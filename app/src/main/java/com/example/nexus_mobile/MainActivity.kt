@@ -16,7 +16,8 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            TelaLogin()
+            //TelaLogin()
+            TelaCadastro()
         }
     }
 }
@@ -31,7 +32,8 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PreviewTelaLogin() {
     NexusmobileTheme {
-        TelaLogin()
+        //TelaLogin()
+        TelaCadastro()
     }
 }
 
