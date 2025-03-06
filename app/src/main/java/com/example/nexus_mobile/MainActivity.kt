@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 //import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 
 class MainActivity : ComponentActivity() {
@@ -17,7 +18,8 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             //TelaLogin()
-            TelaCadastro()
+            //TelaCadastro()
+           AppBar("Perfil")
         }
     }
 }
@@ -30,10 +32,11 @@ class MainActivity : ComponentActivity() {
 )
 
 @Composable
-fun PreviewTelaLogin() {
+fun PreviewTelas() {
     NexusmobileTheme {
         //TelaLogin()
-        TelaCadastro()
+        //TelaCadastro()
+        AppBar("Perfil")
     }
 }
 
