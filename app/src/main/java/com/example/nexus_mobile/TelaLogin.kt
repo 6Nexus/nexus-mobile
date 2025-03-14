@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -56,9 +57,12 @@ fun TelaLogin() {
     var isChecked by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 100.dp),
         verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+
     ) {
 
 
@@ -92,10 +96,12 @@ fun TelaLogin() {
             label = { Text("Email", fontSize = 16.sp) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = verdePrincipal,
-                unfocusedBorderColor = Color(0xFFDFDFDF)
+                unfocusedBorderColor = Color(0xFFDFDFDF),
+                focusedLabelColor = Color(0xFF004b23)
             ),
             modifier = Modifier.size(330.dp, 56.dp),
             shape = RoundedCornerShape(12.dp),
+
 
 
             leadingIcon = {
@@ -118,7 +124,8 @@ fun TelaLogin() {
             label = { Text("Senha", fontSize = 16.sp) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = verdePrincipal,
-                unfocusedBorderColor = Color(0xFFDFDFDF)
+                unfocusedBorderColor = Color(0xFFDFDFDF),
+                focusedLabelColor = Color(0xFF004b23)
             ),
             modifier = Modifier.size(330.dp, 56.dp),
             shape = RoundedCornerShape(12.dp),
@@ -185,6 +192,30 @@ fun TelaLogin() {
                 )
 
         }
+            Spacer(modifier = Modifier.height(20.dp))
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(20.dp)
+        ) {
+
+            Text(
+                text = "Não tem uma conta?",
+                color = Color(0xFF004b23),
+                fontSize = 15.sp
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Text(
+                text = "Cadastre-se",
+                color = Color(0xFF38b000)
+            )
+        }
+
 
     }
 }
