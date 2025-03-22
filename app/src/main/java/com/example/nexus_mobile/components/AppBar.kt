@@ -52,3 +52,4 @@ fun AppBar(descricao: String) {
             .height(50.dp)
     )
 }
+
