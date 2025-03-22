@@ -1,6 +1,9 @@
 package com.example.nexus_mobile
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +21,8 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -25,6 +30,7 @@ import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
@@ -43,18 +49,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
+import java.nio.file.WatchEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaLogin() {
+fun TelaLogin(navController: NavController) {
 
     // VARIÁVEIS
     var isChecked by remember { mutableStateOf(false) }
+    var email by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
+    var exibirSenha by remember { mutableStateOf(false) }
+
+    val visualTransformation: VisualTransformation =
+        if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
 
     Column(
         modifier = Modifier
@@ -63,7 +80,7 @@ fun TelaLogin() {
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
 
-    ) {
+        ) {
 
 
         Image(
@@ -91,17 +108,17 @@ fun TelaLogin() {
         Spacer(modifier = Modifier.height(20.dp))
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = email,
+            onValueChange = { email = it },
             label = { Text("Email", fontSize = 16.sp) },
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = verdePrincipal,
+                focusedBorderColor = Color(0xFF3a5a40),
                 unfocusedBorderColor = Color(0xFFDFDFDF),
                 focusedLabelColor = Color(0xFF004b23)
             ),
-            modifier = Modifier.size(330.dp, 56.dp),
+            modifier = Modifier
+                .size(330.dp, 56.dp),
             shape = RoundedCornerShape(12.dp),
-
 
 
             leadingIcon = {
@@ -119,11 +136,12 @@ fun TelaLogin() {
 
 
         OutlinedTextField(
-            value = "",
-            onValueChange = {},
+            value = senha,
+            onValueChange = { senha = it },
             label = { Text("Senha", fontSize = 16.sp) },
+            visualTransformation = visualTransformation,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = verdePrincipal,
+                focusedBorderColor = Color(0xFF3a5a40),
                 unfocusedBorderColor = Color(0xFFDFDFDF),
                 focusedLabelColor = Color(0xFF004b23)
             ),
@@ -137,11 +155,22 @@ fun TelaLogin() {
                     modifier = Modifier.size(25.dp),
                     tint = cinza
                 )
+            },
+
+            trailingIcon = {
+                IconButton(onClick = { exibirSenha = !exibirSenha }) {
+                    Icon(
+                        imageVector = if (exibirSenha) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                        contentDescription = "ícone para visibilidade da senha",
+                        modifier = Modifier.size(25.dp),
+                        tint = cinza
+                    )
+                }
             }
 
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
 
         Row(
@@ -160,12 +189,12 @@ fun TelaLogin() {
                     checkedColor = verdePrincipal,
                     uncheckedColor = cinza
                 )
-            )
 
+            )
 
             Text(
                 text = "Lembre-me",
-                color = Color(0xFF313131)
+                color = Color(0xFF004b23),
             )
         }
 
@@ -183,7 +212,7 @@ fun TelaLogin() {
             shape = RoundedCornerShape(10.dp),
 
 
-        ) {
+            ) {
             Text(
                 text = "Entrar",
                 color = Color.White,
@@ -192,7 +221,8 @@ fun TelaLogin() {
                 )
 
         }
-            Spacer(modifier = Modifier.height(20.dp))
+
+        Spacer(modifier = Modifier.height(10.dp))
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -208,13 +238,26 @@ fun TelaLogin() {
                 fontSize = 15.sp
             )
 
-            Spacer(modifier = Modifier.width(8.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
             Text(
                 text = "Cadastre-se",
-                color = Color(0xFF38b000)
+                color = Color(0xFF38b000),
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.clickable {
+                    navController.navigate("tela_cadastro")
+                }
             )
         }
+
+        Text(
+            text = "Esqueci minha senha",
+            color = Color(0xFF004b23),
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.clickable{
+                navController.navigate("tela_recuperar_senha")
+            }
+        )
 
 
     }
