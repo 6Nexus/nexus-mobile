@@ -31,7 +31,7 @@ fun NavigationBar(
     BottomAppBar(
         modifier = modifier
             .fillMaxWidth()
-            .height(70.dp)
+            .height(90.dp)
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
         containerColor = Color(76, 173, 76),
         tonalElevation = 10.dp
@@ -58,6 +58,7 @@ fun RowScope.NavigationBarItem(
         onClick = { selecionarTela(nomeTela) },
         modifier = Modifier
             .weight(1f)
+            .padding(top = 10.dp)
             .clip(RoundedCornerShape(12.dp))
             .background(if (isSelecionado) Color(0xFF388E3C) else Color.Transparent)
     ) {
