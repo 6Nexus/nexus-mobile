@@ -25,21 +25,14 @@ import com.example.nexus_mobile.ui.theme.verdePrincipal
 fun AppBar(descricao: String) {
     TopAppBar(
         title = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp),
-                contentAlignment = Alignment.Center
-            ) {
-
-                Text(
-                    text = descricao,
-                    color = Color.White,
-                    textAlign = TextAlign.Center,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-            }
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = descricao,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Medium,
+                fontSize = 18.sp
+            )
         },
 
         colors = TopAppBarDefaults.topAppBarColors(
@@ -47,9 +40,7 @@ fun AppBar(descricao: String) {
             titleContentColor = Color.White,
         ),
         modifier = Modifier
-            .padding(top = 25.dp, bottom = 25.dp)
             .clip(RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp))
-            .height(50.dp)
     )
 }
 
