@@ -9,12 +9,14 @@ import com.example.nexus_mobile.R
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.nexus_mobile.components.BarraPesquisa
 import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
 import com.example.nexus_mobile.components.DetalhesCurso
 import com.example.nexus_mobile.components.NavigationBar
+import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 
 
 @Composable
@@ -24,7 +26,6 @@ fun TelaCursos() {
     var cursoSelecionado by remember { mutableStateOf<Curso?>(null) }
     var telaAtual by remember { mutableStateOf("cursos") }
     val favoritos = remember { mutableStateListOf<Int>() }
-    val context = LocalContext.current
 
     val onFavoritoChanged: (Int, Boolean) -> Unit = { cursoId, isFavorited ->
         if (isFavorited) {
@@ -36,7 +37,7 @@ fun TelaCursos() {
 
     when {
         cursoSelecionado != null -> {
-            DetalhesCurso(cursoSelecionado!!) { cursoSelecionado = null }
+            TelaMatricula(cursoSelecionado!!) { cursoSelecionado = null }
         }
         telaAtual == "favoritos" -> {
             val cursosFavoritos = getCursosFiltrados(categoriaSelecionada).filter { it.id in favoritos }
@@ -108,17 +109,87 @@ fun TelaCursos() {
 
 fun getCursosFiltrados(categoriaSelecionada: String): List<Curso> {
     val cursos = listOf(
-        Curso(1,"Direitos Humanos", "Educação", R.drawable.curso1, "Módulo 1: Introdução", 40),
-        Curso(2, "Informática Básica", "Tecnologia", R.drawable.curso2, "Módulo 2: Pacote Office", 100),
-        Curso(3, "Saúde Mental", "Saúde", R.drawable.curso3, "Módulo 1: Hábitos para manter o equilíbrio", 0)
+        Curso(
+            id = 1,
+            titulo = "Direitos Humanos",
+            categoria = "Educação",
+            imagem = R.drawable.curso1,
+            modulo = "Módulo 1: Introdução",
+            progresso = 40,
+            professor = "Dr. João Silva",
+            duracao = 5,
+            qtdArquivos = 7,
+            aulas = listOf(
+                "Aula 1: História dos Direitos Humanos",
+                "Aula 2: Declaração Universal dos Direitos Humanos",
+                "Aula 3: Direitos Fundamentais",
+                "Aula 4: Casos Práticos",
+                "Prova Final"
+            )
+        ),
+        Curso(
+            id = 2,
+            titulo = "Informática Básica",
+            categoria = "Tecnologia",
+            imagem = R.drawable.curso2,
+            modulo = "Módulo 2: Pacote Office",
+            progresso = 100,
+            professor = "Prof. Maria Andrade",
+            duracao = 10,
+            qtdArquivos = 5,
+            aulas = listOf(
+                "Aula 1: Introdução ao Computador",
+                "Aula 2: Sistema Operacional",
+                "Aula 3: Microsoft Word",
+                "Aula 4: Microsoft Excel",
+                "Aula 5: Microsoft PowerPoint",
+                "Prova Final"
+            )
+        ),
+        Curso(
+            id = 3,
+            titulo = "Saúde Mental",
+            categoria = "Saúde",
+            imagem = R.drawable.curso3,
+            modulo = "Módulo 1: Hábitos para manter o equilíbrio",
+            progresso = 0,
+            professor = "Dra. Fernanda Costa",
+            duracao = 3,
+            qtdArquivos = 3,
+            aulas = listOf(
+                "Aula 1: Introdução à Saúde Mental",
+                "Aula 2: Técnicas de Relaxamento",
+                "Aula 3: Mindfulness e Bem-estar",
+                "Aula 4: Como Lidar com o Estresse",
+                "Prova Final"
+            )
+        )
     )
+
     return if (categoriaSelecionada == "Todos") cursos else cursos.filter { it.categoria == categoriaSelecionada }
 }
 
 
-data class Curso(var id: Int, val titulo: String, val categoria: String, val imagem: Int, val modulo: String, val progresso: Int)
+data class Curso(var id: Int,
+                 val titulo: String,
+                 val categoria: String,
+                 val imagem: Int,
+                 val modulo: String,
+                 val progresso: Int,
+                 val professor: String,
+                 val duracao: Int,
+                 val qtdArquivos: Int,
+                 val aulas: List<String>
+)
 
 
+@Preview(showBackground = true)
+@Composable
+fun PreviewTelas() {
+    NexusmobileTheme {
+        TelaCursos()
+    }
+}
 
 
 

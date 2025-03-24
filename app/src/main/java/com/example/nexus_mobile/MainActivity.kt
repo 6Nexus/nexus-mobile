@@ -23,13 +23,14 @@ import com.example.nexus_mobile.components.NavigationBar
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import com.example.nexus_mobile.telas.TelaCursos
+import com.example.nexus_mobile.telas.TelaMatricula
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-           TelaCursos()
         }
     }
 }
@@ -44,6 +45,5 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PreviewTelas() {
     NexusmobileTheme {
-        TelaCursos()
     }
 }
