@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -77,6 +78,8 @@ fun CartaoCurso(
                 }
 
                 Text(text = curso.modulo, fontSize = 10.sp, color = Color.Gray, modifier = Modifier.padding(top = 2.dp))
+
+                Spacer(modifier = Modifier.height(5.dp))
 
                 Box(
                     modifier = Modifier

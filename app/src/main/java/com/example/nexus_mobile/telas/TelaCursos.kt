@@ -43,6 +43,7 @@ fun TelaCursos() {
             val cursosFavoritos = getCursosFiltrados(categoriaSelecionada).filter { it.id in favoritos }
             Box(modifier = Modifier.fillMaxSize()) {
                 Column(modifier = Modifier.fillMaxSize()) {
+                    Spacer(modifier = Modifier.height(50.dp))
                     BarraPesquisa(query, { query = it })
                     Text(
                         text = "Todos os cursos favoritos",

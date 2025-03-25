@@ -31,7 +31,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-
         }
     }
 }
@@ -46,6 +45,5 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PreviewTelas() {
     NexusmobileTheme {
-        TelaCursos()
     }
 }
