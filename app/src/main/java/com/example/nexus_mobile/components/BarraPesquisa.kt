@@ -27,7 +27,7 @@ fun BarraPesquisa(query: String, onQueryChange: (String) -> Unit) {
     TextField(
         value = query,
         onValueChange = onQueryChange,
-        placeholder = { Text("Pesquisar...", fontSize = 12.sp, color = Color.Gray) },
+        placeholder = { Text("Pesquisar...", fontSize = 13.sp, color = Color.Gray) },
         textStyle = TextStyle(color = Color.Black, fontSize = 12.sp),
         singleLine = true,
         colors = TextFieldDefaults.colors(
@@ -42,6 +42,6 @@ fun BarraPesquisa(query: String, onQueryChange: (String) -> Unit) {
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Color(240, 240, 240))
-            .height(45.dp),
+            .height(50.dp),
     )
 }
