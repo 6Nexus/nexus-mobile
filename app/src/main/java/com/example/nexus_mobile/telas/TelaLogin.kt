@@ -1,11 +1,8 @@
-package com.example.nexus_mobile
+package com.example.nexus_mobile.telas
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,16 +14,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.MailOutline
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -34,8 +28,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,21 +35,23 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.nexus_mobile.R
+import com.example.nexus_mobile.components.AppBar
+import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
-import java.nio.file.WatchEvent
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -201,7 +195,7 @@ fun TelaLogin(navController: NavController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { },
+            onClick = { navController.navigate("tela_perfil") }, // substituir pela tela home
             colors = ButtonDefaults.buttonColors(
                 containerColor = verdePrincipal,
                 contentColor = Color.White,
@@ -210,15 +204,12 @@ fun TelaLogin(navController: NavController) {
                 .size(330.dp, 56.dp)
                 .shadow(8.dp),
             shape = RoundedCornerShape(10.dp),
-
-
-            ) {
+        ) {
             Text(
                 text = "Entrar",
                 color = Color.White,
                 fontSize = 20.sp,
-
-                )
+            )
 
         }
 
@@ -254,11 +245,22 @@ fun TelaLogin(navController: NavController) {
             text = "Esqueci minha senha",
             color = Color(0xFF004b23),
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.clickable{
+            modifier = Modifier.clickable {
                 navController.navigate("tela_recuperar_senha")
             }
         )
 
 
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewLogin() {
+    val navController = rememberNavController()
+    NexusmobileTheme {
+        TelaLogin(navController)
+        //TelaCadastro()
+        //AppBar("Perfil")
     }
 }
