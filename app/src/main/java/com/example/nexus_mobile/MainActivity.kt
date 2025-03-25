@@ -12,6 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 
@@ -20,23 +23,35 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            AppBar("Perfil")
+            val navController = rememberNavController()
+            NavHost(navController = navController, startDestination = "tela_cadastro") {
+                composable("tela_cadastro") {
+                    TelaCadastro(navController)
+                }
+                composable("tela_login") {
+                    TelaLogin(navController)
+                }
+
+                composable("tela_recuperar_senha") {
+                    TelaRecuperarSenha(navController)
+                }
+            }
         }
     }
-}
 
-@Preview(
-    showBackground = true,
-    showSystemUi = true,
-    device = Devices.NEXUS_6
-)
+    @Preview(
+        showBackground = true,
+        showSystemUi = true,
+        device = Devices.NEXUS_6
+    )
 
-@Preview(showBackground = true)
-@Composable
-fun PreviewTelas() {
-    NexusmobileTheme {
-        //TelaLogin()
-        //TelaCadastro()
-        AppBar("Perfil")
+    @Preview(showBackground = true)
+    @Composable
+    fun PreviewTelas() {
+        NexusmobileTheme {
+            //TelaLogin()
+            //TelaCadastro()
+            AppBar("Perfil")
+        }
     }
 }
