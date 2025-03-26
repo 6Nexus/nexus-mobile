@@ -10,8 +10,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.nexus_mobile"
-        minSdk = 31
-        targetSdk = 35
+        minSdk = 29
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
