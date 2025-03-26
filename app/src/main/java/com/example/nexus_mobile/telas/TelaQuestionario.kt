@@ -91,10 +91,10 @@ fun TelaQuestionario() {
             }
         }
 
-        NavigationBar(
-            selecionarTela = {},
-            telaAtual = "questionario",
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+//        NavigationBar(
+//            selecionarTela = {},
+//            telaAtual = "questionario",
+//            modifier = Modifier.align(Alignment.CenterHorizontally)
+//        )
     }
 }
