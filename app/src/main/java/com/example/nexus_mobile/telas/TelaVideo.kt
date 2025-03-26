@@ -38,10 +38,10 @@ fun TelaVideo(
             AppBar(descricao = moduleTitle)
         },
         bottomBar = {
-            NavigationBar(
-                selecionarTela = { telaAtual = it },
-                telaAtual = telaAtual
-            )
+//            NavigationBar(
+//                selecionarTela = { telaAtual = it },
+//                telaAtual = telaAtual
+//            )
         },
         floatingActionButton = {
             FloatingActionButton(

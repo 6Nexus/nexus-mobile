@@ -195,7 +195,7 @@ fun TelaLogin(navController: NavController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { navController.navigate("tela_perfil") }, // substituir pela tela home
+            onClick = { navController.navigate("home") }, // substituir pela tela home
             colors = ButtonDefaults.buttonColors(
                 containerColor = verdePrincipal,
                 contentColor = Color.White,

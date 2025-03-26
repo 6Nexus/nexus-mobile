@@ -41,8 +41,9 @@ fun TelaPerfil( navController: NavController
         },
         bottomBar = {
             NavigationBar(
-                selecionarTela = { telaAtual = it },
-                telaAtual = telaAtual
+                navController = navController,
+                telaAtual = "tela_perfil",
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             )
         },
         floatingActionButton = {

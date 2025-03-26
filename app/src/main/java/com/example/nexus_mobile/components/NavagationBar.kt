@@ -11,22 +11,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.draw.clip
+import androidx.navigation.NavController
 import com.example.nexus_mobile.R
 
 @Composable
 fun NavigationBar(
-    selecionarTela: (String) -> Unit,
+    navController: NavController,
     telaAtual: String,
     modifier: Modifier = Modifier
 ) {
-    val botoes = remember {
-        listOf(
-            "home" to R.drawable.home,
-            "cursos" to R.drawable.school,
-            "perfil" to R.drawable.perfil,
-            "favoritos" to R.drawable.favoritos,
-        )
-    }
+    val botoes = listOf(
+        "home" to R.drawable.home,
+        "tela_curso" to R.drawable.school,
+        "tela_perfil" to R.drawable.perfil,
+        "favoritos" to R.drawable.favoritos,
+    )
 
     BottomAppBar(
         modifier = modifier
@@ -37,35 +36,73 @@ fun NavigationBar(
         tonalElevation = 10.dp
     ) {
         botoes.forEach { (nomeTela, icone) ->
-            NavigationBarItem(
-                nomeTela = nomeTela,
-                icone = icone,
-                isSelecionado = telaAtual == nomeTela,
-                selecionarTela = selecionarTela
-            )
+            IconButton(
+                onClick = {
+                    if (nomeTela != telaAtual) {
+                        navController.navigate(nomeTela) {
+                            popUpTo("tela_curso") { inclusive = false }
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 10.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(if (telaAtual == nomeTela) Color(0xFF388E3C) else Color.Transparent)
+            ) {
+                Icon(
+                    painter = painterResource(id = icone),
+                    contentDescription = nomeTela,
+                    tint = Color.White
+                )
+            }
         }
     }
 }
 
+
+
 @Composable
-fun RowScope.NavigationBarItem(
-    nomeTela: String,
-    icone: Int,
-    isSelecionado: Boolean,
-    selecionarTela: (String) -> Unit
+fun NavigationBar(
+    telaAtual: String,
+    modifier: Modifier = Modifier
 ) {
-    IconButton(
-        onClick = { selecionarTela(nomeTela) },
-        modifier = Modifier
-            .weight(1f)
-            .padding(top = 10.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (isSelecionado) Color(0xFF388E3C) else Color.Transparent)
-    ) {
-        Icon(
-            painter = painterResource(id = icone),
-            contentDescription = nomeTela,
-            tint = Color.White
-        )
-    }
+//    val botoes = listOf(
+//        "home" to R.drawable.home,
+//        "tela_curso" to R.drawable.school,
+//        "tela_perfil" to R.drawable.perfil,
+//        "favoritos" to R.drawable.favoritos,
+//    )
+//
+//    BottomAppBar(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .height(90.dp)
+//            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+//        containerColor = Color(76, 173, 76),
+//        tonalElevation = 10.dp
+//    ) {
+//        botoes.forEach { (nomeTela, icone) ->
+//            IconButton(
+//                onClick = {
+//                    if (nomeTela != telaAtual) {
+//                        navController.navigate(nomeTela) {
+//                            popUpTo("tela_curso") { inclusive = false }
+//                        }
+//                    }
+//                },
+//                modifier = Modifier
+//                    .weight(1f)
+//                    .padding(top = 10.dp)
+//                    .clip(RoundedCornerShape(12.dp))
+//                    .background(if (telaAtual == nomeTela) Color(0xFF388E3C) else Color.Transparent)
+//            ) {
+//                Icon(
+//                    painter = painterResource(id = icone),
+//                    contentDescription = nomeTela,
+//                    tint = Color.White
+//                )
+//            }
+//        }
+//    }
 }

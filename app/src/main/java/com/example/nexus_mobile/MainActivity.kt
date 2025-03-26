@@ -7,12 +7,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.components.AppBar
+import com.example.nexus_mobile.telas.FavoritosViewModel
+import com.example.nexus_mobile.telas.Home
 import com.example.nexus_mobile.telas.TelaCadastro
+import com.example.nexus_mobile.telas.TelaCursos
+import com.example.nexus_mobile.telas.TelaFavoritos
 import com.example.nexus_mobile.telas.TelaLogin
+import com.example.nexus_mobile.telas.TelaMatricula
 import com.example.nexus_mobile.telas.TelaPerfil
 import com.example.nexus_mobile.telas.TelaRecuperarSenha
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
@@ -23,6 +29,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
+            val favoritosViewModel: FavoritosViewModel = viewModel()
             NavHost(navController = navController, startDestination = "tela_cadastro") {
                 composable("tela_cadastro") {
                     TelaCadastro(navController)
@@ -35,9 +42,14 @@ class MainActivity : ComponentActivity() {
                     TelaRecuperarSenha(navController)
                 }
 
-                composable("tela_perfil") {
-                    TelaPerfil(navController)
-                }
+                composable("home") { Home(navController, favoritosViewModel) }
+
+                composable("tela_curso") { TelaCursos(navController, favoritosViewModel) }
+
+                composable("tela_perfil") { TelaPerfil(navController) }
+
+                composable("favoritos") { TelaFavoritos(navController, favoritosViewModel) }
+
             }
         }
     }
@@ -54,7 +66,7 @@ class MainActivity : ComponentActivity() {
         NexusmobileTheme {
             //TelaLogin()
             //TelaCadastro()
-            AppBar("Perfil")
+//            AppBar("Perfil")
         }
     }
 }
