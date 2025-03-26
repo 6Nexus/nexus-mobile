@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -85,7 +86,8 @@ fun CartaoCurso(
                     modifier = Modifier
                         .background(Color(217, 217, 217))
                         .padding(horizontal = 13.dp)
-                        .height(20.dp)
+                        .height(20.dp),
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(text = curso.categoria, fontSize = 9.sp, color = Color.Black)
                 }
@@ -95,9 +97,18 @@ fun CartaoCurso(
                         onClick = { onCursoClick(curso) },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(76, 173, 76)),
-                        modifier = Modifier.padding(top = 26.dp).height(30.dp).width(100.dp)
+                        modifier = Modifier
+                            .padding(top = 26.dp)
+                            .height(30.dp)
+                            .width(100.dp)
                     ) {
-                        Text(text = "Ver Curso", color = Color.White, fontSize = 11.sp, textAlign = TextAlign.Center)
+                        Text(
+                            text = "Ver Curso",
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxSize(), // Faz o texto ocupar toda a área do botão
+                        )
                     }
 
                     Text(

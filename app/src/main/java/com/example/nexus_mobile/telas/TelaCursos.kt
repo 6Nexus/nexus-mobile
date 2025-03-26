@@ -39,67 +39,44 @@ fun TelaCursos() {
         cursoSelecionado != null -> {
             TelaMatricula(cursoSelecionado!!) { cursoSelecionado = null }
         }
-        telaAtual == "favoritos" -> {
-            val cursosFavoritos = getCursosFiltrados(categoriaSelecionada).filter { it.id in favoritos }
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Spacer(modifier = Modifier.height(50.dp))
-                    BarraPesquisa(query, { query = it })
-                    Text(
-                        text = "Todos os cursos favoritos",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ListaCursos(
-                        cursos = cursosFavoritos,
-                        favoritos = favoritos,
-                        onCursoClick = { cursoSelecionado = it },
-                        onFavoritoChanged = onFavoritoChanged
-                    )
-                }
-                NavigationBar(
-                    selecionarTela = { telaAtual = it },
-                    telaAtual = telaAtual,
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-        }
         else -> {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Spacer(modifier = Modifier.height(50.dp))
-                    BarraPesquisa(query, { query = it })
-                    Text(
-                        text = "Todos os cursos",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
-                    Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 16.dp) // Espaço para evitar sobreposição da NavigationBar
+            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+                BarraPesquisa(query, { query = it })
+                Text(
+                    text = if (telaAtual == "favoritos") "Todos os cursos favoritos" else "Todos os cursos",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
+                Spacer(modifier = Modifier.height(16.dp))
 
+                // Box com weight(1f) para ocupar espaço e empurrar a NavigationBar para baixo
+                Box(modifier = Modifier.weight(1f)) {
                     ListaCursos(
-                        cursos = getCursosFiltrados(categoriaSelecionada),
+                        cursos = if (telaAtual == "favoritos") {
+                            getCursosFiltrados(categoriaSelecionada).filter { it.id in favoritos }
+                        } else {
+                            getCursosFiltrados(categoriaSelecionada)
+                        },
                         favoritos = favoritos,
                         onCursoClick = { cursoSelecionado = it },
                         onFavoritoChanged = onFavoritoChanged
                     )
                 }
+
                 NavigationBar(
                     selecionarTela = { telaAtual = it },
                     telaAtual = telaAtual,
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
                         .fillMaxWidth()
-                        .padding(16.dp)
+                        .padding(top = 8.dp)
                 )
             }
         }

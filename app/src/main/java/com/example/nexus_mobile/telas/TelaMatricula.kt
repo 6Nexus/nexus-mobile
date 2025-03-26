@@ -14,6 +14,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.nexus_mobile.R
+import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 
@@ -41,25 +43,37 @@ fun TelaMatricula(curso: Curso, onVoltar: () -> Unit) {
     var telaAtual by remember { mutableStateOf("cursos") }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            TopAppBar(
-                title = { Text("Matrícula", color = Color(0xFF4CAF50)) },
-                navigationIcon = {
-                    IconButton(onClick = onVoltar) {
-                        Image(
-                            painter = painterResource(id = R.drawable.voltar),
-                            contentDescription = "Voltar",
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+        TopAppBar(
+            title = {
+            },
+            navigationIcon = {
+                IconButton(onClick = onVoltar) {
+                    Image(
+                        painter = painterResource(id = R.drawable.voltar),
+                        contentDescription = "Voltar",
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
-            )
-            Spacer(modifier = Modifier.height(25.dp))
+            },
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color(0xFF4CAF50)
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
 
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .padding(top = 100.dp)
+        ) {
             Image(
                 painter = painterResource(id = curso.imagem),
                 contentDescription = "Curso",
-                modifier = Modifier.fillMaxWidth().height(150.dp).clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
                 contentScale = ContentScale.Crop
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -70,14 +84,17 @@ fun TelaMatricula(curso: Curso, onVoltar: () -> Unit) {
                 fontWeight = FontWeight.Bold,
                 color = Color(0xFF4CAF50)
             )
-            Text("Professor: ${curso.professor}", fontSize = 15.sp, color = Color(36, 80, 36))
-            Spacer(modifier = Modifier.height(10.dp))
+            Text("Professor: ${curso.professor}", fontSize = 16.sp, color = Color(36, 80, 36))
+            Spacer(modifier = Modifier.height(16.dp))
 
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
                 Column {
-                    Text(curso.modulo, fontSize = 14.sp, color = Color(82, 78, 78, 166))
-                    Text("Duração total: ${curso.duracao}h", fontSize = 14.sp, color = Color(82, 78, 78, 166))
-                    Text("Arquivos: ${curso.qtdArquivos} Arquivos", fontSize = 14.sp, color = Color(82, 78, 78, 166))
+                    Text(curso.modulo, fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                    Text("Duração total: ${curso.duracao}h", fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                    Text("Arquivos: ${curso.qtdArquivos} Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190))
                 }
                 Button(
                     onClick = { /* Lógica de matrícula */ },
@@ -89,46 +106,48 @@ fun TelaMatricula(curso: Curso, onVoltar: () -> Unit) {
                 }
             }
 
+            Spacer(modifier = Modifier.height(35.dp))
+
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(300.dp)
-                    .background(Color(248, 245, 245), shape = RoundedCornerShape(8.dp))
-                    .clip(RoundedCornerShape(10.dp))
+                    .height(350.dp)
+                    .shadow(6.dp, shape = RoundedCornerShape(6.dp))
+                    .clip(RoundedCornerShape(6.dp))
+                    .background(Color(250, 250, 250))
                     .padding(8.dp)
-                    .shadow(1.dp, shape = RoundedCornerShape(4.dp)),
-                ) {
+            ) {
                 val scrollState = rememberScrollState()
 
-                Column{
+                Column {
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Text(
                         "Conteúdo do curso",
-                        fontSize = 20.sp,
+                        fontSize = 23.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(8.dp),
                         color = Color(0xFF4CAF50)
                     )
                     Spacer(modifier = Modifier.height(5.dp))
-                    Column(
-                        modifier = Modifier.verticalScroll(scrollState)
-                    ) {
+
+                    Column(modifier = Modifier.verticalScroll(scrollState)) {
                         curso.aulas.forEach { aula ->
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 4.dp)
-                                    .height(40.dp)
-                                    .clip(RoundedCornerShape(8.dp))
-                                    .background(Color(248, 245, 245))
+                                    .height(50.dp)
+                                    .shadow(5.dp, shape = RoundedCornerShape(6.dp))
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(Color(250, 250, 250))
                             ) {
                                 Row(
                                     modifier = Modifier.padding(8.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(aula, modifier = Modifier.weight(1f), fontSize = 14.sp)
-                                    Text("5m", color = Color.Gray, fontSize = 12.sp)
+                                    Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                                    Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp)
                                 }
                             }
                         }
@@ -139,13 +158,10 @@ fun TelaMatricula(curso: Curso, onVoltar: () -> Unit) {
         NavigationBar(
             selecionarTela = { telaAtual = it },
             telaAtual = telaAtual,
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
+            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter)
         )
     }
 }
-
 
 
 @Preview(showBackground = true)
