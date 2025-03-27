@@ -2,6 +2,7 @@ package com.example.nexus_mobile.telas
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
@@ -28,20 +30,20 @@ import com.example.nexus_mobile.components.VideoPlayer
 import com.example.nexus_mobile.components.videoMenu
 
 @Composable
-fun TelaVideo(
+fun TelaVideo(navController: NavController,
     moduleTitle: String
 ){
-    var telaAtual by remember { mutableStateOf("cursos") }
 
     Scaffold(
         topBar = {
             AppBar(descricao = moduleTitle)
         },
         bottomBar = {
-//            NavigationBar(
-//                selecionarTela = { telaAtual = it },
-//                telaAtual = telaAtual
-//            )
+            NavigationBar(
+                navController = navController,
+                telaAtual = "tela_curso",
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            )
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -98,7 +100,7 @@ fun TelaVideo(
             }
 
             //questionary card
-            QuestionaryCard()
+            QuestionaryCard(navController = navController )
         }
     }
 }

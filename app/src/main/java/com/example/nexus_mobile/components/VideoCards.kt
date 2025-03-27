@@ -30,6 +30,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
@@ -110,12 +111,14 @@ fun VideoCard(
 }
 
 @Composable
-fun QuestionaryCard() {
+fun QuestionaryCard(navController: NavController) {
     Card(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
-            .aspectRatio(7f),
+            .aspectRatio(7f)
+            .clickable {
+                navController.navigate("questionario") },
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White
@@ -150,7 +153,8 @@ fun QuestionaryCard() {
                     Icon(
                         imageVector = Icons.Filled.KeyboardArrowRight,
                         contentDescription = "Ícone Home",
-                        modifier = Modifier.size(25.dp),
+                        modifier = Modifier
+                            .size(25.dp),
                         tint = verdePrincipal
                     )
                 }

@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.components.BarraPesquisa
 import com.example.nexus_mobile.components.FiltroCategorias
@@ -35,51 +36,47 @@ class FavoritosViewModel : ViewModel() {
 
 @Composable
 fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewModel) {
+    val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
-    var cursoSelecionado by remember { mutableStateOf<Curso?>(null) }
+    val cursosFiltrados = cursoViewModel.getCursosFiltrados(categoriaSelecionada)
 
-    when {
-        cursoSelecionado != null -> {
-            TelaMatricula(cursoSelecionado!!) { cursoSelecionado = null }
-        }
-        else -> {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(30.dp))
-                BarraPesquisa(query, { query = it })
-                Text(
-                    text = "Todos os cursos",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Box(modifier = Modifier.weight(1f)) {
-                    ListaCursos(
-                        cursos = getCursosFiltrados(categoriaSelecionada),
-                        favoritos = favoritosViewModel.favoritos,
-                        onCursoClick = { cursoSelecionado = it },
-                        onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(cursoId) }
-                    )
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(30.dp))
+        BarraPesquisa(query, { query = it })
+        Text(
+            text = "Todos os cursos",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(modifier = Modifier.weight(1f)) {
+            ListaCursos(
+                navController = navController,
+                cursos = cursosFiltrados,
+                favoritos = favoritosViewModel.favoritos,
+                onFavoritoChanged = { cursoId, _ ->
+                    favoritosViewModel.alterarFavorito(cursoId)
                 }
+            )
 
-                NavigationBar(
-                    navController = navController,
-                    telaAtual = "tela_curso",
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                )
-            }
         }
+
+        NavigationBar(
+            navController = navController,
+            telaAtual = "tela_curso",
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        )
     }
 }
 
-
-
-fun getCursosFiltrados(categoriaSelecionada: String): List<Curso> {
-    val cursos = listOf(
+class CursoViewModel : ViewModel() {
+    private val cursos = listOf(
         Curso(
             id = 1,
             titulo = "Direitos Humanos",
@@ -137,8 +134,17 @@ fun getCursosFiltrados(categoriaSelecionada: String): List<Curso> {
         )
     )
 
-    return if (categoriaSelecionada == "Todos") cursos else cursos.filter { it.categoria == categoriaSelecionada }
+    // Função para filtrar os cursos com base na categoria
+    fun getCursosFiltrados(categoriaSelecionada: String): List<Curso> {
+        return if (categoriaSelecionada == "Todos") cursos else cursos.filter { it.categoria == categoriaSelecionada }
+    }
+
+    // Função para obter um curso por ID
+    fun getCursoById(cursoId: Int): Curso? {
+        return cursos.find { it.id == cursoId }
+    }
 }
+
 
 
 data class Curso(var id: Int,

@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.components.BarraPesquisa
 import com.example.nexus_mobile.components.FiltroCategorias
@@ -29,44 +30,39 @@ import com.example.nexus_mobile.components.NavigationBar
 
 @Composable
 fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosViewModel) {
+    val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
-    var cursoSelecionado by remember { mutableStateOf<Curso?>(null) }
+    val cursosFiltrados = cursoViewModel.getCursosFiltrados(categoriaSelecionada)
 
-    when {
-        cursoSelecionado != null -> {
-            TelaMatricula(cursoSelecionado!!) { cursoSelecionado = null }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+        Spacer(modifier = Modifier.height(30.dp))
+        BarraPesquisa(query, { query = it })
+        Text(
+            text = "Todos os cursos favoritos",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Box(modifier = Modifier.weight(1f)) {
+            ListaCursos(
+                navController = navController,
+                cursos = cursosFiltrados
+                    .filter { it.id in favoritosViewModel.favoritos },
+                favoritos = favoritosViewModel.favoritos,
+                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(cursoId) }
+            )
         }
-        else -> {
-            Column(modifier = Modifier.fillMaxSize()) {
-                Spacer(modifier = Modifier.height(30.dp))
-                BarraPesquisa(query, { query = it })
-                Text(
-                    text = "Todos os cursos favoritos",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
-                Spacer(modifier = Modifier.height(16.dp))
 
-                Box(modifier = Modifier.weight(1f)) {
-                    ListaCursos(
-                        cursos = getCursosFiltrados(categoriaSelecionada)
-                            .filter { it.id in favoritosViewModel.favoritos },
-                        favoritos = favoritosViewModel.favoritos,
-                        onCursoClick = { cursoSelecionado = it },
-                        onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(cursoId) }
-                    )
-                }
-
-                NavigationBar(
-                    navController = navController,
-                    telaAtual = "favoritos",
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
-                )
-            }
-        }
+        NavigationBar(
+            navController = navController,
+            telaAtual = "favoritos",
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        )
     }
 }

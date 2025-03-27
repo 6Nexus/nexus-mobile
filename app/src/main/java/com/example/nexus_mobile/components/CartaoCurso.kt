@@ -38,14 +38,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.nexus_mobile.telas.Curso
 import com.example.nexus_mobile.components.Favorito
 
 @Composable
 fun CartaoCurso(
+    navController: NavController,
     curso: Curso,
     favoritos: List<Int>,
-    onCursoClick: (Curso) -> Unit,
     onFavoritoChanged: (Int, Boolean) -> Unit
 ) {
     Card(
@@ -94,7 +95,7 @@ fun CartaoCurso(
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Button(
-                        onClick = { onCursoClick(curso) },
+                        onClick = { navController.navigate("tela_matricula/${curso.id}") },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(76, 173, 76)),
                         modifier = Modifier

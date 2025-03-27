@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.components.BarraPesquisa
 import com.example.nexus_mobile.components.Favorito
@@ -35,70 +36,65 @@ import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 
 @Composable
 fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
+    val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
-    var cursoSelecionado by remember { mutableStateOf<Curso?>(null) }
+    val cursosFiltrados = cursoViewModel.getCursosFiltrados(categoriaSelecionada)
 
-    when {
-        cursoSelecionado != null -> {
-            TelaMatricula(cursoSelecionado!!) { cursoSelecionado = null }
-        }
-        else -> {
-            Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
-                Spacer(modifier = Modifier.height(20.dp))
-                BarraPesquisa(query, { query = it })
+        Spacer(modifier = Modifier.height(20.dp))
+        BarraPesquisa(query, { query = it })
 
-                Spacer(modifier = Modifier.height(20.dp))
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                        .shadow(6.dp, shape = RoundedCornerShape(16.dp))
-                        .height(150.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            "Olá, Maria Eduarda",
-                            fontSize = 30.sp,
-                            color = Color.White
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp))
-
+        Spacer(modifier = Modifier.height(20.dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .shadow(6.dp, shape = RoundedCornerShape(16.dp))
+                .height(150.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
                 Text(
-                    text = "Continuar assistindo",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Box(modifier = Modifier.weight(1f)) {
-                    ListaCursos(
-                        cursos = getCursosFiltrados(categoriaSelecionada),
-                        favoritos = favoritosViewModel.favoritos,
-                        onCursoClick = { cursoSelecionado = it },
-                        onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(cursoId) }
-                    )
-                }
-
-                NavigationBar(
-                    navController = navController,
-                    telaAtual = "home",
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    "Olá, Maria Eduarda",
+                    fontSize = 30.sp,
+                    color = Color.White
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Text(
+            text = "Continuar assistindo",
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp, top = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        Box(modifier = Modifier.weight(1f)) {
+            ListaCursos(
+                navController = navController,
+                cursos = cursosFiltrados,
+                favoritos = favoritosViewModel.favoritos,
+                onFavoritoChanged = { cursoId, _ ->
+                    favoritosViewModel.alterarFavorito(cursoId)
+                }
+            )
+        }
+        NavigationBar(
+            navController = navController,
+            telaAtual = "home",
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+        )
     }
 }

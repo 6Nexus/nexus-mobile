@@ -10,12 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.components.PerguntaCard
 
 @Composable
-fun TelaQuestionario() {
+fun TelaQuestionario(navController: NavController) {
     var respostasCorretas by remember { mutableStateOf(0) }
     var exibirResultado by remember { mutableStateOf(false) }
     var erros by remember { mutableStateOf(listOf(false, false, false)) }
