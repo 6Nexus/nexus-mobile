@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity() {
 fun SplashScreen(navController: NavController) {
     LaunchedEffect(Unit) {
         delay(3000)
-        navController.navigate("home")
+        navController.navigate("tela_cadastro")
     }
 
     TelaInicial(navController = navController)

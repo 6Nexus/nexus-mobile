@@ -26,7 +26,7 @@ fun TelaInicial(navController: NavController) {
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(R.drawable.logo),
+            painter = painterResource(R.drawable.logo_branca),
             contentDescription = "Logo em branco da ONG Mães em luta",
             modifier = Modifier.size(250.dp)
         )
