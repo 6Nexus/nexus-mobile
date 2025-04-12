@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,6 +31,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -37,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,10 +50,12 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.AppBar
+import com.example.nexus_mobile.data.model.login.LoginViewModel
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
@@ -60,12 +67,21 @@ fun TelaLogin(navController: NavController) {
 
     // VARIÁVEIS
     var isChecked by remember { mutableStateOf(false) }
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
+
+    val loginViewModel: LoginViewModel = viewModel()
+    var email by remember { mutableStateOf(loginViewModel.email)}
+    var senha by remember {  mutableStateOf(loginViewModel.senha) }
+
+    val loginResponse = loginViewModel.loginResponse
+    val errorMessage = loginViewModel.errorMessage
+    val isCarregando = loginViewModel.isCarregando
+    val loginSuccess = loginViewModel.loginSuccess
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -103,7 +119,9 @@ fun TelaLogin(navController: NavController) {
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                loginViewModel.email = it
+                email = it },
             label = { Text("Email", fontSize = 16.sp) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF3a5a40),
@@ -131,7 +149,10 @@ fun TelaLogin(navController: NavController) {
 
         OutlinedTextField(
             value = senha,
-            onValueChange = { senha = it },
+            onValueChange = {
+                loginViewModel.senha = it
+                senha = it
+                            },
             label = { Text("Senha", fontSize = 16.sp) },
             visualTransformation = visualTransformation,
             colors = OutlinedTextFieldDefaults.colors(
@@ -195,7 +216,8 @@ fun TelaLogin(navController: NavController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { navController.navigate("home") },
+            onClick = { loginViewModel.fazerLogin(context)},
+            enabled = !isCarregando,
             colors = ButtonDefaults.buttonColors(
                 containerColor = verdePrincipal,
                 contentColor = Color.White,
@@ -205,12 +227,40 @@ fun TelaLogin(navController: NavController) {
                 .shadow(8.dp),
             shape = RoundedCornerShape(10.dp),
         ) {
+
+        if (isCarregando) {
+            CircularProgressIndicator(
+                color = Color.White,
+                modifier = Modifier.size(20.dp),
+                strokeWidth = 2.dp
+            )
+        }
+
+       else {
             Text(
                 text = "Entrar",
                 color = Color.White,
                 fontSize = 20.sp,
             )
 
+        }
+
+        if (errorMessage != null) {
+            Text(
+                text = errorMessage ?: "",
+                color = Color.Red,
+                fontSize = 14.sp,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        if (loginSuccess) {
+            Log.d("LoginActivity", "Login bem-sucedido")
+            LaunchedEffect(loginSuccess) {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -254,7 +304,7 @@ fun TelaLogin(navController: NavController) {
     }
 }
 
-@Preview(showBackground = true)
+//@Preview(showBackground = true)
 @Composable
 fun PreviewLogin() {
     val navController = rememberNavController()
@@ -263,4 +313,5 @@ fun PreviewLogin() {
         //TelaCadastro()
         //AppBar("Perfil")
     }
+}
 }

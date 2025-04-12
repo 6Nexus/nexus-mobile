@@ -31,6 +31,7 @@ import com.example.nexus_mobile.components.Favorito
 import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
 import com.example.nexus_mobile.components.NavigationBar
+import com.example.nexus_mobile.data.model.login.LoginViewModel
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 
 
@@ -40,11 +41,20 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = cursoViewModel.getCursosFiltrados(categoriaSelecionada)
+    var active by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
 
         Spacer(modifier = Modifier.height(20.dp))
-        BarraPesquisa(query, { query = it })
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            active = active,
+            onActiveChange = { active = it },
+            onSearch =  {
+                active = false
+            }
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
         Card(
@@ -94,7 +104,9 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
         NavigationBar(
             navController = navController,
             telaAtual = "home",
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp)
         )
     }
 }

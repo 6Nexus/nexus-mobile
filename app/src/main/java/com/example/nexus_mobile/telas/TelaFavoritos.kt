@@ -17,12 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.nexus_mobile.R
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.BarraPesquisa
 import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
@@ -34,14 +36,23 @@ fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosVie
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = cursoViewModel.getCursosFiltrados(categoriaSelecionada)
-
+    var active by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        Spacer(modifier = Modifier.height(30.dp))
-        BarraPesquisa(query, { query = it })
+       // Spacer(modifier = Modifier.height(30.dp))
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            active = active,
+            onActiveChange = { active = it },
+            onSearch =  {
+                active = false
+            }
+        )
         Text(
-            text = "Todos os cursos favoritos",
+            text = "Cursos favoritos",
             fontSize = 18.sp,
+            color = (Color(0xFF013531)),
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(start = 16.dp, top = 16.dp)
         )
