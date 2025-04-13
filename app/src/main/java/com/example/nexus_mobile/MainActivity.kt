@@ -4,9 +4,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -17,8 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.nexus_mobile.components.AppBar
-import com.example.nexus_mobile.telas.CursoViewModel
-import com.example.nexus_mobile.telas.FavoritosViewModel
+import com.example.nexus_mobile.telas.Curso
 import com.example.nexus_mobile.telas.Home
 import com.example.nexus_mobile.telas.TelaCadastro
 import com.example.nexus_mobile.telas.TelaCursos
@@ -31,6 +35,9 @@ import com.example.nexus_mobile.telas.TelaQuestionario
 import com.example.nexus_mobile.telas.TelaRecuperarSenha
 import com.example.nexus_mobile.telas.TelaVideo
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
+import com.example.nexus_mobile.uiState.CursoUiState
+import com.example.nexus_mobile.viewModel.CursoViewModel
+import com.example.nexus_mobile.viewModel.FavoritosViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -68,12 +75,42 @@ class MainActivity : ComponentActivity() {
                 composable("tela_matricula/{cursoId}") { backStackEntry ->
                     val cursoId = backStackEntry.arguments?.getString("cursoId")?.toInt()
                     val cursoViewModel: CursoViewModel = viewModel()
-                    val curso = cursoId?.let { cursoViewModel.getCursoById(it) }
 
-                    if (curso != null) {
-                        TelaMatricula(curso, navController)
-                    } else {
-                        Text("Curso não encontrado")
+                    LaunchedEffect(cursoId) {
+                        cursoId?.let {
+                            cursoViewModel.carregarCursoPorId(usuarioId = 1, cursoId = it)
+                        }
+                    }
+
+                    when (val state = cursoViewModel.uiState.value) {
+                        is CursoUiState.Loading -> {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
+                            }
+                        }
+
+                        is CursoUiState.Success -> {
+                            val cursoDto = state.curso
+                            val curso = Curso(
+                                id = cursoDto.id,
+                                titulo = cursoDto.titulo,
+                                categoria = cursoDto.descricao,
+                                imagem = R.drawable.curso1,
+                                modulo = "",
+                                progresso = 0,
+                                professor = "",
+                                duracao = 0,
+                                qtdArquivos = 0,
+                                aulas = emptyList()
+                            )
+                            TelaMatricula(curso, navController)
+                        }
+
+                        is CursoUiState.Error -> {
+                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text("Erro: ${state.message}")
+                            }
+                        }
                     }
                 }
 
@@ -92,10 +129,8 @@ class MainActivity : ComponentActivity() {
     )
     @Composable
     fun PreviewTelas() {
-        NexusmobileTheme {
-            //TelaLogin()
-            //TelaCadastro()
-//            AppBar("Perfil")
+       NexusmobileTheme {
+//            Home()
         }
     }
 }

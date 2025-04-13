@@ -27,13 +27,15 @@ import com.example.nexus_mobile.components.BarraPesquisa
 import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
 import com.example.nexus_mobile.components.NavigationBar
+import com.example.nexus_mobile.viewModel.CursoViewModel
+import com.example.nexus_mobile.viewModel.FavoritosViewModel
 
 @Composable
 fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosViewModel) {
     val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
-    val cursosFiltrados = cursoViewModel.getCursosFiltrados(categoriaSelecionada)
+    val cursosFiltrados = cursoViewModel.cursos
 
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -52,8 +54,20 @@ fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosVie
         Box(modifier = Modifier.weight(1f)) {
             ListaCursos(
                 navController = navController,
-                cursos = cursosFiltrados
-                    .filter { it.id in favoritosViewModel.favoritos },
+                cursos = cursosFiltrados.map { cursoDto ->
+                    Curso(
+                        id = 0,
+                        titulo = cursoDto.titulo,
+                        categoria = cursoDto.categoria,
+                        imagem = R.drawable.curso1,
+                        modulo = "",
+                        progresso = 0,
+                        professor = cursoDto.professorNome,
+                        duracao = 0,
+                        qtdArquivos = 0,
+                        aulas = emptyList()
+                    )
+                },
                 favoritos = favoritosViewModel.favoritos,
                 onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(cursoId) }
             )
