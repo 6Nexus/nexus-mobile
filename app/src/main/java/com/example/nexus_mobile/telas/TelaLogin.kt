@@ -54,11 +54,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
+import com.example.nexus_mobile.components.Alert
 import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.data.model.login.LoginViewModel
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +76,7 @@ fun TelaLogin(navController: NavController) {
 
     val loginViewModel: LoginViewModel = viewModel()
     var email by remember { mutableStateOf(loginViewModel.email)}
-    var senha by remember {  mutableStateOf(loginViewModel.senha) }
+    var senha by remember {  mutableStateOf(loginViewModel.senha)}
 
     val loginResponse = loginViewModel.loginResponse
     val errorMessage = loginViewModel.errorMessage
@@ -228,23 +230,21 @@ fun TelaLogin(navController: NavController) {
             shape = RoundedCornerShape(10.dp),
         ) {
 
-        if (isCarregando) {
-            CircularProgressIndicator(
-                color = Color.White,
-                modifier = Modifier.size(20.dp),
-                strokeWidth = 2.dp
-            )
+            if (isCarregando) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = "Entrar",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                )
+
+            }
         }
-
-       else {
-            Text(
-                text = "Entrar",
-                color = Color.White,
-                fontSize = 20.sp,
-            )
-
-        }
-
         if (errorMessage != null) {
             Text(
                 text = errorMessage ?: "",
@@ -299,9 +299,6 @@ fun TelaLogin(navController: NavController) {
                 navController.navigate("tela_recuperar_senha")
             }
         )
-
-
-    }
 }
 
 //@Preview(showBackground = true)
