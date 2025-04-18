@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -48,16 +49,14 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val favoritosViewModel: FavoritosViewModel = viewModel()
 
-            NavHost(navController = navController, startDestination = "splash_screen") {
-                composable("splash_screen") {
-                    SplashScreen(navController)
-                }
+            NavHost(navController = navController, startDestination = "tela_login") {
 
                 composable("tela_cadastro") {
                     TelaCadastro(navController)
                 }
                 composable("tela_login") {
-                    TelaLogin(navController)
+                    val context = LocalContext.current
+                    TelaLogin(navController = navController, context = context)
                 }
 
                 composable("tela_recuperar_senha") {
@@ -72,47 +71,46 @@ class MainActivity : ComponentActivity() {
 
                 composable("favoritos") { TelaFavoritos(navController, favoritosViewModel) }
 
-                composable("tela_matricula/{cursoId}") { backStackEntry ->
-                    val cursoId = backStackEntry.arguments?.getString("cursoId")?.toInt()
-                    val cursoViewModel: CursoViewModel = viewModel()
-
-                    LaunchedEffect(cursoId) {
-                        cursoId?.let {
-                            cursoViewModel.carregarCursoPorId(usuarioId = 1, cursoId = it)
-                        }
-                    }
-
-                    when (val state = cursoViewModel.uiState.value) {
-                        is CursoUiState.Loading -> {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator()
-                            }
-                        }
-
-                        is CursoUiState.Success -> {
-                            val cursoDto = state.curso
-                            val curso = Curso(
-                                id = cursoDto.id,
-                                titulo = cursoDto.titulo,
-                                categoria = cursoDto.descricao,
-                                imagem = R.drawable.curso1,
-                                modulo = "",
-                                progresso = 0,
-                                professor = "",
-                                duracao = 0,
-                                qtdArquivos = 0,
-                                aulas = emptyList()
-                            )
-                            TelaMatricula(curso, navController)
-                        }
-
-                        is CursoUiState.Error -> {
-                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text("Erro: ${state.message}")
-                            }
-                        }
-                    }
-                }
+//                composable("tela_matricula/{cursoId}") { backStackEntry ->
+//                    val cursoId = backStackEntry.arguments?.getString("cursoId")?.toInt()
+//                    val cursoViewModel: CursoViewModel = viewModel()
+//
+//                    LaunchedEffect(cursoId) {
+//                        cursoId?.let {
+//                            cursoViewModel.carregarCursoPorId(usuarioId = 1, cursoId = it)
+//                        }
+//                    }
+//
+//                    when (val state = cursoViewModel.uiState.value) {
+//                        is CursoUiState.Loading -> {
+//                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                                CircularProgressIndicator()
+//                            }
+//                        }
+//
+//                        is CursoUiState.Success -> {
+//                            val cursoDto = state.curso
+//                            val curso = Curso(
+//                                id = cursoDto.id,
+//                                titulo = cursoDto.titulo,
+//                                categoria = cursoDto.descricao,
+//                                imagem = R.drawable.curso1,
+//                                modulo = "",
+//                                professor = "",
+//                                duracao = 0,
+//                                qtdArquivos = 0,
+//                                aulas = emptyList()
+//                            )
+//                            TelaMatricula(curso, navController)
+//                        }
+//
+//                        is CursoUiState.Error -> {
+//                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+//                                Text("Erro: ${state.message}")
+//                            }
+//                        }
+//                    }
+//                }
 
                 composable("video") { TelaVideo(navController, "Aulas") }
 
@@ -122,25 +120,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    @Preview(
-        showBackground = true,
-        showSystemUi = true,
-        device = Devices.NEXUS_6
-    )
-    @Composable
-    fun PreviewTelas() {
-       NexusmobileTheme {
-//            Home()
-        }
-    }
-}
-
-@Composable
-fun SplashScreen(navController: NavController) {
-    LaunchedEffect(Unit) {
-        delay(3000)
-        navController.navigate("home")
-    }
-
-    TelaInicial(navController = navController)
 }

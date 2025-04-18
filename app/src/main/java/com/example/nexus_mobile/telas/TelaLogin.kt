@@ -1,5 +1,8 @@
 package com.example.nexus_mobile.telas
 
+import android.content.Context
+import android.media.session.MediaSession
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -48,15 +51,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
-import com.example.nexus_mobile.components.AppBar
+import com.example.nexus_mobile.RetrofitLogin
+import com.example.nexus_mobile.utils.TokenManager
+import com.example.nexus_mobile.dto.LoginRequest
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaLogin(navController: NavController) {
+fun TelaLogin(navController: NavController, context: Context) {
 
     // VARIÁVEIS
     var isChecked by remember { mutableStateOf(false) }
@@ -195,7 +204,28 @@ fun TelaLogin(navController: NavController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { navController.navigate("home") },
+            onClick = {
+                Log.d("Login", "Botão de login clicado")
+
+                val loginRequest = LoginRequest(email, senha)
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        Log.d("Login", "Chamando API de login...")
+                        val resposta = RetrofitLogin.create(context).login(loginRequest)
+                        Log.d("Login", "Token recebido: ${resposta.token}")
+                        TokenManager.salvarToken(context, resposta.token)
+
+                        withContext(Dispatchers.Main) {
+                            navController.navigate("home") {
+                                popUpTo("tela_login") { inclusive = true }
+                            }
+                        }
+
+                    } catch (e: Exception) {
+                        Log.e("Login", "Erro ao fazer login", e)
+                    }
+                }
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = verdePrincipal,
                 contentColor = Color.White,
@@ -210,7 +240,6 @@ fun TelaLogin(navController: NavController) {
                 color = Color.White,
                 fontSize = 20.sp,
             )
-
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -251,16 +280,5 @@ fun TelaLogin(navController: NavController) {
         )
 
 
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewLogin() {
-    val navController = rememberNavController()
-    NexusmobileTheme {
-        TelaLogin(navController)
-        //TelaCadastro()
-        //AppBar("Perfil")
     }
 }

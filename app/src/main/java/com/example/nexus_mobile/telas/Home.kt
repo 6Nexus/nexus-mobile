@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -42,6 +43,11 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = cursoViewModel.cursos
+
+    LaunchedEffect(Unit) {
+        cursoViewModel.carregarCursos(usuarioId = 2)
+        Log.d("TelaHome", "Chamando carregarCursos")
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -88,12 +94,11 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
                 navController = navController,
                 cursos = cursosFiltrados.map { cursoDto ->
                     Curso(
-                        id = 0,
+                        id = cursoDto.id,
                         titulo = cursoDto.titulo,
                         categoria = cursoDto.categoria,
                         imagem = R.drawable.curso1,
-                        modulo = "",
-                        progresso = 0,
+                        modulo = "aaaaaaaa",
                         professor = cursoDto.professorNome,
                         duracao = 0,
                         qtdArquivos = 0,
@@ -101,9 +106,7 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
                     )
                 },
                 favoritos = favoritosViewModel.favoritos,
-                onFavoritoChanged = { cursoId, _ ->
-                    favoritosViewModel.alterarFavorito(cursoId)
-                }
+                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(idAssociado = 2, cursoId = cursoId) }
             )
         }
         NavigationBar(

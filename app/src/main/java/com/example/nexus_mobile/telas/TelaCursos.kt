@@ -39,7 +39,8 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
     val cursosFiltrados = cursoViewModel.cursos
 
     LaunchedEffect(Unit) {
-        cursoViewModel.carregarCursos(usuarioId = 1)
+        cursoViewModel.carregarCursos(usuarioId = 2)
+        Log.d("TelaCursos", "Chamando carregarCursos")
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -52,7 +53,10 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
             modifier = Modifier.padding(start = 16.dp, top = 16.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
-        FiltroCategorias(categoriaSelecionada) { categoriaSelecionada = it }
+        FiltroCategorias(categoriaSelecionada) { novaCategoria ->
+            categoriaSelecionada = novaCategoria
+            cursoViewModel.carregarCursosPorCategoria(novaCategoria)
+        }
         Spacer(modifier = Modifier.height(16.dp))
 
         Box(modifier = Modifier.weight(1f)) {
@@ -60,12 +64,11 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
                 navController = navController,
                 cursos = cursosFiltrados.map { cursoDto ->
                     Curso(
-                        id = 0,
+                        id = cursoDto.id,
                         titulo = cursoDto.titulo,
                         categoria = cursoDto.categoria,
                         imagem = R.drawable.curso1,
                         modulo = "",
-                        progresso = 0,
                         professor = cursoDto.professorNome,
                         duracao = 0,
                         qtdArquivos = 0,
@@ -73,9 +76,7 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
                     )
                 },
                 favoritos = favoritosViewModel.favoritos,
-                onFavoritoChanged = { cursoId, _ ->
-                    favoritosViewModel.alterarFavorito(cursoId)
-                }
+                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(idAssociado = 2, cursoId = cursoId) }
             )
 
         }
@@ -96,7 +97,6 @@ data class Curso(var id: Int,
                  val categoria: String,
                  val imagem: Int,
                  val modulo: String,
-                 val progresso: Int,
                  val professor: String,
                  val duracao: Int,
                  val qtdArquivos: Int,

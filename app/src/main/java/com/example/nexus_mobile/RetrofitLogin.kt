@@ -1,30 +1,30 @@
 package com.example.nexus_mobile
 
 import android.content.Context
-import com.example.nexus_mobile.api.CursoApi
+import com.example.nexus_mobile.api.LoginApi
 import com.example.nexus_mobile.autenticador.AuthInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-object RetrofitClient {
-    fun create(context: Context): CursoApi {
+object RetrofitLogin {
+
+    fun create(context: Context): LoginApi {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .addInterceptor(AuthInterceptor(context)) // Adiciona token nas requisições
+            .addInterceptor(AuthInterceptor(context)) // AQUI passa o context certinho
             .build()
 
-        val retrofit = Retrofit.Builder()
+        return Retrofit.Builder()
             .baseUrl("http://10.0.2.2:8080")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
-
-        return retrofit.create(CursoApi::class.java)
+            .create(LoginApi::class.java)
     }
 }

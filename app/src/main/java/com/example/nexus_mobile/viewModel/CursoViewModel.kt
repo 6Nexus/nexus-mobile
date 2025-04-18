@@ -1,64 +1,92 @@
 package com.example.nexus_mobile.viewModel
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.Recomposer
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nexus_mobile.RetrofitClient
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.uiState.CursoUiState
+import com.example.nexus_mobile.utils.TokenManager
 import kotlinx.coroutines.launch
+class CursoViewModel(
+    application: Application
+) : AndroidViewModel(application) {
 
-class CursoViewModel : ViewModel() {
+    private val api = RetrofitClient.create(application)
+
     private val _cursos = mutableStateListOf<CursoDto>()
     val cursos: List<CursoDto> get() = _cursos
+
     private val _uiState = mutableStateOf<CursoUiState>(CursoUiState.Loading)
     val uiState: State<CursoUiState> get() = _uiState
 
-
     fun carregarCursos(usuarioId: Int) {
         viewModelScope.launch {
+            _uiState.value = CursoUiState.Loading // Mostra o estado de carregamento enquanto busca os cursos
             try {
-                val cursosRecebidos = RetrofitClient.api.getCursos(usuarioId)
-                _cursos.clear()
-                _cursos.addAll(cursosRecebidos)
+                // Obtendo o token armazenado
+                val token = TokenManager.getToken(getApplication<Application>())
+
+                // Verificando se o token é válido
+                if (token != null && token.isNotEmpty()) {
+
+                    // Chamando a API para buscar todos os cursos com o token de autorização
+                    val cursosRecebidos = api.getCursos("Bearer $token", usuarioId)
+
+                    // Atualizando a lista de cursos com os dados recebidos
+                    _cursos.clear()
+                    _cursos.addAll(cursosRecebidos)
+
+                    // Atualizando o estado da UI com sucesso
+                    _uiState.value = CursoUiState.Success(cursosRecebidos)
+                    Log.d("CursoViewModel", "Cursos carregados com sucesso")
+                } else {
+                    // Se o token for inválido ou expirado, exibindo erro
+                    _uiState.value = CursoUiState.Error("Token não encontrado ou expirado")
+                }
             } catch (e: Exception) {
+                // Tratando exceções e erros de conexão com a API
+                _uiState.value = CursoUiState.Error("Erro ao buscar cursos: ${e.message}")
                 Log.e("CursoViewModel", "Erro ao buscar cursos", e)
             }
         }
     }
 
-    fun carregarCursoPorId(usuarioId: Int, cursoId: Int) {
+    fun carregarCursosPorCategoria(categoria: String) {
         viewModelScope.launch {
-            _uiState.value = CursoUiState.Loading
             try {
-                val cursos = RetrofitClient.api.getCursos(usuarioId)
-                val cursoEncontrado = cursos.find { it.id == cursoId }
-                if (cursoEncontrado != null) {
-                    _uiState.value = CursoUiState.Success(cursoEncontrado)
-                } else {
-                    _uiState.value = CursoUiState.Error("Curso não encontrado")
-                }
+                val cursosRecebidos = api.getCursosPorCategoria(categoria)
+                _cursos.clear()
+                _cursos.addAll(cursosRecebidos)
+                Log.d("CursoViewModel", "Cursos da categoria '$categoria' carregados com sucesso")
             } catch (e: Exception) {
-                _uiState.value = CursoUiState.Error("Erro ao buscar curso: ${e.message}")
+                Log.e("CursoViewModel", "Erro ao buscar cursos por categoria", e)
             }
         }
     }
-}
 
-
-class FavoritosViewModel : ViewModel() {
-    private val _favoritos = mutableStateListOf<Int>()
-    val favoritos: List<Int> get() = _favoritos
-
-    fun alterarFavorito(cursoId: Int) {
-        if (_favoritos.contains(cursoId)) {
-            _favoritos.remove(cursoId)
-        } else {
-            _favoritos.add(cursoId)
-        }
-    }
+//    fun carregarCursoPorId(usuarioId: Int, cursoId: Int) {
+//        viewModelScope.launch {
+//            _uiState.value = CursoUiState.Loading
+//            try {
+//                // Se houver um endpoint para pegar um curso específico
+//                val curso = api.getCursoPorId(usuarioId, cursoId) // Ajuste para o endpoint correto
+//
+//                if (curso != null) {
+//                    _uiState.value = CursoUiState.Success(curso)
+//                } else {
+//                    _uiState.value = CursoUiState.Error("Curso não encontrado")
+//                }
+//            } catch (e: Exception) {
+//                _uiState.value = CursoUiState.Error("Erro ao buscar curso: ${e.message}")
+//            }
+//        }
+//    }
 }

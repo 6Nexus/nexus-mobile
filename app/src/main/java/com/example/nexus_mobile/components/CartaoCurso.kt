@@ -111,13 +111,6 @@ fun CartaoCurso(
                             modifier = Modifier.fillMaxSize(),
                         )
                     }
-
-                    Text(
-                        text = if (curso.progresso == 100) "Concluído" else "${curso.progresso}% progresso",
-                        fontSize = 12.sp,
-                        color = if (curso.progresso == 100) Color(76, 173, 76) else Color.Gray,
-                        modifier = Modifier.align(Alignment.CenterVertically).padding(top = 26.dp)
-                    )
                 }
             }
         }
