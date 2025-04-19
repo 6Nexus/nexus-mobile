@@ -12,6 +12,8 @@ import com.example.nexus_mobile.data.model.login.LoginResponse
 import com.example.nexus_mobile.data.model.services.AssociadoService
 import okhttp3.OkHttpClient
 import androidx.lifecycle.viewModelScope
+import com.example.nexus_mobile.data.model.cadastro.CadastroResponse
+import com.example.nexus_mobile.data.model.cadastro.CadastroViewModel
 import com.example.nexus_mobile.data.model.services.TokenJWT
 import com.example.nexus_mobile.data.model.services.TokenJWT.salvarToken
 import com.example.nexus_mobile.data.model.services.api
@@ -21,6 +23,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 
 class LoginViewModel : ViewModel() {
 
+   // var nome by mutableStateOf("")
     var email by mutableStateOf("")
     var senha by mutableStateOf("")
     var isCarregando by mutableStateOf(false)
@@ -46,6 +49,11 @@ class LoginViewModel : ViewModel() {
                 // Salva o token
                 TokenJWT.salvarToken(context, response.token)
 
+                // Pegar nome do usuario
+                val nomeUsuario = response.nome
+                TokenJWT.salvarDadosUsuario(context, nomeUsuario, email)
+
+
                 // Atualiza estados
                 loginResponse = response
                 loginSuccess = true
@@ -59,4 +67,6 @@ class LoginViewModel : ViewModel() {
             }
         }
     }
+
 }
+

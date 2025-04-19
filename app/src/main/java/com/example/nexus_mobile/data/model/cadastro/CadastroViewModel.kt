@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.nexus_mobile.data.model.services.TokenJWT
 import com.example.nexus_mobile.data.model.services.api
 import kotlinx.coroutines.launch
 
@@ -36,6 +37,10 @@ class CadastroViewModel : ViewModel() {
                 // Faz a chamada de login
                 val response = associadoService.cadastrar(cadastroRequest)
 
+                // Salvar dados do usuário (nome e email)
+                TokenJWT.salvarDadosUsuario(context, nome, email)
+                Log.d("CadastroViewModel", "Dados do usuário salvos: nome: $nome, email: $email")
+
                 // Atualiza estados
                 cadastroResponse = response
                 cadastroSuccess = true
@@ -49,5 +54,10 @@ class CadastroViewModel : ViewModel() {
         }
     }
 
+    fun carregarDadosUsuario(context: Context) {
+        nome = TokenJWT.recuperarNome(context) ?: ""
+        email = TokenJWT.recuperarEmail(context) ?: ""
+        Log.d("TelaPerfil", "Nome carregado: $nome, Email carregado: $email")
+    }
 
 }

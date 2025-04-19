@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -56,6 +57,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.Alert
 import com.example.nexus_mobile.components.AppBar
+import com.example.nexus_mobile.data.model.cadastro.CadastroViewModel
 import com.example.nexus_mobile.data.model.login.LoginViewModel
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.ui.theme.cinza
@@ -84,6 +86,10 @@ fun TelaLogin(navController: NavController) {
     val loginSuccess = loginViewModel.loginSuccess
 
     val context = LocalContext.current
+
+//    LaunchedEffect(Unit) {
+//        loginViewModel.carregarDadosUsuario(context)
+//    }
 
     Column(
         modifier = Modifier
@@ -312,3 +318,5 @@ fun PreviewLogin() {
     }
 }
 }
+
+

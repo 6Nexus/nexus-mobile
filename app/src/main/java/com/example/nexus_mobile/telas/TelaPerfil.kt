@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -13,6 +14,8 @@ import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -23,17 +26,33 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
+import com.example.nexus_mobile.data.model.cadastro.CadastroResponse
+import com.example.nexus_mobile.data.model.cadastro.CadastroViewModel
+import com.example.nexus_mobile.data.model.services.TokenJWT
 
 @Composable
 fun TelaPerfil( navController: NavController
 ) {
     var telaAtual by remember { mutableStateOf("perfil") }
+    val cadastroViewModel:  CadastroViewModel = viewModel()
+    val context = LocalContext.current
+
+    val nome = cadastroViewModel.nome
+    val email = cadastroViewModel.email
+
+
+    LaunchedEffect(Unit) {
+        cadastroViewModel.carregarDadosUsuario(context)
+    }
+
 
     Scaffold(
         topBar = {
@@ -95,9 +114,9 @@ fun TelaPerfil( navController: NavController
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            CampoDeInformacaoEditavel("Maria Eduarda")
-            CampoDeInformacaoEditavel("maria.guarda@esptech.school")
-            CampoDeInformacaoEditavel("11951288322")
+            CampoDeInformacaoEditavel(nome)
+            CampoDeInformacaoEditavel(email)
+
 
             Spacer(modifier = Modifier.height(24.dp))
 

@@ -1,6 +1,6 @@
 package com.example.nexus_mobile.data.model.cadastro
 
-class CadastroResponse {
+class CadastroResponse() {
     var nome: String = ""
     var email: String = ""
 
@@ -10,11 +10,3 @@ class CadastroResponse {
 }
 
 
-// retorno do json
-// {
-//	"id": 11,
-//	"nome": "nome_f7b2e7c255b0",
-//	"email": "fernanda@gmail.com",
-//	"telefone": "telefone_0ced8481d804",
-//	"aprovado": false
-// }
