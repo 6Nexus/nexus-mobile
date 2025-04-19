@@ -61,7 +61,9 @@ fun CartaoCurso(
             Image(
                 painter = painterResource(id = curso.imagem),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(100.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp),
                 contentScale = ContentScale.Crop
             )
 
@@ -70,7 +72,12 @@ fun CartaoCurso(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = curso.titulo, fontSize = 18.sp, color = Color(19, 83, 19), modifier = Modifier.weight(1f))
+                    Text(
+                        text = curso.titulo,
+                        fontSize = 18.sp,
+                        color = Color(19, 83, 19),
+                        modifier = Modifier.weight(1f)
+                    )
 
                     Favorito(
                         cursoId = curso.id,
@@ -79,7 +86,12 @@ fun CartaoCurso(
                     )
                 }
 
-                Text(text = curso.modulo, fontSize = 10.sp, color = Color.Gray, modifier = Modifier.padding(top = 2.dp))
+                Text(
+                    text = curso.modulo,
+                    fontSize = 10.sp,
+                    color = Color.Gray,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
 
                 Spacer(modifier = Modifier.height(5.dp))
 
@@ -93,30 +105,35 @@ fun CartaoCurso(
                     Text(text = curso.categoria, fontSize = 9.sp, color = Color.Black)
                 }
 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Button(
                         onClick = { navController.navigate("tela_matricula/${curso.id}") },
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(76, 173, 76)),
                         modifier = Modifier
-                            .padding(top = 26.dp)
-                            .height(30.dp)
-                            .width(100.dp)
+                            .align(Alignment.CenterVertically)
+                            .padding(top = 20.dp)
                     ) {
+
                         Text(
                             text = "Ver Curso",
                             color = Color.White,
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxSize(),
                         )
+
                     }
 
                     Text(
                         text = if (curso.progresso == 100) "Concluído" else "${curso.progresso}% progresso",
                         fontSize = 12.sp,
                         color = if (curso.progresso == 100) Color(76, 173, 76) else Color.Gray,
-                        modifier = Modifier.align(Alignment.CenterVertically).padding(top = 26.dp)
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(top = 26.dp)
                     )
                 }
             }
