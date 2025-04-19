@@ -57,6 +57,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.Alert
 import com.example.nexus_mobile.components.AppBar
+import com.example.nexus_mobile.components.TipoToast
+import com.example.nexus_mobile.components.Toast
 import com.example.nexus_mobile.data.model.cadastro.CadastroViewModel
 import com.example.nexus_mobile.data.model.login.LoginViewModel
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
@@ -87,9 +89,45 @@ fun TelaLogin(navController: NavController) {
 
     val context = LocalContext.current
 
-//    LaunchedEffect(Unit) {
-//        loginViewModel.carregarDadosUsuario(context)
-//    }
+
+
+    // VALIDAÇÕES PARA CHAMADA DE TOAST
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 25.dp),
+    ) {
+        if (errorMessage != null) {
+            LaunchedEffect(errorMessage) {
+                delay(3000)
+                loginViewModel.errorMessage = null
+            }
+            Toast(
+                mensagem = errorMessage,
+                tipoToast = TipoToast.Erro,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        if (loginSuccess) {
+            Log.d("LoginActivity", "Login bem-sucedido")
+            LaunchedEffect(loginSuccess) {
+                delay(3000)
+                loginViewModel.loginSuccess = false
+            }
+            Toast(
+                mensagem = "Login bem-sucedido",
+                tipoToast = TipoToast.Sucesso,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            LaunchedEffect(loginSuccess) {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -99,6 +137,7 @@ fun TelaLogin(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
+
 
 
         Image(
@@ -251,23 +290,24 @@ fun TelaLogin(navController: NavController) {
 
             }
         }
-        if (errorMessage != null) {
-            Text(
-                text = errorMessage ?: "",
-                color = Color.Red,
-                fontSize = 14.sp,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-        }
 
-        if (loginSuccess) {
-            Log.d("LoginActivity", "Login bem-sucedido")
-            LaunchedEffect(loginSuccess) {
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
-                }
-            }
-        }
+//        if (loginSuccess) {
+//            Log.d("LoginActivity", "Login bem-sucedido")
+//            LaunchedEffect(loginSuccess) {
+//                delay(3000)
+//                loginViewModel.loginSuccess = false
+//            }
+//            Toast(
+//                mensagem = "Login bem-sucedido",
+//                tipoToast = TipoToast.Sucesso,
+//                modifier = Modifier.padding(top = 8.dp)
+//            )
+//            LaunchedEffect(loginSuccess) {
+//                navController.navigate("home") {
+//                    popUpTo("login") { inclusive = true }
+//                }
+//            }
+//        }
 
         Spacer(modifier = Modifier.height(10.dp))
 

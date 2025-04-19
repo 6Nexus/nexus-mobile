@@ -13,7 +13,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 object api {
 
    // private val token = TokenJWT
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+
+   // private const val BASE_URL = "http://10.0.2.2:8080/" - emulador
+   private const val BASE_URL = "http://192.168.18.88:8080/" // IP do computador
 
     fun criarApi(context: Context): AssociadoService {
         val okHttpClient = OkHttpClient.Builder() // cria um cliente http
