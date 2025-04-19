@@ -31,6 +31,7 @@ import com.example.nexus_mobile.components.Favorito
 import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
 import com.example.nexus_mobile.components.NavigationBar
+import com.example.nexus_mobile.data.model.cadastro.CadastroViewModel
 import com.example.nexus_mobile.data.model.login.LoginViewModel
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 
@@ -42,6 +43,14 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = cursoViewModel.getCursosFiltrados(categoriaSelecionada)
     var active by remember { mutableStateOf(false) }
+
+
+    val cadastroViewModel : CadastroViewModel = viewModel()
+    val nome = cadastroViewModel.nome
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        cadastroViewModel.carregarDadosUsuario(context)
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
 
@@ -73,7 +82,7 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    "Olá, Maria Eduarda",
+                    "Olá, $nome",
                     fontSize = 30.sp,
                     color = Color.White
                 )
