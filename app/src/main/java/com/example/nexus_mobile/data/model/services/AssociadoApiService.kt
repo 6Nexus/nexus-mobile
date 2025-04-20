@@ -22,6 +22,6 @@ interface AssociadoService {
 
     // Matricula
     @POST("matriculas")
-    suspend fun matricular(@Body matriculaRequest: MatriculaCriacaoDto): MatriculaResponse
+    suspend fun matricular(@Body matriculaRequest: MatriculaCriacaoDto): Int
 
 }
