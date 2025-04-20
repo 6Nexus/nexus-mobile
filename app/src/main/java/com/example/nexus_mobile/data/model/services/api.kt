@@ -38,7 +38,5 @@ object api {
             .create(AssociadoService::class.java)
 
     }
-
-
 }
 

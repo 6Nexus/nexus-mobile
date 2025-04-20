@@ -36,10 +36,20 @@ import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nexus_mobile.components.TipoToast
+import com.example.nexus_mobile.components.Toast
+import com.example.nexus_mobile.data.model.matricula.MatriculaViewModel
+import kotlinx.coroutines.delay
 
 
 @Composable
 fun TelaMatricula(curso: Curso, navController: NavController) {
+
+    val maticulaViewModel: MatriculaViewModel = viewModel()
+    val context = LocalContext.current
+
     Box(modifier = Modifier.fillMaxSize()) {
         Scaffold(
             topBar = {
@@ -85,17 +95,41 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
                 ) {
                     Column {
                         Text(curso.modulo, fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                        Text("Duração total: ${curso.duracao}h", fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                        Text("Arquivos: ${curso.qtdArquivos} Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                        Text(
+                            "Duração total: ${curso.duracao}h",
+                            fontSize = 15.sp,
+                            color = Color(82, 78, 78, 190)
+                        )
+                        Text(
+                            "Arquivos: ${curso.qtdArquivos} Arquivos",
+                            fontSize = 15.sp,
+                            color = Color(82, 78, 78, 190)
+                        )
                     }
                     Button(
-                        onClick = { navController.navigate("video") },
+                        onClick = {
+                            maticulaViewModel.idAssociado = 16
+                            maticulaViewModel.idCurso = 1
+                            maticulaViewModel.realizarMatricula(context)
+                            // navController.navigate("video")
+                        },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.align(Alignment.CenterVertically)
                     ) {
-                        Text("Matricular", color = Color.White)
+                       LaunchedEffect(maticulaViewModel.resultado != null) {
+                           delay(3000)
+                       }
+                            Toast(
+                                mensagem = "Matrícula realizada com sucesso!",
+                                tipoToast = TipoToast.Info,
+                                modifier = Modifier.padding(top = 8.dp)
+                            )
+
                     }
+
+                    Text("Matricular", color = Color.White)
+
                 }
 
                 Spacer(modifier = Modifier.height(35.dp))
@@ -138,7 +172,12 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
                                         modifier = Modifier.padding(8.dp),
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                                        Text(
+                                            aula,
+                                            modifier = Modifier.weight(1f),
+                                            fontSize = 15.sp,
+                                            color = Color(82, 78, 78, 190)
+                                        )
                                         Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp)
                                     }
                                 }
