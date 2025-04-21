@@ -1,5 +1,13 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -16,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
@@ -36,6 +43,8 @@ import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nexus_mobile.components.TipoToast
@@ -49,8 +58,12 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
 
     val maticulaViewModel: MatriculaViewModel = viewModel()
     val context = LocalContext.current
+    val resultado = maticulaViewModel.resultadoMatricula
+
 
     Box(modifier = Modifier.fillMaxSize()) {
+
+
         Scaffold(
             topBar = {
                 AppBar(descricao = curso.titulo)
@@ -109,26 +122,21 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
                     Button(
                         onClick = {
                             maticulaViewModel.idAssociado = 16
-                            maticulaViewModel.idCurso = 1
-                            maticulaViewModel.realizarMatricula(context)
-                            // navController.navigate("video")
+                            maticulaViewModel.idCurso = 54
+
+                            // Verifica se o usuário já está matriculado, caso contrário, realiza a matrícula
+                            maticulaViewModel.verificarMatricula(context)
+
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                         shape = RoundedCornerShape(8.dp),
                         modifier = Modifier.align(Alignment.CenterVertically)
                     ) {
-                       LaunchedEffect(maticulaViewModel.resultado != null) {
-                           delay(3000)
-                       }
-                            Toast(
-                                mensagem = "Matrícula realizada com sucesso!",
-                                tipoToast = TipoToast.Info,
-                                modifier = Modifier.padding(top = 8.dp)
-                            )
+
+                        Text("Matricular", color = Color.White)
 
                     }
 
-                    Text("Matricular", color = Color.White)
 
                 }
 
@@ -187,5 +195,36 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
                 }
             }
         }
+        // VALIDAÇÕES PARA CHAMADA DE TOAST
+        if (resultado == true) {
+            LaunchedEffect(resultado) {
+                delay(3000)
+                maticulaViewModel.resultadoMatricula = null
+                navController.navigate("video")
+            }
+            Toast(
+                mensagem = "Matrícula realizada com sucesso!",
+                tipoToast = TipoToast.Sucesso,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 100.dp)
+            )
+        }
+
+//        if (resultado == false){
+//            LaunchedEffect(resultado) {
+//                delay(3000)
+//                maticulaViewModel.resultadoMatricula = null
+//                navController.navigate("video")
+//            }
+//            Toast(
+//                mensagem = "Você já está matriculado nesse curso!",
+//                tipoToast = TipoToast.Info,
+//                modifier = Modifier
+//                    .align(Alignment.TopCenter)
+//                    .padding(top = 100.dp)
+//            )
+//        }
+
     }
 }

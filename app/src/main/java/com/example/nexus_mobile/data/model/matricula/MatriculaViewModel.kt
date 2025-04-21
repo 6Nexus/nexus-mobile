@@ -17,7 +17,9 @@ class MatriculaViewModel : ViewModel() {
 
     var idAssociado by mutableStateOf(0)
     var idCurso by mutableStateOf(0)
-    var resultado by mutableStateOf<String?>(null)
+    var resultadoMatricula by mutableStateOf<Boolean?>(false)
+
+    //var verificarAssociadoMatriculado by mutableStateOf<Boolean?>(false)
 
     fun realizarMatricula(context: Context) {
         viewModelScope.launch {
@@ -29,7 +31,7 @@ class MatriculaViewModel : ViewModel() {
 
             Log.d(
                 "MatriculaViewModel",
-                "Realizando matrícula com idAssociado: $idAssociado e idCurso: $idCurso"
+                "Botão clicado: Realizando matrícula com idAssociado: $idAssociado e idCurso: $idCurso"
             )
 
             // Cria uma instância do Retrofit
@@ -39,13 +41,49 @@ class MatriculaViewModel : ViewModel() {
             try {
                 val response = associadoService.matricular(matriculaRequest)
                 Log.d("MatriculaViewModel", "Matrícula realizada com sucesso: $response")
+                resultadoMatricula = true
 
             } catch (e: Exception) {
                 Log.e("MatriculaViewModel", "Erro ao realizar matrícula: ${e.message}")
+                resultadoMatricula = false
             }
 
         }
 
+    }
+
+    // Verifica se o usuário já está matriculado, caso contrário, realiza a matrícula
+    fun verificarMatricula(context: Context) {
+        viewModelScope.launch {
+            val associadoService = api.criarApi(context)
+            try {
+                val response = associadoService.buscarAssociadoPorCurso(idAssociado, idCurso)
+                Log.d("MatriculaViewModel", "Usuário já matriculado: $response")
+                Log.d(
+                    "MatriculaViewModel",
+                    " Associado: $idAssociado já está matriculado no curso: $idCurso"
+                )
+                resultadoMatricula = false
+            } catch (e: Exception) {
+                Log.e("MatriculaViewModel", "Erro ao verificar matrícula: ${e.message}")
+                Log.d(
+                    "MatriculaViewModel",
+                    "Associado: $idAssociado não está matriculado no curso: $idCurso"
+                )
+                try {
+                    realizarMatricula(context)
+                    Log.d(
+                        "MatriculaViewModel",
+                        "Matrícula realizada com sucesso: Associado $idAssociado no Curso $idCurso"
+                    )
+                    resultadoMatricula = true
+                } catch (e: Exception) {
+                    Log.e("MatriculaViewModel", "Erro ao realizar matrícula: ${e.message}")
+                    resultadoMatricula = false
+
+                }
+            }
+        }
     }
 
 }

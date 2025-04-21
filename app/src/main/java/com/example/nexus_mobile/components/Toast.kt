@@ -54,7 +54,7 @@ fun Toast(
 
     Row(
         modifier = modifier
-            .fillMaxWidth()
+           // .fillMaxWidth()
             .padding(16.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(backgroundColor)
