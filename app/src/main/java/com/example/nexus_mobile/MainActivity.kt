@@ -96,6 +96,8 @@ class MainActivity : ComponentActivity() {
             //TelaLogin()
             //TelaCadastro()
 //            AppBar("Perfil")
+            val navController = rememberNavController()
+            TelaPerfil(navController = navController)
         }
     }
 }
