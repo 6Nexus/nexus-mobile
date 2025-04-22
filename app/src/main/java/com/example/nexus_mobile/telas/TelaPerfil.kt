@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -7,30 +8,38 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
+import com.example.nexus_mobile.data.model.perfil.PerfilViewModel
 
 @Composable
-fun TelaPerfil(navController: NavController) {
-    var nome by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
+fun TelaPerfil(
+    navController: NavController,
+    viewModel: PerfilViewModel = viewModel()
+) {
+    val context = LocalContext.current
+    val nome by remember { derivedStateOf { viewModel.nome } }
+    val email by remember { derivedStateOf { viewModel.email } }
+    val senha by remember { derivedStateOf { viewModel.senha } }
+    val isCarregando by remember { derivedStateOf { viewModel.isCarregando } }
+    val errorMessage by remember { derivedStateOf { viewModel.errorMessage } }
+
+    LaunchedEffect(Unit) {
+        viewModel.carregarDadosUsuario(context)
+    }
 
     Scaffold(
-        topBar = {
-            AppBar(descricao = "Perfil")
-        },
+        topBar = { AppBar(descricao = "Perfil") },
         bottomBar = {
-            NavigationBar(
-                navController = navController,
-                telaAtual = "tela_perfil"
-            )
+            NavigationBar(navController = navController, telaAtual = "tela_perfil")
         },
         floatingActionButton = {
             FloatingActionButton(
@@ -53,7 +62,6 @@ fun TelaPerfil(navController: NavController) {
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Text(
                 text = "Informações Pessoais",
                 fontSize = 18.sp,
@@ -62,18 +70,11 @@ fun TelaPerfil(navController: NavController) {
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-
-            Text(
-                text = "Nome Completo",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp)
-            )
+            // Nome
+            Text("Nome Completo", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             OutlinedTextField(
                 value = nome,
-                onValueChange = { nome = it },
+                onValueChange = { viewModel.nome = it },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Digite seu nome") },
                 singleLine = true
@@ -81,18 +82,11 @@ fun TelaPerfil(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-
-            Text(
-                text = "Email",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp)
-            )
+            // Email
+            Text("Email", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = { viewModel.email = it },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Digite seu email") },
                 singleLine = true
@@ -100,18 +94,11 @@ fun TelaPerfil(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-
-            Text(
-                text = "Senha",
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 4.dp)
-            )
+            // Senha
+            Text("Senha", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             OutlinedTextField(
                 value = senha,
-                onValueChange = { senha = it },
+                onValueChange = { viewModel.senha = it },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Digite sua senha") },
                 singleLine = true
@@ -119,14 +106,24 @@ fun TelaPerfil(navController: NavController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botões Salvar e Sair da Conta
+            if (isCarregando) {
+                CircularProgressIndicator()
+            }
+
+            if (errorMessage != null) {
+                Text(text = errorMessage ?: "", color = Color.Red)
+            }
+
+            // Botões
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                // Botão Salvar
                 Button(
-                    onClick = { /* Ação de salvar */ },
+                    onClick = {
+                        viewModel.atualizarPerfil(context)
+                        Toast.makeText(context, "Dados atualizados!", Toast.LENGTH_SHORT).show()
+                    },
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp)
@@ -137,9 +134,8 @@ fun TelaPerfil(navController: NavController) {
                     Text("Salvar", color = Color.White)
                 }
 
-                // Botão Sair da Conta
                 Button(
-                    onClick = { /* Ação de sair da conta */ },
+                    onClick = { /* Lógica de logout aqui */ },
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp)

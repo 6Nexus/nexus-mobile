@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    // Dependências existentes
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -61,8 +62,14 @@ dependencies {
 
     implementation(libs.androidx.material3)
     implementation("androidx.navigation:navigation-compose:2.8.9")
-    implementation ("androidx.compose.material3:material3:1.3.1")
-    implementation ("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    // OkHttp para logging e interceptação
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.squareup.okhttp3:logging-interceptor:4.9.3")
 }
