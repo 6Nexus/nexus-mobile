@@ -74,46 +74,13 @@ class MainActivity : ComponentActivity() {
 
                 composable("favoritos") { TelaFavoritos(navController, favoritosViewModel) }
 
-//                composable("tela_matricula/{cursoId}") { backStackEntry ->
-//                    val cursoId = backStackEntry.arguments?.getString("cursoId")?.toInt()
-//                    val cursoViewModel: CursoViewModel = viewModel()
-//
-//                    LaunchedEffect(cursoId) {
-//                        cursoId?.let {
-//                            cursoViewModel.carregarCursoPorId(usuarioId = 1, cursoId = it)
-//                        }
-//                    }
-//
-//                    when (val state = cursoViewModel.uiState.value) {
-//                        is CursoUiState.Loading -> {
-//                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                                CircularProgressIndicator()
-//                            }
-//                        }
-//
-//                        is CursoUiState.Success -> {
-//                            val cursoDto = state.curso
-//                            val curso = Curso(
-//                                id = cursoDto.id,
-//                                titulo = cursoDto.titulo,
-//                                categoria = cursoDto.descricao,
-//                                imagem = R.drawable.curso1,
-//                                modulo = "",
-//                                professor = "",
-//                                duracao = 0,
-//                                qtdArquivos = 0,
-//                                aulas = emptyList()
-//                            )
-//                            TelaMatricula(curso, navController)
-//                        }
-//
-//                        is CursoUiState.Error -> {
-//                            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-//                                Text("Erro: ${state.message}")
-//                            }
-//                        }
-//                    }
-//                }
+                composable(
+                    route = "tela_matricula/{cursoId}",
+                    arguments = listOf(navArgument("cursoId") { type = NavType.IntType })
+                ) { backStackEntry ->
+                    val cursoId = backStackEntry.arguments?.getInt("cursoId") ?: 0
+                    TelaMatricula(cursoId = cursoId, navController = navController)
+                }
 
                 composable("video") { TelaVideo(navController, "Aulas") }
 

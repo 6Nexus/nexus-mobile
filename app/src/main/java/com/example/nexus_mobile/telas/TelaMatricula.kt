@@ -36,110 +36,129 @@ import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import androidx.compose.material3.Scaffold
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.nexus_mobile.uiState.CursoUiState
+import com.example.nexus_mobile.viewModel.CursoViewModel
+import com.example.nexus_mobile.viewModel.UsuarioViewModel
+import androidx.compose.material3.CircularProgressIndicator
 
 @Composable
-fun TelaMatricula(curso: Curso, navController: NavController) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        Scaffold(
-            topBar = {
-                AppBar(descricao = curso.titulo)
-            },
-            bottomBar = {
-                NavigationBar(
-                    navController = navController,
-                    telaAtual = "tela_curso",
-                    modifier = Modifier.fillMaxWidth()
-                )
-            }
-        ) { valoresDePadding ->
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp)
-                    .padding(top = 130.dp)
-            ) {
-                Image(
-                    painter = painterResource(id = curso.imagem),
-                    contentDescription = "Curso",
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(180.dp)
-                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
-                    contentScale = ContentScale.Crop
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+fun TelaMatricula(cursoId: Int, navController: NavController) {
+    val cursoViewModel: CursoViewModel = viewModel()
+    val usuarioViewModel: UsuarioViewModel = viewModel()
+    val id by usuarioViewModel.id.collectAsState()
+    val uiState = cursoViewModel.uiState.value
 
-                Text(
-                    curso.titulo,
-                    fontSize = 25.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF4CAF50)
-                )
-                Text("Professor: ${curso.professor}", fontSize = 16.sp, color = Color(36, 80, 36))
-                Spacer(modifier = Modifier.height(16.dp))
+    LaunchedEffect(cursoId) {
+        cursoViewModel.carregarCursoPorId(id, cursoId)
+    }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text(curso.modulo, fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                        Text("Duração total: ${curso.duracao}h", fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                        Text("Arquivos: ${curso.qtdArquivos} Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                    }
-                    Button(
-                        onClick = { navController.navigate("video") },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.align(Alignment.CenterVertically)
-                    ) {
-                        Text("Matricular", color = Color.White)
-                    }
+    when (uiState) {
+        is CursoUiState.Loading -> {
+            CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+        }
+        is CursoUiState.SuccessCurso -> {
+            val curso = uiState.curso
+            Scaffold(
+                topBar = { AppBar(descricao = curso.titulo) },
+                bottomBar = {
+                    NavigationBar(
+                        navController = navController,
+                        telaAtual = "tela_curso",
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
-
-                Spacer(modifier = Modifier.height(35.dp))
-
-                Box(
+            ) { valoresDePadding ->
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(350.dp)
-                        .shadow(4.dp, shape = RoundedCornerShape(6.dp))
-                        .clip(RoundedCornerShape(6.dp))
-                        .background(Color(248, 245, 245, 255))
-                        .padding(8.dp)
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp)
+                        .padding(top = 130.dp)
                 ) {
-                    val scrollState = rememberScrollState()
+                    // Imagem fixa do curso
+                    Image(
+                        painter = painterResource(id = R.drawable.curso1), // Use uma imagem fixa
+                        contentDescription = "Curso",
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(180.dp)
+                            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                    Column {
-                        Spacer(modifier = Modifier.height(10.dp))
+                    Text(
+                        curso.titulo,
+                        fontSize = 25.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4CAF50)
+                    )
+                    Text("Professor: ${curso.professorNome}", fontSize = 16.sp, color = Color(36, 80, 36))
+                    Spacer(modifier = Modifier.height(16.dp))
 
-                        Text(
-                            "Conteúdo do curso",
-                            fontSize = 23.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(8.dp),
-                            color = Color(0xFF4CAF50)
-                        )
-                        Spacer(modifier = Modifier.height(5.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text(curso.descricao, fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                            Text("Duração total: 5h", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
+                            Text("Arquivos: 7 Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
+                        }
+                        Button(
+                            onClick = { navController.navigate("video") },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text("Matricular", color = Color.White)
+                        }
+                    }
 
-                        Column(modifier = Modifier.verticalScroll(scrollState)) {
-                            curso.aulas.forEach { aula ->
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = 4.dp)
-                                        .height(50.dp)
-                                        .shadow(2.dp, shape = RoundedCornerShape(6.dp))
-                                        .clip(RoundedCornerShape(6.dp))
-                                        .background(Color(248, 245, 245, 255))
-                                ) {
-                                    Row(
-                                        modifier = Modifier.padding(8.dp),
-                                        verticalAlignment = Alignment.CenterVertically
+                    Spacer(modifier = Modifier.height(35.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(350.dp)
+                            .shadow(4.dp, shape = RoundedCornerShape(6.dp))
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(Color(248, 245, 245, 255))
+                            .padding(8.dp)
+                    ) {
+                        val scrollState = rememberScrollState()
+
+                        Column {
+                            Spacer(modifier = Modifier.height(10.dp))
+
+                            Text(
+                                "Conteúdo do curso",
+                                fontSize = 23.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(8.dp),
+                                color = Color(0xFF4CAF50)
+                            )
+                            Spacer(modifier = Modifier.height(5.dp))
+
+                            Column(modifier = Modifier.verticalScroll(scrollState)) {
+                                // Valores fixos de aulas
+                                listOf("Aula 1", "Aula 2", "Aula 3").forEach { aula ->
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp)
+                                            .height(50.dp)
+                                            .shadow(2.dp, shape = RoundedCornerShape(6.dp))
+                                            .clip(RoundedCornerShape(6.dp))
+                                            .background(Color(248, 245, 245, 255))
                                     ) {
-                                        Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                                        Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp)
+                                        Row(
+                                            modifier = Modifier.padding(8.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                                            Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp) // Duração fixa
+                                        }
                                     }
                                 }
                             }
@@ -148,5 +167,12 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
                 }
             }
         }
+        is CursoUiState.Error -> {
+            Text(text = uiState.message, color = Color.Red, modifier = Modifier.fillMaxSize())
+        }
+
+        is CursoUiState.Success -> TODO()
     }
 }
+
+

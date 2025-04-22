@@ -63,21 +63,19 @@ class CursoViewModel(
         }
     }
 
-//    fun carregarCursoPorId(usuarioId: Int, cursoId: Int) {
-//        viewModelScope.launch {
-//            _uiState.value = CursoUiState.Loading
-//            try {
-//                // Se houver um endpoint para pegar um curso específico
-//                val curso = api.getCursoPorId(usuarioId, cursoId) // Ajuste para o endpoint correto
-//
-//                if (curso != null) {
-//                    _uiState.value = CursoUiState.Success(curso)
-//                } else {
-//                    _uiState.value = CursoUiState.Error("Curso não encontrado")
-//                }
-//            } catch (e: Exception) {
-//                _uiState.value = CursoUiState.Error("Erro ao buscar curso: ${e.message}")
-//            }
-//        }
-//    }
+    fun carregarCursoPorId(usuarioId: Int, cursoId: Int) {
+        viewModelScope.launch {
+            _uiState.value = CursoUiState.Loading
+            try {
+                val curso = api.getCursoPorId(cursoId, usuarioId)
+                if (curso != null) {
+                    _uiState.value = CursoUiState.SuccessCurso(curso)
+                } else {
+                    _uiState.value = CursoUiState.Error("Curso não encontrado")
+                }
+            } catch (e: Exception) {
+                _uiState.value = CursoUiState.Error("Erro ao buscar curso: ${e.message}")
+            }
+        }
+    }
 }
