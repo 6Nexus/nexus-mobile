@@ -16,7 +16,7 @@ object RetrofitClient {
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .addInterceptor(AuthInterceptor(context)) // Adiciona token nas requisições
+            .addInterceptor(AuthInterceptor(context))
             .build()
 
         val retrofit = Retrofit.Builder()

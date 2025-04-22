@@ -25,6 +25,7 @@ import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import com.example.nexus_mobile.viewModel.FavoritosViewModel
+import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import kotlinx.coroutines.launch
 
 
@@ -34,13 +35,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewModel) {
     val cursoViewModel: CursoViewModel = viewModel()
+    val usuarioViewModel: UsuarioViewModel = viewModel()
+    val id by usuarioViewModel.id.collectAsState()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = cursoViewModel.cursos
 
-    LaunchedEffect(Unit) {
-        cursoViewModel.carregarCursos(usuarioId = 2)
-        Log.d("TelaCursos", "Chamando carregarCursos")
+    LaunchedEffect(categoriaSelecionada) {
+        val idAssociado = id
+        if (categoriaSelecionada == "Todos") {
+            cursoViewModel.carregarCursos(idAssociado)
+        } else {
+            cursoViewModel.carregarCursosPorCategoria(idAssociado, categoriaSelecionada)
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -55,7 +62,6 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
         Spacer(modifier = Modifier.height(16.dp))
         FiltroCategorias(categoriaSelecionada) { novaCategoria ->
             categoriaSelecionada = novaCategoria
-            cursoViewModel.carregarCursosPorCategoria(novaCategoria)
         }
         Spacer(modifier = Modifier.height(16.dp))
 

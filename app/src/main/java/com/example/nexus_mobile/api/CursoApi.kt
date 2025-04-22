@@ -24,8 +24,9 @@ interface CursoApi {
         @Query("idAssociado") usuarioId: Int
     ): CursoDto
 
-    @GET("categoria/{categoria}")
+    @GET("cursos/associado/{idAssociado}/categoria/{categoria}")
     suspend fun getCursosPorCategoria(
+        @Path("idAssociado") idAssociado: Int,
         @Path("categoria") categoria: String
     ): List<CursoDto>
 

@@ -1,7 +1,6 @@
 package com.example.nexus_mobile.telas
 
 import android.content.Context
-import android.media.session.MediaSession
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -48,15 +47,17 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.RetrofitLogin
 import com.example.nexus_mobile.utils.TokenManager
 import com.example.nexus_mobile.dto.LoginRequest
-import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
+import com.example.nexus_mobile.utils.UsuarioManager
+import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -67,11 +68,11 @@ import kotlinx.coroutines.withContext
 @Composable
 fun TelaLogin(navController: NavController, context: Context) {
 
-    // VARIÁVEIS
     var isChecked by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
+    val usuarioViewModel: UsuarioViewModel = viewModel()
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
@@ -215,7 +216,14 @@ fun TelaLogin(navController: NavController, context: Context) {
                         Log.d("Login", "Token recebido: ${resposta.token}")
                         TokenManager.salvarToken(context, resposta.token)
 
+                        UsuarioManager.salvarUsuario(context,resposta.id, resposta.nome, resposta.email)
+
                         withContext(Dispatchers.Main) {
+                            usuarioViewModel.setUserData(
+                                nome = resposta.nome,
+                                email = resposta.email,
+                                id = resposta.id
+                            )
                             navController.navigate("home") {
                                 popUpTo("tela_login") { inclusive = true }
                             }
@@ -278,7 +286,5 @@ fun TelaLogin(navController: NavController, context: Context) {
                 navController.navigate("tela_recuperar_senha")
             }
         )
-
-
     }
 }

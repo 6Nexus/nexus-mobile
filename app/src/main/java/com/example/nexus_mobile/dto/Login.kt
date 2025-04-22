@@ -6,5 +6,8 @@ data class LoginRequest(
 )
 
 data class LoginResponse(
-    val token: String // Depende da sua API, pode ter mais campos
+    val id: Int,
+    val nome: String,
+    val email: String,
+    val token: String
 )

@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -33,19 +34,29 @@ import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.ui.theme.NexusmobileTheme
+import com.example.nexus_mobile.utils.UsuarioManager
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import com.example.nexus_mobile.viewModel.FavoritosViewModel
+import com.example.nexus_mobile.viewModel.UsuarioViewModel
 
 
 @Composable
-fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
+fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, context: Context, favoritosViewModel: FavoritosViewModel) {
     val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
-    var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = cursoViewModel.cursos
+    val nome by usuarioViewModel.nome.collectAsState()
+    val id by usuarioViewModel.id.collectAsState()
 
     LaunchedEffect(Unit) {
-        cursoViewModel.carregarCursos(usuarioId = 2)
+        if (nome.isEmpty()) {
+            usuarioViewModel.setUserData(
+                nome = UsuarioManager.getUserName(context),
+                email = UsuarioManager.getUserEmail(context),
+                id = UsuarioManager.getUserId(context)
+            )
+        }
+        cursoViewModel.carregarCursos(id)
         Log.d("TelaHome", "Chamando carregarCursos")
     }
 
@@ -71,7 +82,7 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    "Olá, Maria Eduarda",
+                    "Olá, $nome",
                     fontSize = 30.sp,
                     color = Color.White
                 )
@@ -106,7 +117,7 @@ fun Home(navController: NavController, favoritosViewModel: FavoritosViewModel) {
                     )
                 },
                 favoritos = favoritosViewModel.favoritos,
-                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(idAssociado = 2, cursoId = cursoId) }
+                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(idAssociado = id, cursoId = cursoId) }
             )
         }
         NavigationBar(

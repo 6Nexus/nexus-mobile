@@ -31,7 +31,7 @@ class FavoritosViewModel(application: Application) : AndroidViewModel(applicatio
                 _cursosFavoritos.clear()
                 _cursosFavoritos.addAll(cursos)
                 _favoritos.clear()
-                _favoritos.addAll(cursos.map { it.id}) // cuidado com o nome certo do campo!
+                _favoritos.addAll(cursos.map { it.id})
             } catch (e: Exception) {
                 Log.e("FavoritosViewModel", "Erro ao buscar favoritos", e)
             }
@@ -40,18 +40,14 @@ class FavoritosViewModel(application: Application) : AndroidViewModel(applicatio
     fun alterarFavorito(idAssociado: Int, cursoId: Int) {
         viewModelScope.launch {
             try {
-                // Obtendo o token armazenado
                 val token = TokenManager.getToken(getApplication<Application>())
 
-                // Verificando se o token é válido
                 if (token != null && token.isNotEmpty()) {
-                    // Caso o curso já esteja nos favoritos, descurtir
                     if (_favoritos.contains(cursoId)) {
-                        api.descurtirCurso("Bearer $token", idAssociado, cursoId) // Passando o token na requisição
+                        api.descurtirCurso("Bearer $token", idAssociado, cursoId)
                         _favoritos.remove(cursoId)
                     } else {
-                        // Caso o curso não esteja nos favoritos, curtir
-                        api.curtirCurso("Bearer $token", CurtidaCriacaoDto(idAssociado, cursoId)) // Passando o token na requisição
+                        api.curtirCurso("Bearer $token", CurtidaCriacaoDto(idAssociado, cursoId))
                         _favoritos.add(cursoId)
                     }
                 } else {

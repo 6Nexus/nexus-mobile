@@ -29,40 +29,31 @@ class CursoViewModel(
 
     fun carregarCursos(usuarioId: Int) {
         viewModelScope.launch {
-            _uiState.value = CursoUiState.Loading // Mostra o estado de carregamento enquanto busca os cursos
+            _uiState.value = CursoUiState.Loading
             try {
-                // Obtendo o token armazenado
                 val token = TokenManager.getToken(getApplication<Application>())
 
-                // Verificando se o token é válido
                 if (token != null && token.isNotEmpty()) {
-
-                    // Chamando a API para buscar todos os cursos com o token de autorização
                     val cursosRecebidos = api.getCursos("Bearer $token", usuarioId)
-
-                    // Atualizando a lista de cursos com os dados recebidos
                     _cursos.clear()
                     _cursos.addAll(cursosRecebidos)
 
-                    // Atualizando o estado da UI com sucesso
                     _uiState.value = CursoUiState.Success(cursosRecebidos)
                     Log.d("CursoViewModel", "Cursos carregados com sucesso")
                 } else {
-                    // Se o token for inválido ou expirado, exibindo erro
                     _uiState.value = CursoUiState.Error("Token não encontrado ou expirado")
                 }
             } catch (e: Exception) {
-                // Tratando exceções e erros de conexão com a API
                 _uiState.value = CursoUiState.Error("Erro ao buscar cursos: ${e.message}")
                 Log.e("CursoViewModel", "Erro ao buscar cursos", e)
             }
         }
     }
 
-    fun carregarCursosPorCategoria(categoria: String) {
+    fun carregarCursosPorCategoria(idAssociado: Int, categoria: String) {
         viewModelScope.launch {
             try {
-                val cursosRecebidos = api.getCursosPorCategoria(categoria)
+                val cursosRecebidos = api.getCursosPorCategoria(idAssociado, categoria)
                 _cursos.clear()
                 _cursos.addAll(cursosRecebidos)
                 Log.d("CursoViewModel", "Cursos da categoria '$categoria' carregados com sucesso")

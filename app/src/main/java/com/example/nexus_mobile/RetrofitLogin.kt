@@ -17,7 +17,7 @@ object RetrofitLogin {
 
         val client = OkHttpClient.Builder()
             .addInterceptor(logging)
-            .addInterceptor(AuthInterceptor(context)) // AQUI passa o context certinho
+            .addInterceptor(AuthInterceptor(context))
             .build()
 
         return Retrofit.Builder()

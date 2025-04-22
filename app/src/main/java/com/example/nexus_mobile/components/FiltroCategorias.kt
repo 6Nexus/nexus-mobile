@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun FiltroCategorias(categoriaSelecionada: String, onCategoriaSelecionada: (String) -> Unit) {
-    val categorias = listOf("Todos", "Educação", "Saúde", "Tecnologia", "Engenharia", "Artes", "Ciências", "Negócios")
+    val categorias = listOf("Todos", "Culinária", "Música", "Tecnologia", "Engenharia", "Artes", "Ciências", "Negócios")
 
     LazyRow(
         modifier = Modifier

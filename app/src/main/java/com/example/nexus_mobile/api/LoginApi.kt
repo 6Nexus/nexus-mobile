@@ -6,10 +6,8 @@ import retrofit2.http.Body
 import retrofit2.http.POST
 
 interface LoginApi {
-
-    // Defina o endpoint de login, por exemplo
-    @POST("/login") // O caminho do endpoint depende da sua API
+    @POST("associados/login")
     suspend fun login(
-        @Body loginRequest: LoginRequest // Envia um objeto com email e senha
-    ): LoginResponse // Espera um objeto de resposta contendo o token
+        @Body loginRequest: LoginRequest
+    ): LoginResponse
 }
