@@ -1,10 +1,14 @@
 package com.example.nexus_mobile.viewModel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 class UsuarioViewModel : ViewModel() {
+
 
     private val _nome = MutableStateFlow("")
     val nome: StateFlow<String> = _nome

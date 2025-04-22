@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +70,7 @@ import kotlinx.coroutines.withContext
 fun TelaLogin(navController: NavController, context: Context) {
 
     var isChecked by remember { mutableStateOf(false) }
+    val isCarregando = remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
@@ -209,6 +211,7 @@ fun TelaLogin(navController: NavController, context: Context) {
                 Log.d("Login", "Botão de login clicado")
 
                 val loginRequest = LoginRequest(email, senha)
+                isCarregando.value = true
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         Log.d("Login", "Chamando API de login...")
@@ -231,6 +234,10 @@ fun TelaLogin(navController: NavController, context: Context) {
 
                     } catch (e: Exception) {
                         Log.e("Login", "Erro ao fazer login", e)
+                    } finally {
+                        withContext(Dispatchers.Main) {
+                            isCarregando.value = false
+                        }
                     }
                 }
             },
@@ -243,11 +250,19 @@ fun TelaLogin(navController: NavController, context: Context) {
                 .shadow(8.dp),
             shape = RoundedCornerShape(10.dp),
         ) {
-            Text(
-                text = "Entrar",
-                color = Color.White,
-                fontSize = 20.sp,
-            )
+            if (isCarregando.value) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    strokeWidth = 2.dp,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Text(
+                    text = "Entrar",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
