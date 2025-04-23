@@ -42,6 +42,7 @@ fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosVie
         (categoriaSelecionada == "Todos" || it.categoria == categoriaSelecionada) &&
                 (query.isBlank() || it.titulo.contains(query, ignoreCase = true))
     }
+    var active by remember { mutableStateOf(false) } // usada para barra de pesquisa
 
 
     LaunchedEffect(Unit) {
@@ -50,7 +51,15 @@ fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosVie
 
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(30.dp))
-        BarraPesquisa(query, { query = it })
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            active = active,
+            onActiveChange = { active = it },
+            onSearch = {
+                active = false
+            }
+        )
         Text(
             text = "Todos os cursos favoritos",
             fontSize = 18.sp,

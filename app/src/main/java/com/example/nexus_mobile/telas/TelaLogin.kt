@@ -32,6 +32,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -52,32 +55,79 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
-import com.example.nexus_mobile.RetrofitLogin
-import com.example.nexus_mobile.utils.TokenManager
-import com.example.nexus_mobile.dto.LoginRequest
+
+import com.example.nexus_mobile.components.AppBar
+import com.example.nexus_mobile.components.TipoToast
+import com.example.nexus_mobile.components.Toast
+import com.example.nexus_mobile.data.model.cadastro.CadastroViewModel
+import com.example.nexus_mobile.data.model.login.LoginViewModel
+import com.example.nexus_mobile.ui.theme.NexusmobileTheme
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
-import com.example.nexus_mobile.utils.UsuarioManager
-import com.example.nexus_mobile.viewModel.UsuarioViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TelaLogin(navController: NavController, context: Context) {
 
+    // VARIÁVEIS
     var isChecked by remember { mutableStateOf(false) }
-    val isCarregando = remember { mutableStateOf(false) }
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
-    val usuarioViewModel: UsuarioViewModel = viewModel()
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
+
+    val loginViewModel: LoginViewModel = viewModel()
+    var email by remember { mutableStateOf(loginViewModel.email)}
+    var senha by remember {  mutableStateOf(loginViewModel.senha)}
+
+    val loginResponse = loginViewModel.loginResponse
+    val errorMessage = loginViewModel.errorMessage
+    val isCarregando = loginViewModel.isCarregando
+    val loginSuccess = loginViewModel.loginSuccess
+
+    val context = LocalContext.current
+
+
+
+    // VALIDAÇÕES PARA CHAMADA DE TOAST
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 25.dp),
+    ) {
+        if (errorMessage != null) {
+            LaunchedEffect(errorMessage) {
+                delay(3000)
+                loginViewModel.errorMessage = null
+            }
+            Toast(
+                mensagem = errorMessage,
+                tipoToast = TipoToast.Erro,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+
+        if (loginSuccess) {
+            Log.d("LoginActivity", "Login bem-sucedido")
+            LaunchedEffect(loginSuccess) {
+                delay(3000)
+                loginViewModel.loginSuccess = false
+            }
+            Toast(
+                mensagem = "Login bem-sucedido",
+                tipoToast = TipoToast.Sucesso,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+            LaunchedEffect(loginSuccess) {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -87,6 +137,7 @@ fun TelaLogin(navController: NavController, context: Context) {
         horizontalAlignment = Alignment.CenterHorizontally,
 
         ) {
+
 
 
         Image(
@@ -115,7 +166,9 @@ fun TelaLogin(navController: NavController, context: Context) {
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                loginViewModel.email = it
+                email = it },
             label = { Text("Email", fontSize = 16.sp) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF3a5a40),
@@ -143,7 +196,10 @@ fun TelaLogin(navController: NavController, context: Context) {
 
         OutlinedTextField(
             value = senha,
-            onValueChange = { senha = it },
+            onValueChange = {
+                loginViewModel.senha = it
+                senha = it
+                            },
             label = { Text("Senha", fontSize = 16.sp) },
             visualTransformation = visualTransformation,
             colors = OutlinedTextFieldDefaults.colors(
@@ -207,40 +263,8 @@ fun TelaLogin(navController: NavController, context: Context) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = {
-                Log.d("Login", "Botão de login clicado")
-
-                val loginRequest = LoginRequest(email, senha)
-                isCarregando.value = true
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        Log.d("Login", "Chamando API de login...")
-                        val resposta = RetrofitLogin.create(context).login(loginRequest)
-                        Log.d("Login", "Token recebido: ${resposta.token}")
-                        TokenManager.salvarToken(context, resposta.token)
-
-                        UsuarioManager.salvarUsuario(context,resposta.id, resposta.nome, resposta.email)
-
-                        withContext(Dispatchers.Main) {
-                            usuarioViewModel.setUserData(
-                                nome = resposta.nome,
-                                email = resposta.email,
-                                id = resposta.id
-                            )
-                            navController.navigate("home") {
-                                popUpTo("tela_login") { inclusive = true }
-                            }
-                        }
-
-                    } catch (e: Exception) {
-                        Log.e("Login", "Erro ao fazer login", e)
-                    } finally {
-                        withContext(Dispatchers.Main) {
-                            isCarregando.value = false
-                        }
-                    }
-                }
-            },
+            onClick = { loginViewModel.fazerLogin(context)},
+            enabled = !isCarregando,
             colors = ButtonDefaults.buttonColors(
                 containerColor = verdePrincipal,
                 contentColor = Color.White,
@@ -249,12 +273,14 @@ fun TelaLogin(navController: NavController, context: Context) {
                 .size(330.dp, 56.dp)
                 .shadow(8.dp),
             shape = RoundedCornerShape(10.dp),
+
         ) {
-            if (isCarregando.value) {
+
+            if (isCarregando) {
                 CircularProgressIndicator(
                     color = Color.White,
-                    strokeWidth = 2.dp,
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
                 )
             } else {
                 Text(
@@ -262,6 +288,7 @@ fun TelaLogin(navController: NavController, context: Context) {
                     color = Color.White,
                     fontSize = 20.sp,
                 )
+
             }
         }
 
@@ -301,5 +328,18 @@ fun TelaLogin(navController: NavController, context: Context) {
                 navController.navigate("tela_recuperar_senha")
             }
         )
+}
+
+//@Preview(showBackground = true)
+@Composable
+fun PreviewLogin() {
+    val navController = rememberNavController()
+    NexusmobileTheme {
+       // TelaLogin(navController)
+        //TelaCadastro()
+        //AppBar("Perfil")
     }
 }
+}
+
+

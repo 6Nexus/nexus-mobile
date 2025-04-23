@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -42,21 +45,36 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.R
+import com.example.nexus_mobile.data.model.cadastro.CadastroViewModel
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
 
 @Composable
 fun TelaCadastro(navController: NavController) {
 
-    var nome by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
+//    var nome by remember { mutableStateOf("") }
+//    var email by remember { mutableStateOf("") }
+//    var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
+
+
+    val cadastroViewModel: CadastroViewModel = viewModel()
+    val nome = cadastroViewModel.nome
+    val email = cadastroViewModel.email
+    val senha = cadastroViewModel.senha
+
+
+    val errorMessage = cadastroViewModel.errorMessage
+    val isCarregando = cadastroViewModel.isCarregando
+    val cadastroSuccess = cadastroViewModel.cadastroSuccess
+
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -91,7 +109,10 @@ fun TelaCadastro(navController: NavController) {
 
         OutlinedTextField(
             value = nome,
-            onValueChange = { nome = it },
+            onValueChange = {
+                cadastroViewModel.nome = it
+                //  nome = it
+            },
             label = { Text("Nome", fontSize = 16.sp) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF3a5a40),
@@ -117,7 +138,9 @@ fun TelaCadastro(navController: NavController) {
 
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = {
+                cadastroViewModel.email = it
+            },
             label = { Text("Email", fontSize = 16.sp) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color(0xFF3a5a40),
@@ -143,7 +166,9 @@ fun TelaCadastro(navController: NavController) {
 
         OutlinedTextField(
             value = senha,
-            onValueChange = { senha = it },
+            onValueChange = {
+                cadastroViewModel.senha = it
+            },
             label = { Text("Senha", fontSize = 16.sp) },
             visualTransformation = visualTransformation,
             colors = OutlinedTextFieldDefaults.colors(
@@ -178,7 +203,9 @@ fun TelaCadastro(navController: NavController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                cadastroViewModel.fazerCadastro(context)
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = verdePrincipal,
                 contentColor = Color.White,
@@ -191,13 +218,31 @@ fun TelaCadastro(navController: NavController) {
 
             ) {
             Text(
-                text = "Entrar",
+                text = "Cadastrar",
                 color = Color.White,
                 fontSize = 20.sp,
 
                 )
-
         }
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage ?: "",
+                    color = Color.Red,
+                    fontSize = 14.sp,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            if (cadastroSuccess) {
+                Log.d("CadastroActivity", "Cadastro bem-sucedido")
+                LaunchedEffect(cadastroSuccess) {
+                    navController.navigate("home") {
+                        popUpTo("cadastro") { inclusive = true }
+                    }
+                }
+            }
+
+
 
         Row(
             verticalAlignment = Alignment.CenterVertically,

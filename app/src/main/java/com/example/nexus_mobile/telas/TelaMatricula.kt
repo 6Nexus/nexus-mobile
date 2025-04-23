@@ -41,6 +41,11 @@ import com.example.nexus_mobile.uiState.CursoUiState
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.platform.LocalContext
+import com.example.nexus_mobile.components.TipoToast
+import com.example.nexus_mobile.components.Toast
+import com.example.nexus_mobile.data.model.matricula.MatriculaViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun TelaMatricula(cursoId: Int, navController: NavController) {
@@ -48,6 +53,10 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val id by usuarioViewModel.id.collectAsState()
     val uiState = cursoViewModel.uiState.value
+
+    val matriculaViewModel: MatriculaViewModel = viewModel()
+    val context = LocalContext.current
+    val resultado = matriculaViewModel.resultadoMatricula
 
     LaunchedEffect(cursoId) {
         cursoViewModel.carregarCursoPorId(id, cursoId)
@@ -57,6 +66,7 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
         is CursoUiState.Loading -> {
             CircularProgressIndicator(modifier = Modifier.fillMaxSize())
         }
+
         is CursoUiState.SuccessCurso -> {
             val curso = uiState.curso
             Scaffold(
@@ -93,7 +103,11 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF4CAF50)
                     )
-                    Text("Professor: ${curso.professorNome}", fontSize = 16.sp, color = Color(36, 80, 36))
+                    Text(
+                        "Professor: ${curso.professorNome}",
+                        fontSize = 16.sp,
+                        color = Color(36, 80, 36)
+                    )
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
@@ -102,16 +116,30 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                     ) {
                         Column {
                             Text(curso.descricao, fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                            Text("Duração total: 5h", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
-                            Text("Arquivos: 7 Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
+                            Text(
+                                "Duração total: 5h",
+                                fontSize = 15.sp,
+                                color = Color(82, 78, 78, 190)
+                            ) // Valor fixo
+                            Text(
+                                "Arquivos: 7 Arquivos",
+                                fontSize = 15.sp,
+                                color = Color(82, 78, 78, 190)
+                            ) // Valor fixo
                         }
                         Button(
-                            onClick = { navController.navigate("video") },
+                            onClick = {
+                                matriculaViewModel.idAssociado = 16
+                                matriculaViewModel.idCurso = cursoId
+                                matriculaViewModel.verificarMatricula(context)
+                            },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.align(Alignment.CenterVertically)
                         ) {
+
                             Text("Matricular", color = Color.White)
+
                         }
                     }
 
@@ -156,17 +184,42 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                                             modifier = Modifier.padding(8.dp),
                                             verticalAlignment = Alignment.CenterVertically
                                         ) {
-                                            Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                                            Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp) // Duração fixa
+                                            Text(
+                                                aula,
+                                                modifier = Modifier.weight(1f),
+                                                fontSize = 15.sp,
+                                                color = Color(82, 78, 78, 190)
+                                            )
+                                            Text(
+                                                "5m",
+                                                color = Color(82, 78, 78, 190),
+                                                fontSize = 15.sp
+                                            ) // Duração fixa
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    // VALIDAÇÕES PARA CHAMADA DE TOAST
+                    if (resultado == true) {
+                        LaunchedEffect(resultado) {
+                            delay(3000)
+                            matriculaViewModel.resultadoMatricula = true
+                            navController.navigate("video")
+                        }
+                        Toast(
+                            mensagem = "Matrícula realizada com sucesso!",
+                            tipoToast = TipoToast.Sucesso,
+                            modifier = Modifier
+                                .padding(top = 100.dp)
+                                .align(alignment = Alignment.TopCenter as Alignment.Horizontal)
+                        )
+                    }
                 }
             }
         }
+
         is CursoUiState.Error -> {
             Text(text = uiState.message, color = Color.Red, modifier = Modifier.fillMaxSize())
         }

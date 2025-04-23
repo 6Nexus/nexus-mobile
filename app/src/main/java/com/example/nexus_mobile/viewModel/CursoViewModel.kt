@@ -12,6 +12,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.nexus_mobile.RetrofitClient
 import com.example.nexus_mobile.dto.CursoDto
+import com.example.nexus_mobile.telas.Curso
 import com.example.nexus_mobile.uiState.CursoUiState
 import com.example.nexus_mobile.utils.TokenManager
 import kotlinx.coroutines.launch
@@ -78,4 +79,14 @@ class CursoViewModel(
             }
         }
     }
+
+    fun getCursosFiltrados(categoriaSelecionada: String): List<CursoDto> {
+        return if (categoriaSelecionada == "Todos") cursos else cursos.filter { it.categoria == categoriaSelecionada }
+    }
+
+    // Função para obter um curso por ID
+    fun getCursoById(cursoId: Int): Curso? {
+        return cursos.find { it.id == cursoId } as Curso?
+    }
+
 }

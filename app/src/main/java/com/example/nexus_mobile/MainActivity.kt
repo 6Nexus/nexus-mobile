@@ -40,6 +40,7 @@ import com.example.nexus_mobile.uiState.CursoUiState
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import com.example.nexus_mobile.viewModel.FavoritosViewModel
 import com.example.nexus_mobile.viewModel.UsuarioViewModel
+//import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
@@ -49,7 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             val navController = rememberNavController()
             val favoritosViewModel: FavoritosViewModel = viewModel()
-            val usuarioViewModel: UsuarioViewModel = viewModel()
+             val usuarioViewModel: UsuarioViewModel = viewModel()
             val contexto = LocalContext.current
 
             NavHost(navController = navController, startDestination = "tela_login") {

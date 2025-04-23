@@ -47,6 +47,7 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
     val cursosFiltrados = cursoViewModel.cursos
     val nome by usuarioViewModel.nome.collectAsState()
     val id by usuarioViewModel.id.collectAsState()
+    var active by remember { mutableStateOf(false) } // usada para barra de pesquisa
 
     LaunchedEffect(Unit) {
         if (nome.isEmpty()) {
@@ -63,7 +64,15 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
     Column(modifier = Modifier.fillMaxSize()) {
 
         Spacer(modifier = Modifier.height(20.dp))
-        BarraPesquisa(query, { query = it })
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            active = active,
+            onActiveChange = { active = it },
+            onSearch = {
+                active = false
+            }
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
         Card(
