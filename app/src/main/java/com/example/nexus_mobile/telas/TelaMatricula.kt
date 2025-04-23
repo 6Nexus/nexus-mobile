@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -41,22 +42,39 @@ import com.example.nexus_mobile.uiState.CursoUiState
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.ui.platform.LocalContext
+import com.example.nexus_mobile.components.TipoToast
+import com.example.nexus_mobile.components.Toast
+import com.example.nexus_mobile.utils.UsuarioManager
+import com.example.nexus_mobile.viewModel.MatriculaViewModel
+import kotlinx.coroutines.delay
 
 @Composable
-fun TelaMatricula(cursoId: Int, navController: NavController) {
+fun TelaMatricula(cursoId: Int, navController: NavController,) {
     val cursoViewModel: CursoViewModel = viewModel()
     val usuarioViewModel: UsuarioViewModel = viewModel()
-    val id by usuarioViewModel.id.collectAsState()
+   // val id by usuarioViewModel.id.collectAsState()
     val uiState = cursoViewModel.uiState.value
+
+
+    val context = LocalContext.current
+   // val id = UsuarioManager.getUserId(context)
+    val id = usuarioViewModel.id.value
+    val matriculaViewModel: MatriculaViewModel = viewModel()
+    val resultado = matriculaViewModel.resultadoMatricula
 
     LaunchedEffect(cursoId) {
         cursoViewModel.carregarCursoPorId(id, cursoId)
+        Log.d("TelaMatricula", "ID do curso: $cursoId $id")
     }
 
     when (uiState) {
         is CursoUiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
+
         is CursoUiState.SuccessCurso -> {
             val curso = uiState.curso
             Scaffold(
@@ -75,9 +93,9 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                         .padding(horizontal = 16.dp)
                         .padding(top = 130.dp)
                 ) {
-                    // Imagem fixa do curso
+                    // Imagem do curso
                     Image(
-                        painter = painterResource(id = R.drawable.curso1), // Use uma imagem fixa
+                        painter = painterResource(id = R.drawable.curso1),
                         contentDescription = "Curso",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -85,6 +103,7 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                             .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
                         contentScale = ContentScale.Crop
                     )
+
                     Spacer(modifier = Modifier.height(8.dp))
 
                     Text(
@@ -93,7 +112,12 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                         fontWeight = FontWeight.Bold,
                         color = Color(0xFF4CAF50)
                     )
-                    Text("Professor: ${curso.professorNome}", fontSize = 16.sp, color = Color(36, 80, 36))
+                    Text(
+                        "Professor: ${curso.professorNome}",
+                        fontSize = 16.sp,
+                        color = Color(36, 80, 36)
+                    )
+
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Row(
@@ -102,11 +126,23 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                     ) {
                         Column {
                             Text(curso.descricao, fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                            Text("Duração total: 5h", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
-                            Text("Arquivos: 7 Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
+                            Text(
+                                "Duração total: 5h",
+                                fontSize = 15.sp,
+                                color = Color(82, 78, 78, 190)
+                            )
+                            Text(
+                                "Arquivos: 7 Arquivos",
+                                fontSize = 15.sp,
+                                color = Color(82, 78, 78, 190)
+                            )
                         }
                         Button(
-                            onClick = { navController.navigate("video") },
+                            onClick = {
+                                matriculaViewModel.idAssociado = id
+                                matriculaViewModel.idCurso = cursoId
+                                matriculaViewModel.verificarMatricula(context)
+                            },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.align(Alignment.CenterVertically)
@@ -128,7 +164,7 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                     ) {
                         val scrollState = rememberScrollState()
 
-                        Column {
+                        Column(modifier = Modifier.verticalScroll(scrollState)) {
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
@@ -138,40 +174,69 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                                 modifier = Modifier.padding(8.dp),
                                 color = Color(0xFF4CAF50)
                             )
+
                             Spacer(modifier = Modifier.height(5.dp))
 
-                            Column(modifier = Modifier.verticalScroll(scrollState)) {
-                                // Valores fixos de aulas
-                                listOf("Aula 1", "Aula 2", "Aula 3").forEach { aula ->
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .height(50.dp)
-                                            .shadow(2.dp, shape = RoundedCornerShape(6.dp))
-                                            .clip(RoundedCornerShape(6.dp))
-                                            .background(Color(248, 245, 245, 255))
+                            listOf("Aula 1", "Aula 2", "Aula 3").forEach { aula ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .height(50.dp)
+                                        .shadow(2.dp, shape = RoundedCornerShape(6.dp))
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(248, 245, 245, 255))
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Row(
-                                            modifier = Modifier.padding(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                                            Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp) // Duração fixa
-                                        }
+                                        Text(
+                                            aula,
+                                            modifier = Modifier.weight(1f),
+                                            fontSize = 15.sp,
+                                            color = Color(82, 78, 78, 190)
+                                        )
+                                        Text(
+                                            "5m",
+                                            color = Color(82, 78, 78, 190),
+                                            fontSize = 15.sp
+                                        )
                                     }
                                 }
                             }
                         }
                     }
+
+                    // Feedback da matrícula
+                    if (resultado == true) {
+                        LaunchedEffect(resultado) {
+                            delay(3000)
+                            matriculaViewModel.resultadoMatricula = null
+                            navController.navigate("video")
+                        }
+
+                        Toast(
+                            mensagem = "Matrícula realizada com sucesso!",
+                            tipoToast = TipoToast.Sucesso,
+                            modifier = Modifier
+                                .padding(top = 100.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                    }
                 }
             }
         }
+
         is CursoUiState.Error -> {
-            Text(text = uiState.message, color = Color.Red, modifier = Modifier.fillMaxSize())
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = uiState.message, color = Color.Red)
+            }
         }
 
-        is CursoUiState.Success -> TODO()
+        is CursoUiState.Success -> {
+            // Você pode implementar esse estado quando necessário
+        }
     }
 }
 

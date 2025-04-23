@@ -2,6 +2,7 @@ package com.example.nexus_mobile.api
 
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.CurtidaCriacaoDto
+import com.example.nexus_mobile.dto.MatriculaCriacaoDto
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -45,5 +46,17 @@ interface CursoApi {
 
     @GET("curtidas/{idAssociado}")
     suspend fun getFavoritosDoUsuario(@Path("idAssociado") idAssociado: Int): List<CursoDto>
+
+    // matrícula
+    @POST("matriculas")
+    suspend fun matricular(@Body matriculaRequest: MatriculaCriacaoDto): Int
+
+    // Buscar associado por curso
+    @GET("matriculas/{idAssociado}/{idCurso}")
+    suspend fun buscarAssociadoPorCurso(
+        @Path("idAssociado") idAssociado: Int,
+        @Path("idCurso") idCurso: Int
+    ): Int
+
 }
 
