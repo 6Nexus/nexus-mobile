@@ -52,11 +52,12 @@ class MainActivity : ComponentActivity() {
             val usuarioViewModel: UsuarioViewModel = viewModel()
             val contexto = LocalContext.current
 
-            NavHost(navController = navController, startDestination = "tela_login") {
+            NavHost(navController = navController, startDestination = "tela_cadastro") {
 
                 composable("tela_cadastro") {
                     TelaCadastro(navController)
                 }
+
                 composable("tela_login") {
                     val context = LocalContext.current
                     TelaLogin(navController = navController, context = context)

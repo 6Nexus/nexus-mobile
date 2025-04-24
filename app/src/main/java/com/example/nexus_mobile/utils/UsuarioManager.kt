@@ -8,10 +8,10 @@ object UsuarioManager {
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_USER_EMAIL = "user_email"
 
-    fun salvarUsuario(context: Context, id: Int, nome: String, email: String) {
+    fun salvarUsuario(context: Context, userId: Int, nome: String, email: String) {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         prefs.edit()
-            .putInt(KEY_USER_ID, id)
+            .putInt(KEY_USER_ID, userId)  // Usando userId
             .putString(KEY_USER_NAME, nome)
             .putString(KEY_USER_EMAIL, email)
             .apply()

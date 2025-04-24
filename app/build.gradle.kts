@@ -37,6 +37,15 @@ android {
     buildFeatures {
         compose = true
     }
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/io.netty.versions.properties",
+                "META-INF/DEPENDENCIES"
+            )
+        }
+    }
 }
 
 dependencies {
@@ -51,6 +60,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.androidyoutubeplayer)
     implementation(libs.androidx.navigation.compose.android)
+    implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.firebase.appdistribution.gradle)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

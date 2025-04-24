@@ -11,6 +11,8 @@ composeBom = "2024.04.01"
 coil = "2.2.2"
 androidyoutubeplayer = "12.1.0"
 navigationComposeAndroid = "2.9.0-alpha08"
+media3CommonKtx = "1.6.1"
+firebaseAppdistributionGradle = "5.1.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -30,6 +32,8 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 androidyoutubeplayer = { module = "com.pierfrancescosoffritti.androidyoutubeplayer:core", version.ref = "androidyoutubeplayer" }
 androidx-navigation-compose-android = { group = "androidx.navigation", name = "navigation-compose-android", version.ref = "navigationComposeAndroid" }
+androidx-media3-common-ktx = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3CommonKtx" }
+firebase-appdistribution-gradle = { group = "com.google.firebase", name = "firebase-appdistribution-gradle", version.ref = "firebaseAppdistributionGradle" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

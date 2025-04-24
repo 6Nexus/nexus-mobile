@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewModel) {
     val cursoViewModel: CursoViewModel = viewModel()
     val usuarioViewModel: UsuarioViewModel = viewModel()
-    val id by usuarioViewModel.id.collectAsState()
+    val id by usuarioViewModel.userId.collectAsState()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = cursoViewModel.cursos

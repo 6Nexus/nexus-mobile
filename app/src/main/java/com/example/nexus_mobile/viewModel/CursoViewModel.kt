@@ -15,9 +15,9 @@ import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.uiState.CursoUiState
 import com.example.nexus_mobile.utils.TokenManager
 import kotlinx.coroutines.launch
-class CursoViewModel(
-    application: Application
-) : AndroidViewModel(application) {
+
+
+class CursoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val api = RetrofitClient.create(application)
 
@@ -32,20 +32,16 @@ class CursoViewModel(
             _uiState.value = CursoUiState.Loading
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
-
-                if (token != null && token.isNotEmpty()) {
+                if (!token.isNullOrEmpty()) {
                     val cursosRecebidos = api.getCursos("Bearer $token", usuarioId)
                     _cursos.clear()
                     _cursos.addAll(cursosRecebidos)
-
                     _uiState.value = CursoUiState.Success(cursosRecebidos)
-                    Log.d("CursoViewModel", "Cursos carregados com sucesso")
                 } else {
                     _uiState.value = CursoUiState.Error("Token não encontrado ou expirado")
                 }
             } catch (e: Exception) {
                 _uiState.value = CursoUiState.Error("Erro ao buscar cursos: ${e.message}")
-                Log.e("CursoViewModel", "Erro ao buscar cursos", e)
             }
         }
     }
@@ -56,7 +52,6 @@ class CursoViewModel(
                 val cursosRecebidos = api.getCursosPorCategoria(idAssociado, categoria)
                 _cursos.clear()
                 _cursos.addAll(cursosRecebidos)
-                Log.d("CursoViewModel", "Cursos da categoria '$categoria' carregados com sucesso")
             } catch (e: Exception) {
                 Log.e("CursoViewModel", "Erro ao buscar cursos por categoria", e)
             }
@@ -67,14 +62,10 @@ class CursoViewModel(
         viewModelScope.launch {
             _uiState.value = CursoUiState.Loading
             try {
-                val curso = api.getCursoPorId(cursoId, usuarioId)
-                if (curso != null) {
-                    _uiState.value = CursoUiState.SuccessCurso(curso)
-                } else {
-                    _uiState.value = CursoUiState.Error("Curso não encontrado")
-                }
+                val curso = api.getCursoPorId(cursoId = cursoId, usuarioId = usuarioId)
+                _uiState.value = CursoUiState.SuccessCurso(curso)
             } catch (e: Exception) {
-                _uiState.value = CursoUiState.Error("Erro ao buscar curso: ${e.message}")
+                _uiState.value = CursoUiState.Error("Erro ao carregar o curso: ${e.message}")
             }
         }
     }

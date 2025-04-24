@@ -216,13 +216,22 @@ fun TelaLogin(navController: NavController, context: Context) {
                         Log.d("Login", "Token recebido: ${resposta.token}")
                         TokenManager.salvarToken(context, resposta.token)
 
-                        UsuarioManager.salvarUsuario(context,resposta.id, resposta.nome, resposta.email)
+                        // Salvar os dados do usuário no UsuarioManager
+                        UsuarioManager.salvarUsuario(
+                            context,
+                            resposta.userId,
+                            resposta.nome,
+                            resposta.email
+                        )
 
+                        Log.d("Login", "id usuario: ${resposta.userId} nome: ${resposta.nome} email: ${resposta.email}")
+
+                        // Atualizar o UsuarioViewModel com os dados do usuário
                         withContext(Dispatchers.Main) {
                             usuarioViewModel.setUserData(
                                 nome = resposta.nome,
                                 email = resposta.email,
-                                id = resposta.id
+                                userId = resposta.userId
                             )
                             navController.navigate("home") {
                                 popUpTo("tela_login") { inclusive = true }

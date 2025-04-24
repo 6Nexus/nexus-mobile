@@ -46,18 +46,27 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
     var query by remember { mutableStateOf("") }
     val cursosFiltrados = cursoViewModel.cursos
     val nome by usuarioViewModel.nome.collectAsState()
-    val id by usuarioViewModel.id.collectAsState()
+    val id by usuarioViewModel.userId.collectAsState()
 
     LaunchedEffect(Unit) {
         if (nome.isEmpty()) {
             usuarioViewModel.setUserData(
                 nome = UsuarioManager.getUserName(context),
                 email = UsuarioManager.getUserEmail(context),
-                id = UsuarioManager.getUserId(context)
+                userId = UsuarioManager.getUserId(context)
             )
         }
-        cursoViewModel.carregarCursos(id)
-        Log.d("TelaHome", "Chamando carregarCursos")
+    }
+
+    Log.d("TelaHome", "usuarioId recebido: $id")
+
+// Segundo LaunchedEffect: só executa quando o ID for maior que 0
+    LaunchedEffect(id) {
+        if (id > 0) {
+            Log.d("TelaHome", "usuarioId recebido: $id")
+            cursoViewModel.carregarCursos(id)
+            Log.d("TelaHome", "Chamando carregarCursos")
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {

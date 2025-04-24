@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,11 +31,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -44,8 +47,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.nexus_mobile.R
+import com.example.nexus_mobile.RetrofitLogin
+import com.example.nexus_mobile.dto.CadastroRequest
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
+import kotlinx.coroutines.launch
 
 @Composable
 fun TelaCadastro(navController: NavController) {
@@ -54,6 +60,9 @@ fun TelaCadastro(navController: NavController) {
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
@@ -178,7 +187,30 @@ fun TelaCadastro(navController: NavController) {
         Spacer(modifier = Modifier.height(30.dp))
 
         Button(
-            onClick = { },
+            onClick = {
+                scope.launch {
+                    try {
+                        val cadastroRequest = CadastroRequest(
+                            nome = nome,
+                            email = email,
+                            senha = senha
+                        )
+
+                        val loginApi = RetrofitLogin.create(context)
+                        val response = loginApi.cadastrar(cadastroRequest)
+
+                        if (response.nome.isNotEmpty() && response.email.isNotEmpty()) {
+                            Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_LONG).show()
+                            navController.navigate("tela_login")
+                        } else {
+                            Toast.makeText(context, "Erro ao cadastrar. Tente novamente.", Toast.LENGTH_LONG).show()
+                        }
+
+                    } catch (e: Exception) {
+                        Toast.makeText(context, "Erro: ${e.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
+            },
             colors = ButtonDefaults.buttonColors(
                 containerColor = verdePrincipal,
                 contentColor = Color.White,
