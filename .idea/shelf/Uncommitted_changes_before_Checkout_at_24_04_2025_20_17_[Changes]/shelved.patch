@@ -1,0 +1,193 @@
+Index: app/src/main/java/com/example/nexus_mobile/telas/TelaMatricula.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.nexus_mobile.telas\r\n\r\nimport android.widget.Toast\r\nimport androidx.annotation.OptIn\r\nimport androidx.compose.foundation.Image\r\nimport androidx.compose.foundation.background\r\nimport androidx.compose.foundation.border\r\nimport androidx.compose.foundation.layout.*\r\nimport androidx.compose.foundation.rememberScrollState\r\nimport androidx.compose.foundation.shape.RoundedCornerShape\r\nimport androidx.compose.foundation.verticalScroll\r\nimport androidx.compose.material3.Button\r\nimport androidx.compose.material3.ButtonDefaults\r\nimport androidx.compose.material3.Card\r\nimport androidx.compose.material3.ExperimentalMaterial3Api\r\nimport androidx.compose.material3.IconButton\r\nimport androidx.compose.material3.Text\r\nimport androidx.compose.material3.TopAppBar\r\nimport androidx.compose.material3.TopAppBarDefaults\r\nimport androidx.compose.runtime.*\r\nimport androidx.compose.ui.Alignment\r\nimport androidx.compose.ui.Modifier\r\nimport androidx.compose.ui.draw.clip\r\nimport androidx.compose.ui.draw.drawBehind\r\nimport androidx.compose.ui.draw.shadow\r\nimport androidx.compose.ui.geometry.Offset\r\nimport androidx.compose.ui.geometry.Size\r\nimport androidx.compose.ui.graphics.Color\r\nimport androidx.compose.ui.layout.ContentScale\r\nimport androidx.compose.ui.res.painterResource\r\nimport androidx.compose.ui.text.font.FontWeight\r\nimport androidx.compose.ui.tooling.preview.Preview\r\nimport androidx.compose.ui.unit.dp\r\nimport androidx.compose.ui.unit.sp\r\nimport androidx.navigation.NavController\r\nimport com.example.nexus_mobile.R\r\nimport com.example.nexus_mobile.components.AppBar\r\nimport com.example.nexus_mobile.components.NavigationBar\r\nimport com.example.nexus_mobile.ui.theme.NexusmobileTheme\r\nimport androidx.compose.material3.Scaffold\r\nimport androidx.lifecycle.viewmodel.compose.viewModel\r\nimport com.example.nexus_mobile.uiState.CursoUiState\r\nimport com.example.nexus_mobile.viewModel.CursoViewModel\r\nimport com.example.nexus_mobile.viewModel.UsuarioViewModel\r\nimport androidx.compose.material3.CircularProgressIndicator\r\nimport androidx.compose.ui.platform.LocalContext\r\nimport androidx.media3.common.util.Log\r\nimport androidx.media3.common.util.UnstableApi\r\nimport com.example.nexus_mobile.utils.UsuarioManager\r\nimport com.example.nexus_mobile.viewModel.MatriculaViewModel\r\n\r\n@OptIn(UnstableApi::class)\r\n@Composable\r\nfun TelaMatricula(cursoId: Int, navController: NavController) {\r\n    val cursoViewModel: CursoViewModel = viewModel()\r\n    val usuarioViewModel: UsuarioViewModel = viewModel()\r\n\r\n    val userId by usuarioViewModel.userId.collectAsState()\r\n\r\n    val uiState = cursoViewModel.uiState.value\r\n\r\n    val matriculaViewModel: MatriculaViewModel = viewModel()\r\n    val matriculado by matriculaViewModel.matriculaRealizada.collectAsState()\r\n\r\n    LaunchedEffect(matriculado) {\r\n        if (matriculado) {\r\n            navController.navigate(\"video\") {\r\n                popUpTo(\"tela_matricula/$cursoId\") { inclusive = true }\r\n            }\r\n            matriculaViewModel.resetarStatus()\r\n        }\r\n    }\r\n\r\n\r\n    when (uiState) {\r\n        is CursoUiState.Loading -> {\r\n            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {\r\n                CircularProgressIndicator()\r\n            }\r\n        }\r\n\r\n        is CursoUiState.SuccessCurso -> {\r\n            val curso = uiState.curso\r\n\r\n            Column(\r\n                modifier = Modifier\r\n                    .fillMaxSize()\r\n                    .padding(16.dp)\r\n            ) {\r\n                Text(\"Curso: ${curso.titulo}\", fontSize = 24.sp, fontWeight = FontWeight.Bold)\r\n                Text(\"Professor: ${curso.professorNome}\", fontSize = 18.sp)\r\n\r\n                Spacer(modifier = Modifier.height(16.dp))\r\n\r\n                Button(\r\n                    onClick = {\r\n                        matriculaViewModel.matricular(usuarioId = userId, cursoId = cursoId)\r\n                    }\r\n                ) {\r\n                    Text(\"Matricular\")\r\n                }\r\n            }\r\n        }\r\n\r\n        is CursoUiState.Error -> {\r\n            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {\r\n                Text(text = uiState.message, color = Color.Red)\r\n            }\r\n        }\r\n\r\n        else -> {\r\n            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {\r\n                Text(\"Aguardando carregamento...\")\r\n            }\r\n        }\r\n    }\r\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/app/src/main/java/com/example/nexus_mobile/telas/TelaMatricula.kt b/app/src/main/java/com/example/nexus_mobile/telas/TelaMatricula.kt
+--- a/app/src/main/java/com/example/nexus_mobile/telas/TelaMatricula.kt	(revision e5e6a699f531c9ad5b99fc6ff9ff6e6c43c0e50f)
++++ b/app/src/main/java/com/example/nexus_mobile/telas/TelaMatricula.kt	(date 1745535280183)
+@@ -53,23 +53,19 @@
+ @Composable
+ fun TelaMatricula(cursoId: Int, navController: NavController) {
+     val cursoViewModel: CursoViewModel = viewModel()
++    val matriculaViewModel: MatriculaViewModel = viewModel()
+     val usuarioViewModel: UsuarioViewModel = viewModel()
+-
+-    val userId by usuarioViewModel.userId.collectAsState()
+-
++    val id by usuarioViewModel.userId.collectAsState()
+     val uiState = cursoViewModel.uiState.value
+ 
+-    val matriculaViewModel: MatriculaViewModel = viewModel()
+-    val matriculado by matriculaViewModel.matriculaRealizada.collectAsState()
+-
+-    LaunchedEffect(matriculado) {
+-        if (matriculado) {
+-            navController.navigate("video") {
+-                popUpTo("tela_matricula/$cursoId") { inclusive = true }
+-            }
+-            matriculaViewModel.resetarStatus()
++    LaunchedEffect(cursoId, id) {
++        if (id > 0) {
++            Log.d("TelaMatricula", "cursoId recebido: $cursoId")
++            Log.d("TelaMatricula", "usuarioId recebido: $id")
++            cursoViewModel.carregarCursoPorId(id, cursoId)
+         }
+     }
++
+ 
+ 
+     when (uiState) {
+@@ -81,36 +77,134 @@
+ 
+         is CursoUiState.SuccessCurso -> {
+             val curso = uiState.curso
+-
+-            Column(
+-                modifier = Modifier
+-                    .fillMaxSize()
+-                    .padding(16.dp)
+-            ) {
+-                Text("Curso: ${curso.titulo}", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+-                Text("Professor: ${curso.professorNome}", fontSize = 18.sp)
++            Scaffold(
++                topBar = { AppBar(descricao = curso.titulo) },
++                bottomBar = {
++                    NavigationBar(
++                        navController = navController,
++                        telaAtual = "tela_curso",
++                        modifier = Modifier.fillMaxWidth()
++                    )
++                }
++            ) { valoresDePadding ->
++                Column(
++                    modifier = Modifier
++                        .fillMaxSize()
++                        .padding(horizontal = 16.dp)
++                        .padding(top = 130.dp)
++                ) {
++                    Image(
++                        painter = painterResource(id = R.drawable.curso1),
++                        contentDescription = "Curso",
++                        modifier = Modifier
++                            .fillMaxWidth()
++                            .height(180.dp)
++                            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
++                        contentScale = ContentScale.Crop
++                    )
++                    Spacer(modifier = Modifier.height(8.dp))
+ 
+-                Spacer(modifier = Modifier.height(16.dp))
++                    Text(
++                        curso.titulo,
++                        fontSize = 25.sp,
++                        fontWeight = FontWeight.Bold,
++                        color = Color(0xFF4CAF50)
++                    )
++                    Text("Professor: ${curso.professorNome}", fontSize = 16.sp, color = Color(36, 80, 36))
++                    Spacer(modifier = Modifier.height(16.dp))
+ 
+-                Button(
+-                    onClick = {
+-                        matriculaViewModel.matricular(usuarioId = userId, cursoId = cursoId)
++                    Row(
++                        modifier = Modifier.fillMaxWidth(),
++                        horizontalArrangement = Arrangement.SpaceBetween
++                    ) {
++                        Column {
++                            Text(curso.descricao, fontSize = 15.sp, color = Color(82, 78, 78, 190))
++                            Text("Duração total: 5h", fontSize = 15.sp, color = Color(82, 78, 78, 190))
++                            Text("Arquivos: 7 Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190))
++                        }
++                        Button(
++                            onClick = {
++                                Log.d("TelaMatricula", "Matriculando com idUsuario=$id e idCurso=$cursoId")
++                                matriculaViewModel.matricular(id, cursoId)
++                            },
++                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
++                            shape = RoundedCornerShape(8.dp),
++                            modifier = Modifier.align(Alignment.CenterVertically)
++                        ) {
++                            Text("Matricular", color = Color.White)
++                        }
+                     }
+-                ) {
+-                    Text("Matricular")
++
++                    Spacer(modifier = Modifier.height(35.dp))
++
++                    Box(
++                        modifier = Modifier
++                            .fillMaxWidth()
++                            .height(350.dp)
++                            .shadow(4.dp, shape = RoundedCornerShape(6.dp))
++                            .clip(RoundedCornerShape(6.dp))
++                            .background(Color(248, 245, 245, 255))
++                            .padding(8.dp)
++                    ) {
++                        val scrollState = rememberScrollState()
++                        Column(modifier = Modifier.verticalScroll(scrollState)) {
++                            Spacer(modifier = Modifier.height(10.dp))
++
++                            Text(
++                                "Conteúdo do curso",
++                                fontSize = 23.sp,
++                                fontWeight = FontWeight.Bold,
++                                modifier = Modifier.padding(8.dp),
++                                color = Color(0xFF4CAF50)
++                            )
++                            Spacer(modifier = Modifier.height(5.dp))
++
++                            listOf("Aula 1", "Aula 2", "Aula 3").forEach { aula ->
++                                Box(
++                                    modifier = Modifier
++                                        .fillMaxWidth()
++                                        .padding(vertical = 4.dp)
++                                        .height(50.dp)
++                                        .shadow(2.dp, shape = RoundedCornerShape(6.dp))
++                                        .clip(RoundedCornerShape(6.dp))
++                                        .background(Color(248, 245, 245, 255))
++                                ) {
++                                    Row(
++                                        modifier = Modifier.padding(8.dp),
++                                        verticalAlignment = Alignment.CenterVertically
++                                    ) {
++                                        Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
++                                        Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp)
++                                    }
++                                }
++                            }
++                        }
++                    }
++                }
++            }
++        }
++
++        is CursoUiState.MatriculaSuccess -> {
++            LaunchedEffect(Unit) {
++                Log.d("TelaMatricula", "Matrícula realizada com sucesso, navegando para vídeo")
++                navController.navigate("video") {
++                    popUpTo("tela_matricula/$cursoId") { inclusive = true }
+                 }
+             }
+         }
+ 
+         is CursoUiState.Error -> {
++            Log.d("TelaMatricula", "Erro ao carregar ou matricular: ${uiState.message}")
+             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                 Text(text = uiState.message, color = Color.Red)
+             }
+         }
+ 
+-        else -> {
++        is CursoUiState.Success -> {
++            // Apenas para satisfazer a exigência de exaustividade
++            Log.d("TelaMatricula", "Success com lista de cursos – estado não utilizado aqui.")
+             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+-                Text("Aguardando carregamento...")
++                Text("Estado de lista de cursos não utilizado aqui.")
+             }
+         }
+     }

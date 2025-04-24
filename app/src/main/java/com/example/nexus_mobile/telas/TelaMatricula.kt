@@ -45,18 +45,28 @@ import androidx.compose.material3.CircularProgressIndicator
 @Composable
 fun TelaMatricula(cursoId: Int, navController: NavController) {
     val cursoViewModel: CursoViewModel = viewModel()
+    val matriculaViewModel: MatriculaViewModel = viewModel()
     val usuarioViewModel: UsuarioViewModel = viewModel()
-    val id by usuarioViewModel.id.collectAsState()
+    val id by usuarioViewModel.userId.collectAsState()
     val uiState = cursoViewModel.uiState.value
 
-    LaunchedEffect(cursoId) {
-        cursoViewModel.carregarCursoPorId(id, cursoId)
+    LaunchedEffect(cursoId, id) {
+        if (id > 0) {
+            Log.d("TelaMatricula", "cursoId recebido: $cursoId")
+            Log.d("TelaMatricula", "usuarioId recebido: $id")
+            cursoViewModel.carregarCursoPorId(id, cursoId)
+        }
     }
+
+
 
     when (uiState) {
         is CursoUiState.Loading -> {
-            CircularProgressIndicator(modifier = Modifier.fillMaxSize())
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
+
         is CursoUiState.SuccessCurso -> {
             val curso = uiState.curso
             Scaffold(
@@ -75,9 +85,8 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                         .padding(horizontal = 16.dp)
                         .padding(top = 130.dp)
                 ) {
-                    // Imagem fixa do curso
                     Image(
-                        painter = painterResource(id = R.drawable.curso1), // Use uma imagem fixa
+                        painter = painterResource(id = R.drawable.curso1),
                         contentDescription = "Curso",
                         modifier = Modifier
                             .fillMaxWidth()
@@ -102,11 +111,14 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                     ) {
                         Column {
                             Text(curso.descricao, fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                            Text("Duração total: 5h", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
-                            Text("Arquivos: 7 Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190)) // Valor fixo
+                            Text("Duração total: 5h", fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                            Text("Arquivos: 7 Arquivos", fontSize = 15.sp, color = Color(82, 78, 78, 190))
                         }
                         Button(
-                            onClick = { navController.navigate("video") },
+                            onClick = {
+                                Log.d("TelaMatricula", "Matriculando com idUsuario=$id e idCurso=$cursoId")
+                                matriculaViewModel.matricular(id, cursoId)
+                            },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                             shape = RoundedCornerShape(8.dp),
                             modifier = Modifier.align(Alignment.CenterVertically)
@@ -127,8 +139,7 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                             .padding(8.dp)
                     ) {
                         val scrollState = rememberScrollState()
-
-                        Column {
+                        Column(modifier = Modifier.verticalScroll(scrollState)) {
                             Spacer(modifier = Modifier.height(10.dp))
 
                             Text(
@@ -140,25 +151,22 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                             )
                             Spacer(modifier = Modifier.height(5.dp))
 
-                            Column(modifier = Modifier.verticalScroll(scrollState)) {
-                                // Valores fixos de aulas
-                                listOf("Aula 1", "Aula 2", "Aula 3").forEach { aula ->
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .height(50.dp)
-                                            .shadow(2.dp, shape = RoundedCornerShape(6.dp))
-                                            .clip(RoundedCornerShape(6.dp))
-                                            .background(Color(248, 245, 245, 255))
+                            listOf("Aula 1", "Aula 2", "Aula 3").forEach { aula ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 4.dp)
+                                        .height(50.dp)
+                                        .shadow(2.dp, shape = RoundedCornerShape(6.dp))
+                                        .clip(RoundedCornerShape(6.dp))
+                                        .background(Color(248, 245, 245, 255))
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        Row(
-                                            modifier = Modifier.padding(8.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
-                                            Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp) // Duração fixa
-                                        }
+                                        Text(aula, modifier = Modifier.weight(1f), fontSize = 15.sp, color = Color(82, 78, 78, 190))
+                                        Text("5m", color = Color(82, 78, 78, 190), fontSize = 15.sp)
                                     }
                                 }
                             }
@@ -167,12 +175,29 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                 }
             }
         }
-        is CursoUiState.Error -> {
-            Text(text = uiState.message, color = Color.Red, modifier = Modifier.fillMaxSize())
+
+        is CursoUiState.MatriculaSuccess -> {
+            LaunchedEffect(Unit) {
+                Log.d("TelaMatricula", "Matrícula realizada com sucesso, navegando para vídeo")
+                navController.navigate("video") {
+                    popUpTo("tela_matricula/$cursoId") { inclusive = true }
+                }
+            }
         }
 
-        is CursoUiState.Success -> TODO()
+        is CursoUiState.Error -> {
+            Log.d("TelaMatricula", "Erro ao carregar ou matricular: ${uiState.message}")
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text(text = uiState.message, color = Color.Red)
+            }
+        }
+
+        is CursoUiState.Success -> {
+            // Apenas para satisfazer a exigência de exaustividade
+            Log.d("TelaMatricula", "Success com lista de cursos – estado não utilizado aqui.")
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("Estado de lista de cursos não utilizado aqui.")
+            }
+        }
     }
 }
-
-
