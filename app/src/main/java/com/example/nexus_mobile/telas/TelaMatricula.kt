@@ -50,6 +50,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.nexus_mobile.components.TipoToast
 import com.example.nexus_mobile.components.Toast
 import com.example.nexus_mobile.data.model.matricula.MatriculaViewModel
+import com.example.nexus_mobile.data.model.services.TokenJWT
 import kotlinx.coroutines.delay
 
 
@@ -60,6 +61,9 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
     val context = LocalContext.current
     val resultado = maticulaViewModel.resultadoMatricula
 
+    // id usuário logado
+    val idUser = TokenJWT.recuperarIdAssociado(context)
+    maticulaViewModel.idAssociado = idUser
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -121,8 +125,8 @@ fun TelaMatricula(curso: Curso, navController: NavController) {
                     }
                     Button(
                         onClick = {
-                            maticulaViewModel.idAssociado = 16
-                            maticulaViewModel.idCurso = 54
+                            maticulaViewModel.idAssociado = idUser
+                            maticulaViewModel.idCurso = curso.id
 
                             // Verifica se o usuário já está matriculado, caso contrário, realiza a matrícula
                             maticulaViewModel.verificarMatricula(context)

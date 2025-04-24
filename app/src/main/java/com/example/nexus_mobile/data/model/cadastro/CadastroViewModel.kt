@@ -38,8 +38,8 @@ class CadastroViewModel : ViewModel() {
                 val response = associadoService.cadastrar(cadastroRequest)
 
                 // Salvar dados do usuário (nome e email)
-                TokenJWT.salvarDadosUsuario(context, nome, email)
-                Log.d("CadastroViewModel", "Dados do usuário salvos: nome: $nome, email: $email")
+                TokenJWT.salvarDadosUsuario(context, nome, email, idAssociado = response.idAssociado )
+                Log.d("CadastroViewModel", "Dados do usuário salvos: nome: $nome, email: $email  id: ")
 
                 // Atualiza estados
                 cadastroResponse = response

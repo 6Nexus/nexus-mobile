@@ -38,20 +38,20 @@ class LoginViewModel : ViewModel() {
             try {
                 val loginRequest = LoginRequest(email, senha)
 
-                Log.d("LoginViewModel", "Fazendo login com email: $email e senha: $senha")
 
                 // Cria uma instância do Retrofit com o contexto
                 val associadoService = api.criarApi(context)
 
                 // Faz a chamada de login
                 val response = associadoService.login(loginRequest)
+                Log.d("LoginViewModel", "Fazendo login com email: $email e senha: $senha id: ${response.userId}")
 
                 // Salva o token
                 TokenJWT.salvarToken(context, response.token)
 
                 // Pegar nome do usuario
                 val nomeUsuario = response.nome
-                TokenJWT.salvarDadosUsuario(context, nomeUsuario, email)
+                TokenJWT.salvarDadosUsuario(context, nomeUsuario, email, response.userId)
 
 
                 // Atualiza estados

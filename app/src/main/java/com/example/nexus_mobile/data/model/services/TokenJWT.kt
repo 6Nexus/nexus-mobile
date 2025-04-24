@@ -33,12 +33,18 @@ object TokenJWT {
 
     }
 
-    fun salvarDadosUsuario(context: Context, nome: String, email: String) {
+    fun salvarDadosUsuario(context: Context, nome: String, email: String, idAssociado: Int) {
         val prefs = getPrefs(context)
         prefs.edit()
             .putString(NOME_KEY, nome)
             .putString(EMAIL_KEY, email)
+            .putInt("idAssociado", idAssociado)
             .apply()
+    }
+
+    fun recuperarIdAssociado(context: Context): Int {
+        val prefs = getPrefs(context)
+        return prefs.getInt("idAssociado", 0)
     }
 
     fun recuperarNome(context: Context): String? {
