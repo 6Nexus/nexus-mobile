@@ -42,7 +42,7 @@ object TokenJWT {
             .apply()
     }
 
-    fun recuperarIdAssociado(context: Context): Int {
+        fun recuperarIdAssociado(context: Context): Int {
         val prefs = getPrefs(context)
         return prefs.getInt("idAssociado", 0)
     }

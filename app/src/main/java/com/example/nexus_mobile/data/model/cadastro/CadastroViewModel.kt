@@ -29,17 +29,17 @@ class CadastroViewModel : ViewModel() {
             try {
                 val cadastroRequest = CadastroRequest(nome, email, senha)
 
-                Log.d("CadastroViewModel", "Fazendo cadastro com nome: $nome, email: $email")
 
                 // Cria uma instância do Retrofit com o contexto
                 val associadoService = api.criarApi(context)
 
                 // Faz a chamada de login
                 val response = associadoService.cadastrar(cadastroRequest)
+                Log.d("CadastroViewModel", "Fazendo cadastro com nome: $nome, email: $email")
 
                 // Salvar dados do usuário (nome e email)
                 TokenJWT.salvarDadosUsuario(context, nome, email, idAssociado = response.idAssociado )
-                Log.d("CadastroViewModel", "Dados do usuário salvos: nome: $nome, email: $email  id: ")
+                Log.d("CadastroViewModel", "Dados do usuário salvos: nome: $nome, email: $email")
 
                 // Atualiza estados
                 cadastroResponse = response
