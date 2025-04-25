@@ -55,4 +55,20 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         UsuarioManager.limparDados(context)
         Log.d("UsuarioViewModel", "Dados do usuário limpos")
     }
+
+    fun atualizarPerfil(nome: String, email: String) {
+        _nome.value = nome
+        _email.value = email
+        UsuarioManager.atualizarUsuario(context, nome, email)
+    }
+
+    fun atualizarNome(novoNome: String) {
+        _nome.value = novoNome
+        UsuarioManager.atualizarUsuario(context, novoNome, _email.value)
+    }
+
+    fun atualizarEmail(novoEmail: String) {
+        _email.value = novoEmail
+        UsuarioManager.atualizarUsuario(context, _nome.value, novoEmail)
+    }
 }

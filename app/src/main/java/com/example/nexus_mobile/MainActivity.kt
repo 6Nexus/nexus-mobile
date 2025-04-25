@@ -71,7 +71,7 @@ class MainActivity : ComponentActivity() {
 
                 composable("tela_curso") { TelaCursos(navController, favoritosViewModel) }
 
-                composable("tela_perfil") { TelaPerfil(navController) }
+                composable("tela_perfil") { TelaPerfil(navController, ) }
 
                 composable("favoritos") { TelaFavoritos(navController, favoritosViewModel) }
 

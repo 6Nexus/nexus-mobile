@@ -36,4 +36,12 @@ object UsuarioManager {
         val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
         prefs.edit().clear().apply()
     }
+
+    fun atualizarUsuario(context: Context, nome: String, email: String) {
+        val prefs = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putString(KEY_USER_NAME, nome)
+            .putString(KEY_USER_EMAIL, email)
+            .apply()
+    }
 }
