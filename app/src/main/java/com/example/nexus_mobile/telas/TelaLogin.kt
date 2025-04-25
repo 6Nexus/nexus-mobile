@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -73,6 +74,7 @@ fun TelaLogin(navController: NavController, context: Context) {
     var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
     val usuarioViewModel: UsuarioViewModel = viewModel()
+    var isCarregando by mutableStateOf(false)
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
@@ -210,6 +212,7 @@ fun TelaLogin(navController: NavController, context: Context) {
 
                 val loginRequest = LoginRequest(email, senha)
                 CoroutineScope(Dispatchers.IO).launch {
+                    isCarregando = true
                     try {
                         Log.d("Login", "Chamando API de login...")
                         val resposta = RetrofitLogin.create(context).login(loginRequest)
@@ -252,11 +255,20 @@ fun TelaLogin(navController: NavController, context: Context) {
                 .shadow(8.dp),
             shape = RoundedCornerShape(10.dp),
         ) {
-            Text(
-                text = "Entrar",
-                color = Color.White,
-                fontSize = 20.sp,
-            )
+            if (isCarregando) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = "Entrar",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                )
+
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))

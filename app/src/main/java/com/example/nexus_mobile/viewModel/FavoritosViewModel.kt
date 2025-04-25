@@ -37,6 +37,7 @@ class FavoritosViewModel(application: Application) : AndroidViewModel(applicatio
             }
         }
     }
+
     fun alterarFavorito(idAssociado: Int, cursoId: Int) {
         viewModelScope.launch {
             try {

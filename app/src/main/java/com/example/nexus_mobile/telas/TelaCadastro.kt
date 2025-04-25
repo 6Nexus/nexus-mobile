@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -63,6 +64,7 @@ fun TelaCadastro(navController: NavController) {
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    var isCarregando by mutableStateOf(false)
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
@@ -188,6 +190,7 @@ fun TelaCadastro(navController: NavController) {
 
         Button(
             onClick = {
+                isCarregando = true
                 scope.launch {
                     try {
                         val cadastroRequest = CadastroRequest(
@@ -200,10 +203,18 @@ fun TelaCadastro(navController: NavController) {
                         val response = loginApi.cadastrar(cadastroRequest)
 
                         if (response.nome.isNotEmpty() && response.email.isNotEmpty()) {
-                            Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "Cadastro realizado com sucesso!",
+                                Toast.LENGTH_LONG
+                            ).show()
                             navController.navigate("tela_login")
                         } else {
-                            Toast.makeText(context, "Erro ao cadastrar. Tente novamente.", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                context,
+                                "Erro ao cadastrar. Tente novamente.",
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
 
                     } catch (e: Exception) {
@@ -222,13 +233,19 @@ fun TelaCadastro(navController: NavController) {
 
 
             ) {
-            Text(
-                text = "Entrar",
-                color = Color.White,
-                fontSize = 20.sp,
-
+            if (isCarregando) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
                 )
-
+            } else {
+                Text(
+                    text = "Entrar",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                )
+            }
         }
 
         Row(

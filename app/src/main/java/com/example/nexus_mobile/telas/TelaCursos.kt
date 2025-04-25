@@ -39,7 +39,7 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
     val id by usuarioViewModel.userId.collectAsState()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
-    val cursosFiltrados = cursoViewModel.cursos
+    var active by remember { mutableStateOf(false) }
 
     LaunchedEffect(categoriaSelecionada) {
         val idAssociado = id
@@ -50,9 +50,29 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
         }
     }
 
+    // para a barra de pesquisa
+    val cursosFiltrados = remember(query, categoriaSelecionada) {
+        cursoViewModel.getCursosFiltrados(categoriaSelecionada)
+        if (query.isNotEmpty()) {
+            cursoViewModel.cursos.filter { it.titulo.contains(query, ignoreCase = true) }
+        } else {
+            cursoViewModel.cursos
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(30.dp))
-        BarraPesquisa(query, { query = it })
+
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            active = active,
+            onActiveChange = { active = it },
+            onSearch = {
+                active = false
+            }
+        )
+
         Text(
             text = "Todos os cursos",
             fontSize = 18.sp,
@@ -94,8 +114,6 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
         )
     }
 }
-
-
 
 
 data class Curso(var id: Int,

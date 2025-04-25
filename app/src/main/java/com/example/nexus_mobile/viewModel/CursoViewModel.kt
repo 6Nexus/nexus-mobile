@@ -69,4 +69,8 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    fun getCursosFiltrados(categoriaSelecionada: String): List<CursoDto> {
+        return if (categoriaSelecionada == "Todos") cursos else cursos.filter { it.categoria == categoriaSelecionada }
+    }
 }

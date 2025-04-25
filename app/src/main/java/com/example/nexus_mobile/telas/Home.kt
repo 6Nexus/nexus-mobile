@@ -44,9 +44,11 @@ import com.example.nexus_mobile.viewModel.UsuarioViewModel
 fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, context: Context, favoritosViewModel: FavoritosViewModel) {
     val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
-    val cursosFiltrados = cursoViewModel.cursos
+   // val cursosFiltrados = cursoViewModel.cursos
     val nome by usuarioViewModel.nome.collectAsState()
     val id by usuarioViewModel.userId.collectAsState()
+
+
 
     LaunchedEffect(Unit) {
         if (nome.isEmpty()) {
@@ -69,10 +71,31 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
         }
     }
 
+    // para a barra de pesquisa
+    var categoriaSelecionada by remember { mutableStateOf("Todos") }
+    var active by remember { mutableStateOf(false) }
+    val cursosFiltrados = remember(query, categoriaSelecionada) {
+        cursoViewModel.getCursosFiltrados(categoriaSelecionada)
+            if (query.isNotEmpty()) {
+                cursoViewModel.cursos.filter { it.titulo.contains(query, ignoreCase = true) }
+            } else {
+                cursoViewModel.cursos
+            }
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
 
         Spacer(modifier = Modifier.height(20.dp))
-        BarraPesquisa(query, { query = it })
+
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            active = active,
+            onActiveChange = { active = it },
+            onSearch = {
+                active = false
+            }
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
         Card(

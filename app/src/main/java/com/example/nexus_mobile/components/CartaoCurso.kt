@@ -1,6 +1,7 @@
 package com.example.nexus_mobile.components
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -99,16 +100,14 @@ fun CartaoCurso(
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(76, 173, 76)),
                         modifier = Modifier
-                            .padding(top = 26.dp)
-                            .height(30.dp)
-                            .width(100.dp)
+                            .align(Alignment.CenterVertically)
+                            .padding(top = 20.dp)
                     ) {
                         Text(
                             text = "Ver Curso",
                             color = Color.White,
-                            fontSize = 11.sp,
+                            fontSize = 13.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxSize(),
                         )
                     }
                 }

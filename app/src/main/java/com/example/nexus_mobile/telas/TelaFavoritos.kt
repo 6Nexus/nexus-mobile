@@ -31,6 +31,7 @@ import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import com.example.nexus_mobile.viewModel.FavoritosViewModel
+import com.example.nexus_mobile.viewModel.UsuarioViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
@@ -38,19 +39,35 @@ fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosVie
     val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
-    val cursosFiltrados = favoritosViewModel.cursosFavoritos.filter {
-        (categoriaSelecionada == "Todos" || it.categoria == categoriaSelecionada) &&
-                (query.isBlank() || it.titulo.contains(query, ignoreCase = true))
-    }
-
+    var active by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        favoritosViewModel.carregarFavoritos(idAssociado = 2)
+        favoritosViewModel.carregarFavoritos(idAssociado = 19)
+    }
+
+    // para a barra de pesquisa
+    val cursosFiltrados = remember(query, categoriaSelecionada) {
+        cursoViewModel.getCursosFiltrados(categoriaSelecionada)
+        if (query.isNotEmpty()) {
+            cursoViewModel.cursos.filter { it.titulo.contains(query, ignoreCase = true) }
+        } else {
+            cursoViewModel.cursos
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(30.dp))
-        BarraPesquisa(query, { query = it })
+
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            active = active,
+            onActiveChange = { active = it },
+            onSearch = {
+                active = false
+            }
+        )
+
         Text(
             text = "Todos os cursos favoritos",
             fontSize = 18.sp,
