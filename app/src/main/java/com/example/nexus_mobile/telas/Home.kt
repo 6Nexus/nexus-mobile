@@ -45,6 +45,7 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
     val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
    // val cursosFiltrados = cursoViewModel.cursos
+    val usuarioViewModel : UsuarioViewModel = viewModel()
     val nome by usuarioViewModel.nome.collectAsState()
     val id by usuarioViewModel.userId.collectAsState()
 

@@ -2,14 +2,22 @@ package com.example.nexus_mobile.viewModel
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
+import androidx.lifecycle.application
+import androidx.lifecycle.viewModelScope
+import com.example.nexus_mobile.RetrofitClient
+import com.example.nexus_mobile.api.LoginApi
+import com.example.nexus_mobile.dto.CadastroRequest
+// androidx.media3.common.util.UnstableApi
+//import androidx.media3.common.util.Log
+//import androidx.media3.common.util.UnstableApi
 import com.example.nexus_mobile.utils.UsuarioManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class UsuarioViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -23,6 +31,10 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
 
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
+
+    private val _senha = MutableStateFlow("")
+    val senha : StateFlow<String> = _senha
+
 
     init {
         carregarUsuario()
@@ -39,7 +51,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         UsuarioManager.salvarUsuario(context, userId, nome, email)
     }
 
-    @OptIn(UnstableApi::class)
+    //@OptIn(UnstableApi::class)
     fun carregarUsuario() {
         _nome.value = UsuarioManager.getUserName(context)
         _email.value = UsuarioManager.getUserEmail(context)
@@ -56,19 +68,27 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         Log.d("UsuarioViewModel", "Dados do usuário limpos")
     }
 
-    fun atualizarPerfil(nome: String, email: String) {
-        _nome.value = nome
-        _email.value = email
-        UsuarioManager.atualizarUsuario(context, nome, email)
-    }
+//    fun atualizarPerfil(nome: String, email: String) {
+//        _nome.value = nome
+//        _email.value = email
+//        UsuarioManager.atualizarUsuario(context, nome, email)
+//    }
 
     fun atualizarNome(novoNome: String) {
         _nome.value = novoNome
-        UsuarioManager.atualizarUsuario(context, novoNome, _email.value)
+       // UsuarioManager.atualizarUsuario(context, novoNome, _email.value)
     }
 
     fun atualizarEmail(novoEmail: String) {
         _email.value = novoEmail
-        UsuarioManager.atualizarUsuario(context, _nome.value, novoEmail)
+       // UsuarioManager.atualizarUsuario(context, _nome.value, novoEmail)
     }
+
+    fun atualizarSenha(novaSenha: String) {
+        _senha.value = novaSenha
+    }
+
+
 }
+
+

@@ -21,6 +21,7 @@ import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import com.example.nexus_mobile.viewModel.PerfilViewModel
 
 @Composable
 fun TelaPerfil(
@@ -35,6 +36,9 @@ fun TelaPerfil(
     //val senha by remember { derivedStateOf { viewModel.senha } }
     //val isCarregando by remember { derivedStateOf { viewModel.isCarregando } }
     //val errorMessage by remember { derivedStateOf { viewModel.errorMessage } }
+    val senha by remember { mutableStateOf("") }
+    val userId by usuarioViewModel.userId.collectAsState()
+    val perfilViewModel : PerfilViewModel = viewModel()
 
     LaunchedEffect(Unit) {
         usuarioViewModel.carregarUsuario()
@@ -80,7 +84,9 @@ fun TelaPerfil(
 
             OutlinedTextField(
                 value = nome,
-                onValueChange = { usuarioViewModel.atualizarNome(it) },
+                onValueChange = { novoNome ->
+                    usuarioViewModel.atualizarNome(novoNome)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Digite seu nome") },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -98,7 +104,9 @@ fun TelaPerfil(
             Text("Email", fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
             OutlinedTextField(
                 value = email,
-                onValueChange = { usuarioViewModel.atualizarEmail(it) },
+                onValueChange = { novoEmail ->
+                    usuarioViewModel.atualizarEmail(novoEmail)
+                },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = { Text("Digite seu email") },
                 colors = OutlinedTextFieldDefaults.colors(
@@ -145,10 +153,8 @@ fun TelaPerfil(
             ) {
                 Button(
                     onClick = {
-                        usuarioViewModel.atualizarPerfil(
-                            nome = usuarioViewModel.nome.value,
-                            email = usuarioViewModel.nome.value
-                        )
+                        perfilViewModel.atualizarPerfil(userId, nome, email, senha,  context)
+                        usuarioViewModel.setUserData(nome, email, userId)
                         Toast.makeText(context, "Dados atualizados!", Toast.LENGTH_SHORT).show()
                     },
                     modifier = Modifier

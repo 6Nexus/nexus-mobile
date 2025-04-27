@@ -1,6 +1,7 @@
 package com.example.nexus_mobile.viewModel
 
 import android.app.Application
+import android.util.Log
 import androidx.annotation.OptIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -10,8 +11,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.util.Log
-import androidx.media3.common.util.UnstableApi
+//import androidx.media3.common.util.Log
+//import androidx.media3.common.util.UnstableApi
 import com.example.nexus_mobile.RetrofitClient
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
