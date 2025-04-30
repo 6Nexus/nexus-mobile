@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,6 +54,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.RetrofitLogin
+import com.example.nexus_mobile.components.TipoToast
+import com.example.nexus_mobile.components.Toast
 import com.example.nexus_mobile.utils.TokenManager
 import com.example.nexus_mobile.dto.LoginRequest
 import com.example.nexus_mobile.ui.theme.cinza
@@ -61,6 +64,7 @@ import com.example.nexus_mobile.utils.UsuarioManager
 import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -75,9 +79,28 @@ fun TelaLogin(navController: NavController, context: Context) {
     var exibirSenha by remember { mutableStateOf(false) }
     val usuarioViewModel: UsuarioViewModel = viewModel()
     var isCarregando by mutableStateOf(false)
+    var isLoginSucesso by remember { mutableStateOf(false) }
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 25.dp),
+    ) {
+        if (isLoginSucesso) {
+            LaunchedEffect(isLoginSucesso) {
+                delay(2000)
+                isLoginSucesso = false
+            }
+            Toast(
+                mensagem = "Login realizado com sucesso",
+                tipoToast = TipoToast.Sucesso,
+                modifier = Modifier.padding(top = 8.dp)
+            )
+        }
+    }
 
 
     Column(
@@ -228,8 +251,11 @@ fun TelaLogin(navController: NavController, context: Context) {
                             resposta.email
                         )
 
-                        Log.d("Login", "id usuario: ${resposta.userId} nome: ${resposta.nome} email: ${resposta.email}")
-
+                        Log.d(
+                            "Login",
+                            "id usuario: ${resposta.userId} nome: ${resposta.nome} email: ${resposta.email}"
+                        )
+                        isLoginSucesso = true
                         // Atualizar o UsuarioViewModel com os dados do usuário
                         withContext(Dispatchers.Main) {
                             usuarioViewModel.setUserData(
