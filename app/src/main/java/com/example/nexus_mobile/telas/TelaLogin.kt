@@ -79,6 +79,7 @@ fun TelaLogin(navController: NavController, context: Context) {
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()

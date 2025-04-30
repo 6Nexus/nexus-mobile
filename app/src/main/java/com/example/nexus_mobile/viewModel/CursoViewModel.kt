@@ -42,6 +42,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 _uiState.value = CursoUiState.Error("Erro ao buscar cursos: ${e.message}")
+                Log.d("CursoViewModel", "Erro ao buscar cursos: ${e.message}")
             }
         }
     }
