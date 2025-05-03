@@ -3,6 +3,7 @@ package com.example.nexus_mobile.api
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.CurtidaCriacaoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
+import com.example.nexus_mobile.dto.Modulo
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -58,6 +59,11 @@ interface CursoApi {
         @Query("cursoId") cursoId: Int
     ): Response<MatriculaVerificacaoResponse>
 
+    @GET("modulos/curso/{idCurso}")
+    suspend fun getModulosPorCurso(
+        @Path("idCurso") cursoId: Int,
+        @Header("Authorization") token: String
+    ): List<Modulo>
 }
 
 data class MatriculaVerificacaoResponse(
