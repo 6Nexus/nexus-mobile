@@ -73,7 +73,7 @@ class MainActivity : ComponentActivity() {
 
                 composable("tela_perfil") { TelaPerfil(navController) }
 
-                composable("favoritos") { TelaFavoritos(navController, favoritosViewModel) }
+                composable("favoritos") { TelaFavoritos(navController, favoritosViewModel, usuarioViewModel) }
 
                 composable(
                     route = "tela_matricula/{cursoId}",
@@ -83,7 +83,17 @@ class MainActivity : ComponentActivity() {
                     TelaMatricula(cursoId = cursoId, navController = navController)
                 }
 
-                composable("video") { TelaVideo(navController, "Aulas") }
+                composable(
+                    route = "videos/{moduloId}",
+                    arguments = listOf(navArgument("moduloId") { type = NavType.IntType })
+                ) { backStackEntry ->
+                    val moduloId = backStackEntry.arguments?.getInt("moduloId") ?: 0
+                    TelaVideo(
+                        navController = navController,
+                        moduleTitle = "Título do Módulo",
+                        moduloId = moduloId
+                    )
+                }
 
                 composable("questionario") { TelaQuestionario(navController) }
 

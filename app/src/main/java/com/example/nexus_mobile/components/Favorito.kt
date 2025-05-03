@@ -19,7 +19,7 @@ fun Favorito(
     favoritos: List<Int>,
     onFavoritoChanged: (Int, Boolean) -> Unit
 ) {
-    val isFavorited = cursoId in favoritos
+    val isFavorited = favoritos.contains(cursoId)
 
     Icon(
         imageVector = if (isFavorited) Icons.Default.Favorite else Icons.Default.FavoriteBorder,

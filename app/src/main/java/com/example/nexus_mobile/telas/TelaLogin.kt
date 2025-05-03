@@ -51,7 +51,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.nexus_mobile.R
-import com.example.nexus_mobile.RetrofitLogin
+import com.example.nexus_mobile.RetrofitClient
 import com.example.nexus_mobile.utils.TokenManager
 import com.example.nexus_mobile.dto.LoginRequest
 import com.example.nexus_mobile.ui.theme.cinza
@@ -212,7 +212,7 @@ fun TelaLogin(navController: NavController, context: Context) {
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         Log.d("Login", "Chamando API de login...")
-                        val resposta = RetrofitLogin.create(context).login(loginRequest)
+                        val resposta = RetrofitClient.getLoginApi(context).login(loginRequest)
                         Log.d("Login", "Token recebido: ${resposta.token}")
                         TokenManager.salvarToken(context, resposta.token)
 

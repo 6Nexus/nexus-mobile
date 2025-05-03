@@ -87,7 +87,7 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                 topBar = {
                     Column {
                         AppBar(descricao = "Perfil")
-                        Spacer(modifier = Modifier.width(20.dp))
+                        Spacer(modifier = Modifier.height(30.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier
@@ -199,7 +199,7 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                         Card(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(150.dp)
+                                .wrapContentHeight()
                                 .padding(vertical = 8.dp),
                             shape = RoundedCornerShape(16.dp),
                             colors = CardDefaults.cardColors(containerColor = Color.White),
@@ -215,7 +215,9 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                                     fontWeight = FontWeight.Bold,
                                     fontSize = 16.sp
                                 )
+
                                 Spacer(modifier = Modifier.height(4.dp))
+
                                 Text(
                                     text = modulo.descricao,
                                     fontSize = 12.sp,
@@ -226,7 +228,7 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                                 if (iniciado) {
                                     Spacer(modifier = Modifier.height(8.dp))
                                     LinearProgressIndicator(
-                                        progress = 0.7f, // Exemplo de progresso
+                                        progress = 0.7f,
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(6.dp)
@@ -235,13 +237,13 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(8.dp))
-
                                 if (matriculado) {
+                                    Spacer(modifier = Modifier.height(12.dp))
                                     Button(
-                                        onClick = { iniciado = true
-                                            navController.navigate("videos/${modulo.id}")
-                                                  },
+                                        onClick = {
+                                            iniciado = true
+                                            navController.navigate("video/${modulo.id}")
+                                        },
                                         shape = RoundedCornerShape(20.dp),
                                         colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
                                         modifier = Modifier.align(Alignment.End)

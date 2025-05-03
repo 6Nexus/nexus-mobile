@@ -48,24 +48,10 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
     val nome by usuarioViewModel.nome.collectAsState()
     val id by usuarioViewModel.userId.collectAsState()
 
-    LaunchedEffect(Unit) {
-        if (nome.isEmpty()) {
-            usuarioViewModel.setUserData(
-                nome = UsuarioManager.getUserName(context),
-                email = UsuarioManager.getUserEmail(context),
-                userId = UsuarioManager.getUserId(context)
-            )
-        }
-    }
-
-    Log.d("TelaHome", "usuarioId recebido: $id")
-
-// Segundo LaunchedEffect: só executa quando o ID for maior que 0
     LaunchedEffect(id) {
         if (id > 0) {
-            Log.d("TelaHome", "usuarioId recebido: $id")
             cursoViewModel.carregarCursos(id)
-            Log.d("TelaHome", "Chamando carregarCursos")
+            favoritosViewModel.carregarFavoritos(id) // Carregar os favoritos ao acessar a tela
         }
     }
 
@@ -82,19 +68,30 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
                 .shadow(6.dp, shape = RoundedCornerShape(16.dp))
                 .height(150.dp),
             shape = RoundedCornerShape(16.dp),
-            colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50))
         ) {
-            Column(
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.fundo),
+                    contentDescription = "Imagem de fundo",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.matchParentSize()
+                )
+
+                Column(
                 modifier = Modifier
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(
-                    "Olá, $nome",
-                    fontSize = 30.sp,
-                    color = Color.White
-                )
+                    Text(
+                        "Olá, $nome",
+                        fontSize = 30.sp,
+                        color = Color.White
+                    )
+                }
             }
         }
 
@@ -118,11 +115,8 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
                         titulo = cursoDto.titulo,
                         categoria = cursoDto.categoria,
                         imagem = R.drawable.curso1,
-                        modulo = "aaaaaaaa",
-                        professor = cursoDto.professorNome,
-                        duracao = 0,
-                        qtdArquivos = 0,
-                        aulas = emptyList()
+                        modulo = cursoDto.descricao,
+                        professor = cursoDto.professorNome
                     )
                 },
                 favoritos = favoritosViewModel.favoritos,

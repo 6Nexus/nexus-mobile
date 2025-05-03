@@ -48,6 +48,7 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
         Log.d("UsuarioViewModel", "Usuário carregado: id=${_userId.value}, nome=${_nome.value}")
     }
 
+    @OptIn(UnstableApi::class)
     fun limparUsuario() {
         _nome.value = ""
         _email.value = ""

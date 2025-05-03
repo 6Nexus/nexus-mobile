@@ -2,6 +2,7 @@ package com.example.nexus_mobile
 
 import android.content.Context
 import com.example.nexus_mobile.api.CursoApi
+import com.example.nexus_mobile.api.LoginApi
 import com.example.nexus_mobile.autenticador.AuthInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -9,7 +10,10 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 
 object RetrofitClient {
-    fun create(context: Context): CursoApi {
+
+    private const val BASE_URL = "http://10.0.2.2:8080/"
+
+    private fun getRetrofit(context: Context): Retrofit {
         val logging = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
@@ -19,12 +23,18 @@ object RetrofitClient {
             .addInterceptor(AuthInterceptor(context))
             .build()
 
-        val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080")
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
+    }
 
-        return retrofit.create(CursoApi::class.java)
+    fun getLoginApi(context: Context): LoginApi {
+        return getRetrofit(context).create(LoginApi::class.java)
+    }
+
+    fun getCursoApi(context: Context): CursoApi {
+        return getRetrofit(context).create(CursoApi::class.java)
     }
 }

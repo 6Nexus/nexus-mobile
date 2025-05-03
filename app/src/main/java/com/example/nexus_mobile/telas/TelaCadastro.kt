@@ -47,7 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.nexus_mobile.R
-import com.example.nexus_mobile.RetrofitLogin
+import com.example.nexus_mobile.RetrofitClient
 import com.example.nexus_mobile.dto.CadastroRequest
 import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
@@ -196,7 +196,7 @@ fun TelaCadastro(navController: NavController) {
                             senha = senha
                         )
 
-                        val loginApi = RetrofitLogin.create(context)
+                        val loginApi = RetrofitClient.getLoginApi(context)
                         val response = loginApi.cadastrar(cadastroRequest)
 
                         if (response.nome.isNotEmpty() && response.email.isNotEmpty()) {

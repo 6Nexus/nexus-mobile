@@ -70,8 +70,14 @@ fun CartaoCurso(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = curso.titulo, fontSize = 18.sp, color = Color(19, 83, 19), modifier = Modifier.weight(1f))
+                    Text(
+                        text = curso.titulo,
+                        fontSize = 18.sp,
+                        color = Color(19, 83, 19),
+                        modifier = Modifier.weight(1f)
+                    )
 
+                    // Passa o estado dos favoritos para o componente Favorito
                     Favorito(
                         cursoId = curso.id,
                         favoritos = favoritos,
@@ -79,7 +85,7 @@ fun CartaoCurso(
                     )
                 }
 
-                Text(text = curso.modulo, fontSize = 10.sp, color = Color.Gray, modifier = Modifier.padding(top = 2.dp))
+                Text(text = curso.modulo, fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(top = 2.dp))
 
                 Spacer(modifier = Modifier.height(5.dp))
 
@@ -90,7 +96,7 @@ fun CartaoCurso(
                         .height(20.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = curso.categoria, fontSize = 9.sp, color = Color.Black)
+                    Text(text = curso.categoria, fontSize = 11.sp, color = Color.Black)
                 }
 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -116,3 +122,5 @@ fun CartaoCurso(
         }
     }
 }
+
+

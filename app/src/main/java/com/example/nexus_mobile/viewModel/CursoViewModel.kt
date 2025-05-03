@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
 import com.example.nexus_mobile.RetrofitClient
@@ -21,11 +22,13 @@ import com.example.nexus_mobile.utils.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import com.example.nexus_mobile.dto.Video
+
 
 
 class CursoViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val api = RetrofitClient.create(application)
+    private val api = RetrofitClient.getCursoApi(application)
 
     private val _cursos = mutableStateListOf<CursoDto>()
     val cursos: List<CursoDto> get() = _cursos
@@ -38,6 +41,15 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _modulos = MutableStateFlow<List<Modulo>>(emptyList())
     val modulos: StateFlow<List<Modulo>> = _modulos
+
+    private val _videos = MutableStateFlow<List<Video>>(emptyList())
+    val videos: StateFlow<List<Video>> = _videos
+
+    private val _loading = MutableStateFlow(false)
+    val loading: StateFlow<Boolean> = _loading
+
+    private val _erro = MutableStateFlow<String?>(null)
+    val erro: StateFlow<String?> = _erro
 
 
     fun carregarCursos(usuarioId: Int) {
@@ -112,6 +124,21 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
                 }
             } catch (e: Exception) {
                 Log.e("CursoViewModel", "Erro ao carregar módulos", e)
+            }
+        }
+    }
+
+    fun carregarVideos(moduloId: Int) {
+        viewModelScope.launch {
+            _loading.value = true
+            _erro.value = null
+            try {
+                val listaVideos = api.getVideosPorModulo(moduloId)
+                _videos.value = listaVideos
+            } catch (e: Exception) {
+                _erro.value = "Erro ao carregar vídeos: ${e.message}"
+            } finally {
+                _loading.value = false
             }
         }
     }

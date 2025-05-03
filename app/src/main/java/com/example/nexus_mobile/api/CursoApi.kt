@@ -4,6 +4,7 @@ import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.CurtidaCriacaoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
 import com.example.nexus_mobile.dto.Modulo
+import com.example.nexus_mobile.dto.Video
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -64,6 +65,10 @@ interface CursoApi {
         @Path("idCurso") cursoId: Int,
         @Header("Authorization") token: String
     ): List<Modulo>
+
+    @GET("videos/modulo/{moduloId}")
+    suspend fun getVideosPorModulo(@Path("moduloId") moduloId: Int): List<Video>
+
 }
 
 data class MatriculaVerificacaoResponse(

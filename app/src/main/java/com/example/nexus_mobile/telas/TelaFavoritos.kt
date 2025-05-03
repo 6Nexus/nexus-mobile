@@ -31,21 +31,23 @@ import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import com.example.nexus_mobile.viewModel.FavoritosViewModel
+import com.example.nexus_mobile.viewModel.UsuarioViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosViewModel) {
-    val cursoViewModel: CursoViewModel = viewModel()
+fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosViewModel, usuarioViewModel: UsuarioViewModel) {
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = favoritosViewModel.cursosFavoritos.filter {
         (categoriaSelecionada == "Todos" || it.categoria == categoriaSelecionada) &&
                 (query.isBlank() || it.titulo.contains(query, ignoreCase = true))
     }
+    val userId by usuarioViewModel.userId.collectAsState()
 
-
-    LaunchedEffect(Unit) {
-        favoritosViewModel.carregarFavoritos(idAssociado = 2)
+    LaunchedEffect(userId) {
+        if (userId > 0) {
+            favoritosViewModel.carregarFavoritos(idAssociado = userId)
+        }
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -66,19 +68,20 @@ fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosVie
                 navController = navController,
                 cursos = cursosFiltrados.map { cursoDto ->
                     Curso(
-                        id = 0,
+                        id = cursoDto.id,
                         titulo = cursoDto.titulo,
                         categoria = cursoDto.categoria,
                         imagem = R.drawable.curso1,
-                        modulo = "",
-                        professor = cursoDto.professorNome,
-                        duracao = 0,
-                        qtdArquivos = 0,
-                        aulas = emptyList()
+                        modulo = cursoDto.descricao,
+                        professor = cursoDto.professorNome
                     )
                 },
                 favoritos = favoritosViewModel.favoritos,
-                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(idAssociado = 2, cursoId = cursoId) }
+                onFavoritoChanged = { cursoId, _ ->
+                    if (userId > 0) {
+                        favoritosViewModel.alterarFavorito(idAssociado = userId, cursoId = cursoId)
+                    }
+                }
             )
         }
 

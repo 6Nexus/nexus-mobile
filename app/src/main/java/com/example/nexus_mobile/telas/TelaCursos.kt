@@ -75,14 +75,15 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
                         categoria = cursoDto.categoria,
                         imagem = R.drawable.curso1,
                         modulo = "",
-                        professor = cursoDto.professorNome,
-                        duracao = 0,
-                        qtdArquivos = 0,
-                        aulas = emptyList()
+                        professor = cursoDto.professorNome
                     )
                 },
                 favoritos = favoritosViewModel.favoritos,
-                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(idAssociado = 2, cursoId = cursoId) }
+                onFavoritoChanged = { cursoId, _ ->
+                    if (id > 0) {
+                        favoritosViewModel.alterarFavorito(idAssociado = id, cursoId = cursoId)
+                    }
+                }
             )
 
         }
@@ -104,8 +105,5 @@ data class Curso(var id: Int,
                  val imagem: Int,
                  val modulo: String,
                  val professor: String,
-                 val duracao: Int,
-                 val qtdArquivos: Int,
-                 val aulas: List<String>
 )
 

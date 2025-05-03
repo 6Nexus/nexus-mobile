@@ -16,7 +16,8 @@ import com.example.nexus_mobile.utils.TokenManager
 import kotlinx.coroutines.launch
 
 class FavoritosViewModel(application: Application) : AndroidViewModel(application) {
-    private val api = RetrofitClient.create(application.applicationContext)
+
+    private val api = RetrofitClient.getCursoApi(application.applicationContext)
 
     private val _favoritos = mutableStateListOf<Int>()
     val favoritos: List<Int> get() = _favoritos
@@ -31,17 +32,17 @@ class FavoritosViewModel(application: Application) : AndroidViewModel(applicatio
                 _cursosFavoritos.clear()
                 _cursosFavoritos.addAll(cursos)
                 _favoritos.clear()
-                _favoritos.addAll(cursos.map { it.id})
+                _favoritos.addAll(cursos.map { it.id })
             } catch (e: Exception) {
                 Log.e("FavoritosViewModel", "Erro ao buscar favoritos", e)
             }
         }
     }
+
     fun alterarFavorito(idAssociado: Int, cursoId: Int) {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
-
                 if (token != null && token.isNotEmpty()) {
                     if (_favoritos.contains(cursoId)) {
                         api.descurtirCurso("Bearer $token", idAssociado, cursoId)
@@ -50,6 +51,7 @@ class FavoritosViewModel(application: Application) : AndroidViewModel(applicatio
                         api.curtirCurso("Bearer $token", CurtidaCriacaoDto(idAssociado, cursoId))
                         _favoritos.add(cursoId)
                     }
+                    carregarFavoritos(idAssociado)
                 } else {
                     Log.e("FavoritosViewModel", "Token não encontrado ou expirado")
                 }

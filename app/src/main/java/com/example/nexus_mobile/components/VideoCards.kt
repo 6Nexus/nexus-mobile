@@ -43,7 +43,7 @@ fun VideoCard(
     url: String,
     videoTitle: String,
     onClick: (String, Boolean) -> Unit
-){
+) {
     Card(
         modifier = Modifier
             .padding(16.dp)
@@ -79,7 +79,7 @@ fun VideoCard(
             ) {
                 Text(
                     text = videoTitle,
-                    color = cinza
+                    color = Color.Gray
                 )
             }
 
@@ -95,20 +95,21 @@ fun VideoCard(
                 Box(
                     modifier = Modifier
                         .size(30.dp)
-                        .border(3.dp, color = verdePrincipal, shape = CircleShape),
+                        .border(3.dp, color = Color.Green, shape = CircleShape),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = Icons.Filled.PlayArrow,
-                        contentDescription = "Ícone Home",
+                        contentDescription = "Ícone Play",
                         modifier = Modifier.size(25.dp),
-                        tint = verdePrincipal
+                        tint = Color.Green
                     )
                 }
             }
         }
     }
 }
+
 
 @Composable
 fun QuestionaryCard(navController: NavController) {

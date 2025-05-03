@@ -7,19 +7,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.AppBar
@@ -28,11 +34,26 @@ import com.example.nexus_mobile.components.QuestionaryCard
 import com.example.nexus_mobile.components.VideoCard
 import com.example.nexus_mobile.components.VideoPlayer
 import com.example.nexus_mobile.components.videoMenu
+import com.example.nexus_mobile.viewModel.CursoViewModel
 
 @Composable
-fun TelaVideo(navController: NavController,
-    moduleTitle: String
-){
+fun TelaVideo(
+    navController: NavController,
+    moduleTitle: String,
+    moduloId: Int,
+) {
+    val viewModel: CursoViewModel = viewModel()
+
+    val videos by viewModel.videos.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+    val erro by viewModel.erro.collectAsState()
+
+    var currentVideo by remember { mutableStateOf("") }
+    var showPlayer by remember { mutableStateOf(false) }
+
+    LaunchedEffect(moduloId) {
+        viewModel.carregarVideos(moduloId)
+    }
 
     Scaffold(
         topBar = {
@@ -42,7 +63,9 @@ fun TelaVideo(navController: NavController,
             NavigationBar(
                 navController = navController,
                 telaAtual = "tela_curso",
-                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
             )
         },
         floatingActionButton = {
@@ -58,49 +81,46 @@ fun TelaVideo(navController: NavController,
                 )
             }
         }
-    ){ valoresDePadding ->
+    ) { valoresDePadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(valoresDePadding)
         ) {
-            //player
-            var currentVideo by remember { mutableStateOf("") }
-            var showPlayer by remember { mutableStateOf(false) }
+            if (loading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+            } else if (erro != null) {
+                Text(
+                    text = erro ?: "",
+                    color = Color.Red,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            } else {
+                if (showPlayer) {
+                    videoMenu({ showPlayer = false })
+                    key(currentVideo) {
+                        VideoPlayer(currentVideo)
+                    }
+                }
 
-            if (showPlayer) {
-                videoMenu({ showPlayer = false })
-                key(currentVideo) {
-                    VideoPlayer(
-                        currentVideo
-                    )
+                videos.forEach { video ->
+                    val url = video.youtubeUrl ?: ""
+                    if (url.isNotEmpty()) {
+                        VideoCard(
+                            url = url,
+                            videoTitle = video.titulo,
+                            onClick = { videoUrl, shouldShow ->
+                                currentVideo = videoUrl
+                                showPlayer = shouldShow
+                            }
+                        )
+                    }
                 }
             }
 
-            //fake request
-            val requestSimulation = listOf(
-                hashMapOf("title" to "Aula 1: Introdução", "url" to "https://www.youtube.com/watch?v=QKviWFOfcog"),
-                hashMapOf("title" to "Aula 2: Continuação", "url" to "https://www.youtube.com/watch?v=v-vRNPXMEGU&t=89s"),
-                hashMapOf("title" to "Aula 3: Finalização", "url" to "https://www.youtube.com/watch?v=7XsLu-CHQnQ&t=1907s")
-            )
-
-            //video click callback
-            val onVideoCardClick: (String, Boolean) -> Unit = { videoId, shouldShow ->
-                currentVideo = videoId
-                showPlayer = shouldShow
-            }
-
-            //video cards
-            requestSimulation.forEach { video ->
-                val title = video["title"]!!
-                val url = video["url"]!!
-
-                VideoCard(url, title, onVideoCardClick)
-            }
-
-            //questionary card
-            QuestionaryCard(navController = navController )
+            // Questionário
+            QuestionaryCard(navController = navController)
         }
     }
 }
