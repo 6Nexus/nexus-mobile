@@ -60,426 +60,204 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
     val cursoViewModel: CursoViewModel = viewModel()
     val usuarioViewModel: UsuarioViewModel = viewModel()
     val id by usuarioViewModel.userId.collectAsState()
-    val uiState = cursoViewModel.uiState.value
-    var matriculado by remember { mutableStateOf(false) }
+    val curso by cursoViewModel.curso
     val modulos by cursoViewModel.modulos.collectAsState()
+    val matriculaRealizada by cursoViewModel.matriculaRealizada
     var iniciado by remember { mutableStateOf(false) }
 
-    LaunchedEffect(cursoId, id) {
+    LaunchedEffect(key1 = id, key2 = cursoId) {
         if (id > 0) {
+            Log.d("TelaMatricula", "Chamando carregarCursoPorId com id=$id e cursoId=$cursoId")
             cursoViewModel.carregarCursoPorId(id, cursoId)
+            Log.d("TelaMatricula", "Chamando verificarMatricula com id=$id e cursoId=$cursoId")
+            cursoViewModel.verificarMatricula(id, cursoId)
             cursoViewModel.carregarModulos(cursoId)
+        } else {
+            Log.w("TelaMatricula", "ID do usuário ainda é inválido: $id")
         }
     }
 
-    when (uiState) {
-        is CursoUiState.Loading -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+    if (curso == null) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
+        return
+    }
 
-        is CursoUiState.SuccessCurso -> {
-            val curso = uiState.curso
-
-            Scaffold(
-                containerColor = Color(0xFFF8F8F8),
-                topBar = {
-                    Column {
-                        AppBar(descricao = "Perfil")
-                        Spacer(modifier = Modifier.height(30.dp))
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
-                                .clickable { navController.popBackStack() }
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.seta),
-                                contentDescription = "Voltar",
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Voltar",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1B5E20)
-                            )
-                        }
-                    }
-                },
-                bottomBar = {
-                    NavigationBar(
-                        navController = navController,
-                        telaAtual = "tela_curso",
-                        modifier = Modifier.fillMaxWidth()
+    Scaffold(
+        containerColor = Color(0xFFF8F8F8),
+        topBar = {
+            Column {
+                AppBar(descricao = "Perfil")
+                Spacer(modifier = Modifier.height(30.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+                        .clickable { navController.popBackStack() }
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.seta),
+                        contentDescription = "Voltar",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Voltar",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF1B5E20)
                     )
                 }
-            ) { padding ->
-                LazyColumn(
+            }
+        },
+        bottomBar = {
+            NavigationBar(
+                navController = navController,
+                telaAtual = "tela_curso",
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    ) { padding ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+                .padding(16.dp)
+        ) {
+            item {
+                // Cabeçalho do curso
+                Card(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .padding(padding)
-                        .padding(16.dp)
+                        .fillMaxWidth()
+                        .height(140.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50)),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                 ) {
-                    item {
-                        // Cabeçalho do curso
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(140.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50)),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f)
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.Start,
-                                verticalAlignment = Alignment.Top
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f)
-                                ) {
-                                    Text(
-                                        text = "Curso: ${curso.titulo}",
-                                        fontSize = 20.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White
-                                    )
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        text = "Professor(a): ${curso.professorNome}",
-                                        fontSize = 17.sp,
-                                        color = Color.White
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.width(16.dp))
-
-                                Column(
-                                    verticalArrangement = Arrangement.Top,
-                                    horizontalAlignment = Alignment.End
-                                ) {
-                                    Spacer(modifier = Modifier.height(32.dp)) // Ajuste este valor conforme necessário
-                                    Button(
-                                        onClick = {
-                                            cursoViewModel.matricular(id, cursoId)
-                                            matriculado = true
-                                        },
-                                        enabled = !matriculado,
-                                        shape = RoundedCornerShape(10.dp),
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = if (matriculado) Color.LightGray else Color.White
-                                        )
-                                    ) {
-                                        Text(
-                                            if (matriculado) "Matriculado" else "Matricule-se",
-                                            color = if (matriculado) Color.DarkGray else Color(0xFF4CAF50)
-                                        )
-                                    }
-                                }
-                            }
+                            Text(
+                                text = "Curso: ${curso?.titulo}",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Professor(a): ${curso?.professorNome}",
+                                fontSize = 17.sp,
+                                color = Color.White
+                            )
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
-                        Text(
-                            text = "Módulos",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1B5E20)
-                        )
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
+                        Spacer(modifier = Modifier.width(16.dp))
 
-                    items(modulos) { modulo ->
-                        Card(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .padding(vertical = 8.dp),
-                            shape = RoundedCornerShape(16.dp),
-                            colors = CardDefaults.cardColors(containerColor = Color.White),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        Column(
+                            verticalArrangement = Arrangement.Top,
+                            horizontalAlignment = Alignment.End
                         ) {
-                            Column(
+                            Spacer(modifier = Modifier.height(32.dp))
+                            Button(
+                                onClick = {
+                                    cursoViewModel.matricular(id, cursoId)
+                                },
+                                enabled = !matriculaRealizada,
+                                shape = RoundedCornerShape(10.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (matriculaRealizada) Color.LightGray else Color.White
+                                )
+                            ) {
+                                Text(
+                                    if (matriculaRealizada) "Matriculado" else "Matricule-se",
+                                    color = if (matriculaRealizada) Color.DarkGray else Color(0xFF4CAF50)
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "Módulos",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF1B5E20)
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            items(modulos) { modulo ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(vertical = 8.dp),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color.White),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp)
+                    ) {
+                        Text(
+                            text = modulo.titulo,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        Text(
+                            text = modulo.descricao,
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            modifier = Modifier.widthIn(max = 250.dp)
+                        )
+
+                        if (iniciado) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            LinearProgressIndicator(
+                                progress = 0.7f,
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(16.dp)
+                                    .height(6.dp)
+                                    .clip(RoundedCornerShape(4.dp)),
+                                color = Color(0xFF4CAF50)
+                            )
+                        }
+
+                        if (matriculaRealizada) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            Button(
+                                onClick = {
+                                    iniciado = true
+                                    navController.navigate("video/${modulo.id}")
+                                },
+                                shape = RoundedCornerShape(20.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                                modifier = Modifier.align(Alignment.End)
                             ) {
                                 Text(
-                                    text = modulo.titulo,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 16.sp
+                                    text = if (iniciado) "Continuar" else "Começar",
+                                    color = Color.White
                                 )
-
-                                Spacer(modifier = Modifier.height(4.dp))
-
-                                Text(
-                                    text = modulo.descricao,
-                                    fontSize = 12.sp,
-                                    color = Color.Gray,
-                                    modifier = Modifier.widthIn(max = 250.dp)
-                                )
-
-                                if (iniciado) {
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    LinearProgressIndicator(
-                                        progress = 0.7f,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(6.dp)
-                                            .clip(RoundedCornerShape(4.dp)),
-                                        color = Color(0xFF4CAF50)
-                                    )
-                                }
-
-                                if (matriculado) {
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                    Button(
-                                        onClick = {
-                                            iniciado = true
-                                            navController.navigate("video/${modulo.id}")
-                                        },
-                                        shape = RoundedCornerShape(20.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-                                        modifier = Modifier.align(Alignment.End)
-                                    ) {
-                                        Text(
-                                            text = if (iniciado) "Continuar" else "Começar",
-                                            color = Color.White
-                                        )
-                                    }
-                                }
                             }
                         }
                     }
                 }
             }
         }
-
-        is CursoUiState.MatriculaSuccess -> {
-            LaunchedEffect(Unit) {
-                navController.navigate("video") {
-                    popUpTo("tela_matricula/$cursoId") { inclusive = true }
-                }
-            }
-        }
-
-        is CursoUiState.Error -> {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(text = uiState.message, color = Color.Red)
-            }
-        }
-
-        is CursoUiState.Success -> { /* Ignorado aqui */ }
     }
 }
-
-
-
-//@Preview(showBackground = true)
-//@Composable
-//fun TelaMatriculaPreview() {
-//    NexusmobileTheme {
-//        val modulo1Iniciado = remember { mutableStateOf(false) }
-//        val modulo2Iniciado = remember { mutableStateOf(false) }
-//        val matriculado = remember { mutableStateOf(false) } // Novo estado
-//
-//        Scaffold(
-//            containerColor = Color(0xFFF8F8F8),
-//            topBar = {
-//                Row(
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-//                ) {
-//                    Image(
-//                        painter = painterResource(id = R.drawable.seta),
-//                        contentDescription = "Voltar",
-//                        modifier = Modifier.size(24.dp)
-//                    )
-//                    Spacer(modifier = Modifier.width(8.dp))
-//                    Text(
-//                        text = "Voltar",
-//                        fontSize = 18.sp,
-//                        fontWeight = FontWeight.Bold,
-//                        color = Color(0xFF1B5E20)
-//                    )
-//                }
-//            },
-//            bottomBar = {
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .background(Color(0xFFE8F5E9))
-//                        .padding(16.dp),
-//                    horizontalArrangement = Arrangement.SpaceEvenly
-//                ) {
-//                    Text("Início", color = Color(0xFF4CAF50))
-//                    Text("Cursos", color = Color.Gray)
-//                    Text("Perfil", color = Color.Gray)
-//                }
-//            }
-//        ) { padding ->
-//            Column(
-//                modifier = Modifier
-//                    .fillMaxSize()
-//                    .padding(padding)
-//                    .padding(16.dp)
-//                    .verticalScroll(rememberScrollState())
-//            ) {
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .height(160.dp),
-//                    shape = RoundedCornerShape(16.dp),
-//                    colors = CardDefaults.cardColors(containerColor = Color(0xFF4CAF50)),
-//                    elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
-//                ) {
-//                    Row(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .padding(16.dp),
-//                        horizontalArrangement = Arrangement.SpaceBetween,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Column(
-//                            modifier = Modifier.weight(1f)
-//                        ) {
-//                            Text(
-//                                text = "Curso: Introdução ao Kotlin",
-//                                fontSize = 18.sp,
-//                                fontWeight = FontWeight.Bold,
-//                                color = Color.White
-//                            )
-//                            Spacer(modifier = Modifier.height(8.dp))
-//                            Text(
-//                                text = "Professor(a): Maria Silva",
-//                                fontSize = 15.sp,
-//                                color = Color.White
-//                            )
-//                        }
-//
-//                        Button(
-//                            onClick = { matriculado.value = true },
-//                            enabled = !matriculado.value,
-//                            shape = RoundedCornerShape(10.dp),
-//                            colors = ButtonDefaults.buttonColors(
-//                                containerColor = if (matriculado.value) Color.LightGray else Color.White
-//                            )
-//                        ) {
-//                            Text(
-//                                if (matriculado.value) "Matriculado" else "Matricule-se",
-//                                color = if (matriculado.value) Color.DarkGray else Color(0xFF4CAF50)
-//                            )
-//                        }
-//                    }
-//                }
-//
-//                Spacer(modifier = Modifier.height(40.dp))
-//                Text(
-//                    text = "Módulos",
-//                    fontSize = 18.sp,
-//                    fontWeight = FontWeight.Bold,
-//                    color = Color(0xFF1B5E20)
-//                )
-//
-//                Spacer(modifier = Modifier.height(8.dp))
-//
-//                // Módulo 1
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 8.dp),
-//                    shape = RoundedCornerShape(16.dp),
-//                    colors = CardDefaults.cardColors(containerColor = Color.White),
-//                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-//                ) {
-//                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-//                        Text("Módulo 1", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-//                        Spacer(modifier = Modifier.height(4.dp))
-//                        Text(
-//                            "Conteúdo introdutório sobre o tema do módulo...",
-//                            fontSize = 12.sp,
-//                            color = Color.Gray,
-//                            modifier = Modifier.widthIn(max = 250.dp) // Limita a largura do texto
-//                        )
-//                        if (modulo1Iniciado.value) {
-//                            Spacer(modifier = Modifier.height(8.dp))
-//                            LinearProgressIndicator(
-//                                progress = 0.7f,
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .height(6.dp)
-//                                    .clip(RoundedCornerShape(4.dp)),
-//                                color = Color(0xFF4CAF50)
-//                            )
-//                        }
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                        if (matriculado.value) {
-//                            Button(
-//                                onClick = { modulo1Iniciado.value = true },
-//                                shape = RoundedCornerShape(20.dp),
-//                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-//                                modifier = Modifier.align(Alignment.End)
-//                            ) {
-//                                Text(
-//                                    if (modulo1Iniciado.value) "Continuar" else "Começar",
-//                                    color = Color.White
-//                                )
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                // Módulo 2
-//                Card(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .padding(vertical = 8.dp),
-//                    shape = RoundedCornerShape(16.dp),
-//                    colors = CardDefaults.cardColors(containerColor = Color.White),
-//                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-//                ) {
-//                    Column(modifier = Modifier.padding(16.dp)) {
-//                        Text("Módulo 2", fontWeight = FontWeight.Bold, fontSize = 16.sp)
-//                        Spacer(modifier = Modifier.height(4.dp))
-//                        Text(
-//                            "Conteúdo introdutório sobre o tema do módulo...",
-//                            fontSize = 12.sp,
-//                            color = Color.Gray
-//                        )
-//                        if (modulo2Iniciado.value) {
-//                            Spacer(modifier = Modifier.height(8.dp))
-//                            LinearProgressIndicator(
-//                                progress = 0.0f,
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .height(6.dp)
-//                                    .clip(RoundedCornerShape(4.dp)),
-//                                color = Color(0xFF4CAF50)
-//                            )
-//                        }
-//                        Spacer(modifier = Modifier.height(8.dp))
-//                        Button(
-//                            onClick = { modulo2Iniciado.value = true },
-//                            shape = RoundedCornerShape(20.dp),
-//                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
-//                            modifier = Modifier.align(Alignment.End)
-//                        ) {
-//                            Text(
-//                                if (modulo2Iniciado.value) "Continuar" else "Começar",
-//                                color = Color.White
-//                            )
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }
-//}

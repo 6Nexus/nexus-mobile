@@ -68,16 +68,7 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
         Box(modifier = Modifier.weight(1f)) {
             ListaCursos(
                 navController = navController,
-                cursos = cursosFiltrados.map { cursoDto ->
-                    Curso(
-                        id = cursoDto.id,
-                        titulo = cursoDto.titulo,
-                        categoria = cursoDto.categoria,
-                        imagem = R.drawable.curso1,
-                        modulo = "",
-                        professor = cursoDto.professorNome
-                    )
-                },
+                cursos = cursosFiltrados,
                 favoritos = favoritosViewModel.favoritos,
                 onFavoritoChanged = { cursoId, _ ->
                     if (id > 0) {
@@ -85,9 +76,7 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
                     }
                 }
             )
-
         }
-
         NavigationBar(
             navController = navController,
             telaAtual = "tela_curso",
@@ -96,14 +85,4 @@ fun TelaCursos(navController: NavController, favoritosViewModel: FavoritosViewMo
     }
 }
 
-
-
-
-data class Curso(var id: Int,
-                 val titulo: String,
-                 val categoria: String,
-                 val imagem: Int,
-                 val modulo: String,
-                 val professor: String,
-)
 

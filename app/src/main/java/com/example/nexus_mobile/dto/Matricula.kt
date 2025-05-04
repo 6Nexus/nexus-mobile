@@ -5,3 +5,6 @@ data class MatriculaRequest(
     val idCurso: Int
 )
 
+data class MatriculaVerificacaoResponse(
+    val matriculaId: Int?  // Pode ser null ou um ID válido da matrícula
+)

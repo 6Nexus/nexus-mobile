@@ -23,7 +23,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.nexus_mobile.components.AppBar
-import com.example.nexus_mobile.telas.Curso
 import com.example.nexus_mobile.telas.Home
 import com.example.nexus_mobile.telas.TelaCadastro
 import com.example.nexus_mobile.telas.TelaCursos

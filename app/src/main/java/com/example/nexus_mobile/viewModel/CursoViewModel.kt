@@ -25,7 +25,6 @@ import kotlinx.coroutines.launch
 import com.example.nexus_mobile.dto.Video
 
 
-
 class CursoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val api = RetrofitClient.getCursoApi(application)
@@ -33,8 +32,11 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
     private val _cursos = mutableStateListOf<CursoDto>()
     val cursos: List<CursoDto> get() = _cursos
 
-    private val _matriculaRealizada = MutableStateFlow(false)
-    val matriculaRealizada: StateFlow<Boolean> = _matriculaRealizada
+    private val _curso = mutableStateOf<CursoDto?>(null)
+    val curso: State<CursoDto?> = _curso
+
+    private val _matriculaRealizada = mutableStateOf(false)
+    val matriculaRealizada: State<Boolean> = _matriculaRealizada
 
     private val _uiState = mutableStateOf<CursoUiState>(CursoUiState.Loading)
     val uiState: State<CursoUiState> get() = _uiState
@@ -51,6 +53,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
     private val _erro = MutableStateFlow<String?>(null)
     val erro: StateFlow<String?> = _erro
 
+    private var isMatriculado = false
 
     fun carregarCursos(usuarioId: Int) {
         viewModelScope.launch {
@@ -88,8 +91,11 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             _uiState.value = CursoUiState.Loading
             try {
                 val curso = api.getCursoPorId(cursoId = cursoId, usuarioId = usuarioId)
+                _curso.value = curso
                 _uiState.value = CursoUiState.SuccessCurso(curso)
+                Log.d("CursoViewModel", "Curso carregado com sucesso: ${curso.titulo}")
             } catch (e: Exception) {
+                Log.e("CursoViewModel", "Erro ao carregar o curso: ${e.message}", e)
                 _uiState.value = CursoUiState.Error("Erro ao carregar o curso: ${e.message}")
             }
         }
@@ -97,20 +103,50 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
 
     @OptIn(UnstableApi::class)
     fun matricular(usuarioId: Int, cursoId: Int) {
+        if (_matriculaRealizada.value) return
+
         viewModelScope.launch {
             try {
                 val response = api.matricular(MatriculaRequest(usuarioId, cursoId))
                 if (response.isSuccessful) {
                     _matriculaRealizada.value = true
-                    androidx.media3.common.util.Log.e("CursoViewModel", "matricula executada: ${response.code()}")
+                    Log.e("CursoViewModel", "matricula executada: ${response.code()}")
                 } else {
-                    androidx.media3.common.util.Log.e("CursoViewModel", "Erro ao matricular: ${response.code()}")
+                    Log.e("CursoViewModel", "Erro ao matricular: ${response.code()}")
                 }
             } catch (e: Exception) {
-                androidx.media3.common.util.Log.e("CursoViewModel", "Exceção ao matricular", e)
+                Log.e("CursoViewModel", "Exceção ao matricular", e)
             }
         }
     }
+
+
+    fun verificarMatricula(idAssociado: Int, cursoId: Int) {
+        viewModelScope.launch {
+            try {
+                val token = TokenManager.getToken(getApplication<Application>())
+                val response = api.verificarMatricula("Bearer $token", idAssociado, cursoId)
+
+                if (response.isSuccessful) {
+                    val idMatricula = response.body()
+                    if (idMatricula != null) {
+                        Log.d("Curso", "Usuário já matriculado! ID: $idMatricula")
+                        _matriculaRealizada.value = true
+                    }
+                } else if (response.code() == 404) {
+                    Log.d("Curso", "Usuário ainda não está matriculado")
+                    _matriculaRealizada.value = false
+                } else {
+                    Log.e("Curso", "Erro inesperado: ${response.code()}")
+                    _matriculaRealizada.value = false
+                }
+            } catch (e: Exception) {
+                Log.e("Curso", "Erro ao verificar matrícula: ${e.message}")
+                _matriculaRealizada.value = false
+            }
+        }
+    }
+
 
     fun carregarModulos(cursoId: Int) {
         viewModelScope.launch {
@@ -118,7 +154,13 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
                 val token = TokenManager.getToken(getApplication<Application>())
                 if (!token.isNullOrEmpty()) {
                     val modulosRecebidos = api.getModulosPorCurso(cursoId, "Bearer $token")
-                    _modulos.value = modulosRecebidos
+
+                    // Verifique se a resposta é válida
+                    if (modulosRecebidos.isNullOrEmpty()) {
+                        Log.e("CursoViewModel", "Nenhum módulo encontrado para o curso")
+                    } else {
+                        _modulos.value = modulosRecebidos
+                    }
                 } else {
                     Log.e("CursoViewModel", "Token não encontrado ou expirado")
                 }
@@ -127,6 +169,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
 
     fun carregarVideos(moduloId: Int) {
         viewModelScope.launch {

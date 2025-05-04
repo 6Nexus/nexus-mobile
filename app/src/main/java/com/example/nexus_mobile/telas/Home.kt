@@ -109,18 +109,13 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
         Box(modifier = Modifier.weight(1f)) {
             ListaCursos(
                 navController = navController,
-                cursos = cursosFiltrados.map { cursoDto ->
-                    Curso(
-                        id = cursoDto.id,
-                        titulo = cursoDto.titulo,
-                        categoria = cursoDto.categoria,
-                        imagem = R.drawable.curso1,
-                        modulo = cursoDto.descricao,
-                        professor = cursoDto.professorNome
-                    )
-                },
+                cursos = cursosFiltrados,
                 favoritos = favoritosViewModel.favoritos,
-                onFavoritoChanged = { cursoId, _ -> favoritosViewModel.alterarFavorito(idAssociado = id, cursoId = cursoId) }
+                onFavoritoChanged = { cursoId, _ ->
+                    if (id > 0) {
+                        favoritosViewModel.alterarFavorito(idAssociado = id, cursoId = cursoId)
+                    }
+                }
             )
         }
         NavigationBar(

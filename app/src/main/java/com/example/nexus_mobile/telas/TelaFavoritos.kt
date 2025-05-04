@@ -66,16 +66,7 @@ fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosVie
         Box(modifier = Modifier.weight(1f)) {
             ListaCursos(
                 navController = navController,
-                cursos = cursosFiltrados.map { cursoDto ->
-                    Curso(
-                        id = cursoDto.id,
-                        titulo = cursoDto.titulo,
-                        categoria = cursoDto.categoria,
-                        imagem = R.drawable.curso1,
-                        modulo = cursoDto.descricao,
-                        professor = cursoDto.professorNome
-                    )
-                },
+                cursos = cursosFiltrados,
                 favoritos = favoritosViewModel.favoritos,
                 onFavoritoChanged = { cursoId, _ ->
                     if (userId > 0) {

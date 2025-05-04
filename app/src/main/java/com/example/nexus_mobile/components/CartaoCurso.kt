@@ -39,16 +39,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.nexus_mobile.telas.Curso
+import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.Favorito
+import com.example.nexus_mobile.dto.CursoDto
 
 @Composable
 fun CartaoCurso(
     navController: NavController,
-    curso: Curso,
+    curso: CursoDto,
     favoritos: List<Int>,
     onFavoritoChanged: (Int, Boolean) -> Unit
 ) {
+    val imagem = R.drawable.curso1
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -59,7 +62,7 @@ fun CartaoCurso(
     ) {
         Column {
             Image(
-                painter = painterResource(id = curso.imagem),
+                painter = painterResource(id = imagem),
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth().height(100.dp),
                 contentScale = ContentScale.Crop
@@ -85,7 +88,7 @@ fun CartaoCurso(
                     )
                 }
 
-                Text(text = curso.modulo, fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(top = 2.dp))
+                Text(text = curso.descricao, fontSize = 12.sp, color = Color.Gray, modifier = Modifier.padding(top = 2.dp))
 
                 Spacer(modifier = Modifier.height(5.dp))
 

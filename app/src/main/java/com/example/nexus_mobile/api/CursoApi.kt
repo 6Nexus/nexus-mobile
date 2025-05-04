@@ -3,6 +3,7 @@ package com.example.nexus_mobile.api
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.CurtidaCriacaoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
+import com.example.nexus_mobile.dto.MatriculaVerificacaoResponse
 import com.example.nexus_mobile.dto.Modulo
 import com.example.nexus_mobile.dto.Video
 import retrofit2.Response
@@ -54,11 +55,13 @@ interface CursoApi {
     @POST("matriculas")
     suspend fun matricular(@Body matriculaRequest: MatriculaRequest): Response<Unit>
 
-    @GET("matriculas/verificar")
+    @GET("matriculas/{usuarioId}/{cursoId}")
     suspend fun verificarMatricula(
-        @Query("usuarioId") usuarioId: Int,
-        @Query("cursoId") cursoId: Int
-    ): Response<MatriculaVerificacaoResponse>
+        @Header("Authorization") token: String,
+        @Path("usuarioId") usuarioId: Int,
+        @Path("cursoId") cursoId: Int
+    ): Response<Int>
+
 
     @GET("modulos/curso/{idCurso}")
     suspend fun getModulosPorCurso(
@@ -70,8 +73,4 @@ interface CursoApi {
     suspend fun getVideosPorModulo(@Path("moduloId") moduloId: Int): List<Video>
 
 }
-
-data class MatriculaVerificacaoResponse(
-    val matriculado: Boolean
-)
 
