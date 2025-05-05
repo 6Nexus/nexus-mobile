@@ -10,92 +10,102 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.components.PerguntaCard
+import com.example.nexus_mobile.dto.ProgressoRequest
+import com.example.nexus_mobile.viewModel.CursoViewModel
+import kotlinx.coroutines.launch
 
 @Composable
-fun TelaQuestionario(navController: NavController) {
-    var respostasCorretas by remember { mutableStateOf(0) }
+fun TelaQuestionario(
+    navController: NavController,
+    moduloId: Int,
+    idMatricula: Int,
+) {
+    val viewModel: CursoViewModel = viewModel()
+    val questionario by viewModel.questionario.collectAsState()
+    val erro by viewModel.erro.collectAsState()
+
+    var respostasSelecionadas by remember { mutableStateOf(emptyList<Int>()) }
+    var erros by remember { mutableStateOf(emptyList<Boolean>()) }
     var exibirResultado by remember { mutableStateOf(false) }
-    var erros by remember { mutableStateOf(listOf(false, false, false)) }
-    var respostasSelecionadas by remember { mutableStateOf(listOf(-1, -1, -1)) }
 
-    val scrollState = rememberScrollState()
+    LaunchedEffect(moduloId) {
+        viewModel.carregarQuestionario(moduloId)
+    }
 
-    val perguntas = listOf(
-        Triple("Lorem Lorem", listOf("Opção 1", "Opção 2", "Opção 3"), 1),
-        Triple("Lorem Lorem", listOf("Opção A", "Opção B", "Opção C"), 1),
-        Triple("Lorem Lorem", listOf("Resposta X", "Resposta Y", "Resposta Z"), 1)
-    )
+    if (questionario == null) {
+        Text("Carregando questionário...")
+        return
+    }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        AppBar("Finalização: Questionário")
+    val perguntas = questionario!!.perguntas
 
-        Spacer(modifier = Modifier.height(8.dp))
+    // Inicializa seleção
+    if (respostasSelecionadas.isEmpty()) {
+        respostasSelecionadas = List(perguntas.size) { -1 }
+        erros = List(perguntas.size) { false }
+    }
 
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .verticalScroll(scrollState)
-        ) {
-            perguntas.forEachIndexed { index, (pergunta, respostas, correta) ->
-                PerguntaCard(
-                    numero = index + 1,
-                    pergunta = pergunta,
-                    respostas = respostas,
-                    respostaCorreta = correta,
-                    respostaSelecionada = respostasSelecionadas[index],
-                    onRespostaSelecionada = { selectedIndex ->
-                        respostasSelecionadas = respostasSelecionadas.toMutableList().apply {
-                            set(index, selectedIndex) // Salva o índice da resposta selecionada
-                        }
-                    },
-                    isErrado = erros.getOrElse(index) { false }
-                )
-            }
+    Column {
+        AppBar("Questionário")
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            Button(
-                onClick = {
-                    // Calcula as respostas corretas comparando os índices
-                    respostasCorretas = respostasSelecionadas.count { selectedIndex ->
-                        selectedIndex != -1 && selectedIndex == perguntas[respostasSelecionadas.indexOf(selectedIndex)].third
-                    }
-
-                    // Atualiza se os erros devem ser exibidos
-                    exibirResultado = true
-                    erros = respostasSelecionadas.mapIndexed { index, resposta ->
-                        resposta != perguntas[index].third
+        perguntas.forEachIndexed { index, pergunta ->
+            PerguntaCard(
+                numero = index + 1,
+                pergunta = pergunta.pergunta,
+                respostas = pergunta.respostas.map { it.resposta },
+                respostaCorreta = pergunta.respostas.indexOfFirst { it.respostaCerta },
+                respostaSelecionada = respostasSelecionadas[index],
+                onRespostaSelecionada = { selectedIndex ->
+                    respostasSelecionadas = respostasSelecionadas.toMutableList().apply {
+                        set(index, selectedIndex)
                     }
                 },
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(16.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4C7031))
-            ) {
-                Text("Enviar Questionário", color = Color.White)
-            }
-
-            if (exibirResultado) {
-                Text(
-                    text = if (respostasCorretas == perguntas.size) "Parabéns! Você acertou 100% das respostas."
-                    else "Não atingiu a nota suficiente.",
-                    modifier = Modifier
-                        .align(Alignment.CenterHorizontally)
-                        .padding(16.dp),
-                    color = if (respostasCorretas == perguntas.size) Color(0xFF4C7031) else Color.Red
-                )
-            }
+                isErrado = erros[index]
+            )
         }
 
-//        NavigationBar(
-//            selecionarTela = {},
-//            telaAtual = "questionario",
-//            modifier = Modifier.align(Alignment.CenterHorizontally)
-//        )
+        Button(
+            onClick = {
+                val acertos = perguntas.indices.count { index ->
+                    val correta = perguntas[index].respostas.indexOfFirst { it.respostaCerta }
+                    respostasSelecionadas[index] == correta
+                }
+
+                erros = perguntas.indices.map { index ->
+                    val correta = perguntas[index].respostas.indexOfFirst { it.respostaCerta }
+                    respostasSelecionadas[index] != correta
+                }
+
+                exibirResultado = true
+
+                viewModel.viewModelScope.launch {
+                    viewModel.enviarProgresso(
+                        ProgressoRequest(
+                            idMatricula = idMatricula,
+                            idQuestionario = questionario!!.id,
+                            acertos = acertos,
+                            erros = perguntas.size - acertos
+                        )
+                    )
+                }
+            },
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Text("Enviar Questionário")
+        }
+
+        if (exibirResultado) {
+            Text(
+                text = "Você acertou ${perguntas.size - erros.count { it }} de ${perguntas.size} questões.",
+                color = if (erros.all { !it }) Color(0xFF4C7031) else Color.Red,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
     }
 }

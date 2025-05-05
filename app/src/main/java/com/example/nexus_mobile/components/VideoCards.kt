@@ -112,14 +112,19 @@ fun VideoCard(
 
 
 @Composable
-fun QuestionaryCard(navController: NavController) {
+fun QuestionaryCard(
+    navController: NavController,
+    moduloId: Int,
+    idMatricula: Int
+) {
     Card(
         modifier = Modifier
             .padding(16.dp)
             .fillMaxWidth()
             .aspectRatio(7f)
             .clickable {
-                navController.navigate("questionario") },
+                navController.navigate("questionario/$moduloId/$idMatricula")
+                       },
         elevation = CardDefaults.cardElevation(8.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White

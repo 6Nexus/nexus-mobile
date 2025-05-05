@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.OptIn
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -16,6 +17,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.media3.common.util.Log
+import androidx.media3.common.util.UnstableApi
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -42,6 +45,7 @@ import com.example.nexus_mobile.viewModel.UsuarioViewModel
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
+    @OptIn(UnstableApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,6 +53,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val favoritosViewModel: FavoritosViewModel = viewModel()
             val usuarioViewModel: UsuarioViewModel = viewModel()
+            val cursoViewModel: CursoViewModel = viewModel()
             val contexto = LocalContext.current
 
             NavHost(navController = navController, startDestination = "tela_cadastro") {
@@ -79,23 +84,39 @@ class MainActivity : ComponentActivity() {
                     arguments = listOf(navArgument("cursoId") { type = NavType.IntType })
                 ) { backStackEntry ->
                     val cursoId = backStackEntry.arguments?.getInt("cursoId") ?: 0
-                    TelaMatricula(cursoId = cursoId, navController = navController)
+                    TelaMatricula(
+                        cursoId = cursoId,
+                        navController = navController,
+                        usuarioViewModel = usuarioViewModel,
+                        cursoViewModel = cursoViewModel // ✅ adiciona aqui
+                    )
                 }
 
                 composable(
                     route = "videos/{moduloId}",
                     arguments = listOf(navArgument("moduloId") { type = NavType.IntType })
                 ) { backStackEntry ->
-                    val moduloId = backStackEntry.arguments?.getInt("moduloId") ?: 0
+                    val cursoId = backStackEntry.arguments?.getInt("cursoId") ?: 0
+                    val moduloId = backStackEntry.arguments?.getInt("moduloId") ?: run {
+                        Log.e("MainActivity", "moduloId não encontrado!")
+                        return@composable
+                    }
+
                     TelaVideo(
                         navController = navController,
                         moduleTitle = "Título do Módulo",
-                        moduloId = moduloId
+                        cursoViewModel = cursoViewModel, // ✅ já estava aqui, mantenha
+                        moduloId = moduloId,
+                        cursoId = cursoId,
+                        usuarioViewModel = usuarioViewModel // ✅ adiciona aqui também
                     )
                 }
 
-                composable("questionario") { TelaQuestionario(navController) }
-
+                composable("questionario/{moduloId}/{idMatricula}") { backStackEntry ->
+                    val moduloId = backStackEntry.arguments?.getString("moduloId")?.toInt() ?: 0
+                    val idMatricula = backStackEntry.arguments?.getString("idMatricula")?.toInt() ?: 0
+                    TelaQuestionario(navController, moduloId, idMatricula)
+                }
             }
         }
     }

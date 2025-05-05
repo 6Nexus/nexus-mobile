@@ -5,6 +5,8 @@ import com.example.nexus_mobile.dto.CurtidaCriacaoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
 import com.example.nexus_mobile.dto.MatriculaVerificacaoResponse
 import com.example.nexus_mobile.dto.Modulo
+import com.example.nexus_mobile.dto.ProgressoRequest
+import com.example.nexus_mobile.dto.QuestionarioResponse
 import com.example.nexus_mobile.dto.Video
 import retrofit2.Response
 import retrofit2.http.Body
@@ -49,7 +51,7 @@ interface CursoApi {
     )
 
     @GET("curtidas/{idAssociado}")
-    suspend fun getFavoritosDoUsuario(@Path("idAssociado") idAssociado: Int): List<CursoDto>
+    suspend fun getFavoritosDoUsuario(@Path("idAssociado") idAssociado: Int): List<CursoDto>?
 
 
     @POST("matriculas")
@@ -71,6 +73,18 @@ interface CursoApi {
 
     @GET("videos/modulo/{moduloId}")
     suspend fun getVideosPorModulo(@Path("moduloId") moduloId: Int): List<Video>
+
+    @GET("questionarios/modulo/{moduloId}")
+    suspend fun getQuestionarioPorModulo(
+        @Path("moduloId") moduloId: Int,
+        @Header("Authorization") authToken: String
+    ): QuestionarioResponse
+
+    @POST("progresso-questionarios")
+    suspend fun enviarProgresso(
+        @Body progresso: ProgressoRequest,
+        @Header("Authorization") authToken: String
+    )
 
 }
 

@@ -17,12 +17,15 @@ import com.example.nexus_mobile.RetrofitClient
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
 import com.example.nexus_mobile.dto.Modulo
+import com.example.nexus_mobile.dto.QuestionarioResponse
 import com.example.nexus_mobile.uiState.CursoUiState
 import com.example.nexus_mobile.utils.TokenManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.nexus_mobile.dto.Video
+import com.example.nexus_mobile.dto.ProgressoRequest
+
 
 
 class CursoViewModel(application: Application) : AndroidViewModel(application) {
@@ -32,11 +35,11 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
     private val _cursos = mutableStateListOf<CursoDto>()
     val cursos: List<CursoDto> get() = _cursos
 
-    private val _curso = mutableStateOf<CursoDto?>(null)
-    val curso: State<CursoDto?> = _curso
+    private val _curso = MutableStateFlow<CursoDto?>(null)
+    val curso: StateFlow<CursoDto?> = _curso
 
-    private val _matriculaRealizada = mutableStateOf(false)
-    val matriculaRealizada: State<Boolean> = _matriculaRealizada
+    private val _matriculaRealizada = MutableStateFlow(false)
+    val matriculaRealizada: StateFlow<Boolean> = _matriculaRealizada
 
     private val _uiState = mutableStateOf<CursoUiState>(CursoUiState.Loading)
     val uiState: State<CursoUiState> get() = _uiState
@@ -52,6 +55,14 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _erro = MutableStateFlow<String?>(null)
     val erro: StateFlow<String?> = _erro
+
+    private val _questionario = MutableStateFlow<QuestionarioResponse?>(null)
+    val questionario: StateFlow<QuestionarioResponse?> = _questionario
+
+    private val _idMatricula = MutableStateFlow<Int?>(null)
+    val idMatricula: StateFlow<Int?> = _idMatricula
+
+
 
     private var isMatriculado = false
 
@@ -130,6 +141,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
                 if (response.isSuccessful) {
                     val idMatricula = response.body()
                     if (idMatricula != null) {
+                        _idMatricula.value = idMatricula
                         Log.d("Curso", "Usuário já matriculado! ID: $idMatricula")
                         _matriculaRealizada.value = true
                     }
@@ -186,7 +198,23 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun resetarStatus() {
-        _matriculaRealizada.value = false
+
+    suspend fun carregarQuestionario(moduloId: Int) {
+        val token = TokenManager.getToken(getApplication<Application>())
+        try {
+            val response = api.getQuestionarioPorModulo(moduloId, "Bearer $token")
+            _questionario.value = response
+        } catch (e: Exception) {
+            _erro.value = "Erro ao carregar questionário: ${e.message}"
+        }
+    }
+
+    suspend fun enviarProgresso(progresso: ProgressoRequest) {
+        val token = TokenManager.getToken(getApplication<Application>())
+        try {
+            api.enviarProgresso(progresso, "Bearer $token")
+        } catch (e: Exception) {
+            _erro.value = "Erro ao enviar progresso: ${e.message}"
+        }
     }
 }

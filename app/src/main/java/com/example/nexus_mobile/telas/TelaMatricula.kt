@@ -56,13 +56,16 @@ import com.example.nexus_mobile.utils.UsuarioManager
 
 @OptIn(UnstableApi::class)
 @Composable
-fun TelaMatricula(cursoId: Int, navController: NavController) {
-    val cursoViewModel: CursoViewModel = viewModel()
-    val usuarioViewModel: UsuarioViewModel = viewModel()
+fun TelaMatricula(
+    cursoId: Int,
+    navController: NavController,
+    usuarioViewModel: UsuarioViewModel,
+    cursoViewModel: CursoViewModel
+){
     val id by usuarioViewModel.userId.collectAsState()
-    val curso by cursoViewModel.curso
+    val curso by cursoViewModel.curso.collectAsState()
     val modulos by cursoViewModel.modulos.collectAsState()
-    val matriculaRealizada by cursoViewModel.matriculaRealizada
+    val matriculaRealizada by cursoViewModel.matriculaRealizada.collectAsState()
     var iniciado by remember { mutableStateOf(false) }
 
     LaunchedEffect(key1 = id, key2 = cursoId) {
@@ -240,10 +243,11 @@ fun TelaMatricula(cursoId: Int, navController: NavController) {
 
                         if (matriculaRealizada) {
                             Spacer(modifier = Modifier.height(12.dp))
+                            Log.d("TelaMatricula", "id do modulo ${modulo.id}")
                             Button(
                                 onClick = {
                                     iniciado = true
-                                    navController.navigate("video/${modulo.id}")
+                                    navController.navigate("videos/${modulo.id}")
                                 },
                                 shape = RoundedCornerShape(20.dp),
                                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
