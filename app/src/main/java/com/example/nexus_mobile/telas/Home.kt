@@ -50,7 +50,7 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
 
     LaunchedEffect(id) {
         if (id > 0) {
-            cursoViewModel.carregarCursos(id)
+            cursoViewModel.carregarCursosMatriculados(id)
             favoritosViewModel.carregarFavoritos(id) // Carregar os favoritos ao acessar a tela
         }
     }

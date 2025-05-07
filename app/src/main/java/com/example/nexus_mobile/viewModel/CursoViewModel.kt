@@ -85,6 +85,27 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun carregarCursosMatriculados(idAssociado: Int) {
+        viewModelScope.launch {
+            _uiState.value = CursoUiState.Loading
+            try {
+                val token = TokenManager.getToken(getApplication<Application>())
+                if (!token.isNullOrEmpty()) {
+                    val cursosMatriculados = api.getCursosMatriculados("Bearer $token", idAssociado)
+                    _cursos.clear()
+                    _cursos.addAll(cursosMatriculados)
+                    _uiState.value = CursoUiState.Success(cursosMatriculados)
+                } else {
+                    _uiState.value = CursoUiState.Error("Token não encontrado ou expirado")
+                }
+            } catch (e: Exception) {
+                _uiState.value = CursoUiState.Error("Erro ao buscar cursos matriculados: ${e.message}")
+                Log.e("CursoViewModel", "Erro ao buscar cursos matriculados", e)
+            }
+        }
+    }
+
+
     fun carregarCursosPorCategoria(idAssociado: Int, categoria: String) {
         viewModelScope.launch {
             try {

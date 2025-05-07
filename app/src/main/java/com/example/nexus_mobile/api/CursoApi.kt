@@ -31,6 +31,12 @@ interface CursoApi {
         @Query("idAssociado") usuarioId: Int
     ): CursoDto
 
+    @GET("cursos/associado/{idAssociado}")
+    suspend fun getCursosMatriculados(
+        @Header("Authorization") token: String,
+        @Path("idAssociado") idAssociado: Int
+    ): List<CursoDto>
+
     @GET("cursos/associado/{idAssociado}/categoria/{categoria}")
     suspend fun getCursosPorCategoria(
         @Path("idAssociado") idAssociado: Int,

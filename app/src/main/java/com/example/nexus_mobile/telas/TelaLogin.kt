@@ -62,6 +62,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +74,8 @@ fun TelaLogin(navController: NavController, context: Context) {
     var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
     val usuarioViewModel: UsuarioViewModel = viewModel()
+    var erroEmail by remember { mutableStateOf("") }
+    var erroSenha by remember { mutableStateOf("") }
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
@@ -123,8 +126,6 @@ fun TelaLogin(navController: NavController, context: Context) {
             modifier = Modifier
                 .size(330.dp, 56.dp),
             shape = RoundedCornerShape(12.dp),
-
-
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.MailOutline,
@@ -133,8 +134,19 @@ fun TelaLogin(navController: NavController, context: Context) {
                     tint = cinza
                 )
             }
-
         )
+
+        if (erroEmail.isNotEmpty()) {
+            Text(
+                text = erroEmail,
+                color = Color.Red,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .padding(start = 40.dp, top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -171,8 +183,18 @@ fun TelaLogin(navController: NavController, context: Context) {
                     )
                 }
             }
-
         )
+
+        if (erroSenha.isNotEmpty()) {
+            Text(
+                text = erroSenha,
+                color = Color.Red,
+                fontSize = 14.sp,
+                modifier = Modifier
+                    .padding(start = 40.dp, top = 4.dp)
+                    .align(Alignment.Start)
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -208,7 +230,20 @@ fun TelaLogin(navController: NavController, context: Context) {
             onClick = {
                 Log.d("Login", "Botão de login clicado")
 
+                erroEmail = ""
+                erroSenha = ""
+
+                if (email.isBlank()) {
+                    erroEmail = "O campo de e-mail é obrigatório"
+                    return@Button
+                }
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    erroEmail = "Formato de e-mail inválido"
+                    return@Button
+                }
+
                 val loginRequest = LoginRequest(email, senha)
+
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
                         Log.d("Login", "Chamando API de login...")
@@ -216,7 +251,6 @@ fun TelaLogin(navController: NavController, context: Context) {
                         Log.d("Login", "Token recebido: ${resposta.token}")
                         TokenManager.salvarToken(context, resposta.token)
 
-                        // Salvar os dados do usuário no UsuarioManager
                         UsuarioManager.salvarUsuario(
                             context,
                             resposta.userId,
@@ -224,9 +258,6 @@ fun TelaLogin(navController: NavController, context: Context) {
                             resposta.email
                         )
 
-                        Log.d("Login", "id usuario: ${resposta.userId} nome: ${resposta.nome} email: ${resposta.email}")
-
-                        // Atualizar o UsuarioViewModel com os dados do usuário
                         withContext(Dispatchers.Main) {
                             usuarioViewModel.setUserData(
                                 nome = resposta.nome,
@@ -238,8 +269,20 @@ fun TelaLogin(navController: NavController, context: Context) {
                             }
                         }
 
+                    } catch (e: HttpException) {
+                        Log.e("Login", "Erro HTTP: ${e.code()} - ${e.message()}")
+                        withContext(Dispatchers.Main) {
+                            when (e.code()) {
+                                404 -> erroEmail = "Email não cadastrado"
+                                401 -> erroSenha = "Senha incorreta"
+                                else -> erroSenha = "Erro ao fazer login"
+                            }
+                        }
                     } catch (e: Exception) {
-                        Log.e("Login", "Erro ao fazer login", e)
+                        Log.e("Login", "Erro inesperado", e)
+                        withContext(Dispatchers.Main) {
+                            erroSenha = "Erro de conexão. Tente novamente."
+                        }
                     }
                 }
             },
