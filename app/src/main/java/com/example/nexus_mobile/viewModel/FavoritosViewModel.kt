@@ -30,24 +30,29 @@ class FavoritosViewModel(application: Application) : AndroidViewModel(applicatio
         viewModelScope.launch {
             try {
                 Log.d("FavoritosViewModel", "Iniciando carregamento de favoritos para idAssociado=$idAssociado")
-                val cursos = api.getFavoritosDoUsuario(idAssociado)
+                val response = api.getFavoritosDoUsuario(idAssociado)
 
-                if (cursos == null) {
-                    Log.w("FavoritosViewModel", "API retornou null ao buscar favoritos!")
-                } else {
+                if (response.isSuccessful) {
+                    val cursos = response.body() ?: emptyList()
                     Log.d("FavoritosViewModel", "API retornou ${cursos.size} curso(s) favorito(s)")
                     cursos.forEach {
                         Log.d("FavoritosViewModel", "Curso -> id=${it.id}, titulo=${it.titulo}, categoria=${it.categoria}")
                     }
+
+                    _cursosFavoritos.clear()
+                    _cursosFavoritos.addAll(cursos)
+
+                    _favoritos.clear()
+                    _favoritos.addAll(cursos.map { it.id })
+                    Log.d("FavoritosViewModel", "Favoritos atualizados: $_favoritos")
+
+                } else if (response.code() == 204) {
+                    Log.d("FavoritosViewModel", "API retornou 204 - Nenhum conteúdo (lista vazia)")
+                    _cursosFavoritos.clear()
+                    _favoritos.clear()
+                } else {
+                    Log.e("FavoritosViewModel", "Erro na resposta da API: ${response.code()}")
                 }
-
-                _cursosFavoritos.clear()
-                _cursosFavoritos.addAll(cursos ?: emptyList())
-
-                _favoritos.clear()
-                _favoritos.addAll((cursos ?: emptyList()).map { it.id })
-
-                Log.d("FavoritosViewModel", "Favoritos atualizados: $_favoritos")
             } catch (e: Exception) {
                 Log.e("FavoritosViewModel", "Erro ao buscar favoritos", e)
             }

@@ -1,58 +1,55 @@
 package com.example.nexus_mobile.viewModel
 
-//import android.content.Context
-//import android.util.Log
-//import androidx.compose.runtime.*
-//import androidx.lifecycle.ViewModel
-//import androidx.lifecycle.viewModelScope
-//import com.example.nexus_mobile.AssociadoService
-//import com.example.nexus_mobile.data.model.services.TokenJWT
-//import com.example.nexus_mobile.data.model.services.api
-//import kotlinx.coroutines.launch
-//import retrofit2.Retrofit
-//import retrofit2.converter.gson.GsonConverterFactory
-//
-//class PerfilViewModel : ViewModel() {
-//
-//    var nome by mutableStateOf("")
-//    var email by mutableStateOf("")
-//    var senha by mutableStateOf("")
-//    var isCarregando by mutableStateOf(false)
-//    var errorMessage by mutableStateOf<String?>(null)
-//    var perfilResponse by mutableStateOf<PerfilResponse?>(null)
-//
-////    private val retrofit = Retrofit.Builder()
-////        .baseUrl("http://88:8080/") // substitua pelo seu IP se necessário
-////        .addConverterFactory(GsonConverterFactory.create())
-////        .build()
-//
-//    // private val associadoService = retrofit.create(AssociadoService::class.java)
-//
-//    fun carregarDadosUsuario(context: Context) {
-//        nome = TokenJWT.recuperarNome(context) ?: ""
-//        email = TokenJWT.recuperarEmail(context) ?: ""
-//    }
-//
-//    fun atualizarPerfil(context: Context) {
-//        viewModelScope.launch {
-//            isCarregando = true
-//            errorMessage = null
-//            try {
-//                val associadoService = api.criarApi(context)
-//                val perfilRequest = PerfilRequest(nome, email, senha)
-//                val idUsuario = TokenJWT.recuperarIdAssociado(context)
-//                val response = associadoService.atualizarPerfil(idUsuario, perfilRequest)
-//
-//                TokenJWT.salvarDadosUsuario(context, response.nome, response.email, idUsuario)
-//                Log.d("PerfilViewModel", "Perfil atualizado com sucesso: $response")
-//                Log.d("PerfilViewModel", "Nome: ${response.nome} e Email: ${response.email}")
-//                perfilResponse = response
-//
-//            } catch (e: Exception) {
-//                errorMessage = "Erro ao atualizar perfil: ${e.message}"
-//            } finally {
-//                isCarregando = false
-//            }
-//        }
-//    }
-//}
+import android.app.Application
+import android.content.Context
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.nexus_mobile.RetrofitClient
+import com.example.nexus_mobile.api.LoginApi
+import com.example.nexus_mobile.dto.CadastroRequest
+import com.example.nexus_mobile.dto.CadastroResponse
+import com.example.nexus_mobile.utils.TokenManager
+import kotlinx.coroutines.launch
+
+class PerfilViewModel (application: Application) : AndroidViewModel(application){
+
+    var nome by mutableStateOf("")
+    var email by mutableStateOf("")
+    var senha by mutableStateOf("")
+    var isCarregando by mutableStateOf(false)
+    var errorMessage by mutableStateOf<String?>(null)
+    var perfilResponde by mutableStateOf<CadastroResponse?>(null)
+
+    private val context = getApplication<Application>().applicationContext
+    private val api = RetrofitClient.getLoginApi(context)
+    //private val api: LoginApi = RetrofitLogin.create(context)
+
+    fun atualizarPerfil (id: Int, nome: String, email: String, senha: String, context: Context) {
+        isCarregando = true
+        errorMessage = null
+
+        val cadastroRequest = CadastroRequest(nome, email, senha)
+
+
+        viewModelScope.launch {
+            try {
+                val response = api.atualizarUsuario(cadastroRequest, id)
+                if (response.isSuccessful) {
+                    perfilResponde = response.body()
+                } else {
+                    errorMessage = "Erro ao atualizar perfil: ${response.code()}"
+                }
+            } catch (e: Exception) {
+                errorMessage = "Erro ao atualizar perfil: ${e.message}"
+            } finally {
+                isCarregando = false
+            }
+        }
+    }
+
+}

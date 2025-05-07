@@ -186,13 +186,16 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
                 if (!token.isNullOrEmpty()) {
-                    val modulosRecebidos = api.getModulosPorCurso(cursoId, "Bearer $token")
-
-                    // Verifique se a resposta é válida
-                    if (modulosRecebidos.isNullOrEmpty()) {
-                        Log.e("CursoViewModel", "Nenhum módulo encontrado para o curso")
+                    val response = api.getModulosPorCurso(cursoId, "Bearer $token")
+                    if (response.isSuccessful) {
+                        val modulosRecebidos = response.body()
+                        _modulos.value = modulosRecebidos ?: emptyList()
+                        Log.d("CursoViewModel", "Módulos carregados: ${_modulos.value.size}")
+                    } else if (response.code() == 204) {
+                        _modulos.value = emptyList()
+                        Log.d("CursoViewModel", "Nenhum módulo encontrado (204)")
                     } else {
-                        _modulos.value = modulosRecebidos
+                        Log.e("CursoViewModel", "Erro inesperado ao buscar módulos: ${response.code()}")
                     }
                 } else {
                     Log.e("CursoViewModel", "Token não encontrado ou expirado")

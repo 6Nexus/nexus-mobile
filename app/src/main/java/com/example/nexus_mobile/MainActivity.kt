@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
 
                 composable("tela_login") {
                     val context = LocalContext.current
-                    TelaLogin(navController = navController, context = context)
+                    TelaLogin(navController = navController, context = context, usuarioViewModel)
                 }
 
                 composable("tela_recuperar_senha") {
@@ -73,9 +73,9 @@ class MainActivity : ComponentActivity() {
 
                 composable("home") { Home(navController, usuarioViewModel, contexto, favoritosViewModel) }
 
-                composable("tela_curso") { TelaCursos(navController, favoritosViewModel) }
+                composable("tela_curso") { TelaCursos(navController, favoritosViewModel, cursoViewModel, usuarioViewModel) }
 
-                composable("tela_perfil") { TelaPerfil(navController) }
+                composable("tela_perfil") { TelaPerfil(navController, usuarioViewModel) }
 
                 composable("favoritos") { TelaFavoritos(navController, favoritosViewModel, usuarioViewModel) }
 
@@ -88,7 +88,7 @@ class MainActivity : ComponentActivity() {
                         cursoId = cursoId,
                         navController = navController,
                         usuarioViewModel = usuarioViewModel,
-                        cursoViewModel = cursoViewModel // ✅ adiciona aqui
+                        cursoViewModel = cursoViewModel
                     )
                 }
 
@@ -105,17 +105,17 @@ class MainActivity : ComponentActivity() {
                     TelaVideo(
                         navController = navController,
                         moduleTitle = "Título do Módulo",
-                        cursoViewModel = cursoViewModel, // ✅ já estava aqui, mantenha
+                        cursoViewModel = cursoViewModel,
                         moduloId = moduloId,
                         cursoId = cursoId,
-                        usuarioViewModel = usuarioViewModel // ✅ adiciona aqui também
+                        usuarioViewModel = usuarioViewModel
                     )
                 }
 
                 composable("questionario/{moduloId}/{idMatricula}") { backStackEntry ->
                     val moduloId = backStackEntry.arguments?.getString("moduloId")?.toInt() ?: 0
                     val idMatricula = backStackEntry.arguments?.getString("idMatricula")?.toInt() ?: 0
-                    TelaQuestionario(navController, moduloId, idMatricula)
+                    TelaQuestionario(navController, moduloId, idMatricula, cursoViewModel)
                 }
             }
         }

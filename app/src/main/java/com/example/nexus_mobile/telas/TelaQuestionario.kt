@@ -25,8 +25,8 @@ fun TelaQuestionario(
     navController: NavController,
     moduloId: Int,
     idMatricula: Int,
+    viewModel: CursoViewModel
 ) {
-    val viewModel: CursoViewModel = viewModel()
     val questionario by viewModel.questionario.collectAsState()
     val erro by viewModel.erro.collectAsState()
 

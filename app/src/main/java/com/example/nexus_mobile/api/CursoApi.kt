@@ -57,8 +57,9 @@ interface CursoApi {
     )
 
     @GET("curtidas/{idAssociado}")
-    suspend fun getFavoritosDoUsuario(@Path("idAssociado") idAssociado: Int): List<CursoDto>?
-
+    suspend fun getFavoritosDoUsuario(
+        @Path("idAssociado") idAssociado: Int
+    ): Response<List<CursoDto>>
 
     @POST("matriculas")
     suspend fun matricular(@Body matriculaRequest: MatriculaRequest): Response<Unit>
@@ -75,7 +76,7 @@ interface CursoApi {
     suspend fun getModulosPorCurso(
         @Path("idCurso") cursoId: Int,
         @Header("Authorization") token: String
-    ): List<Modulo>
+    ):  Response<List<Modulo>>
 
     @GET("videos/modulo/{moduloId}")
     suspend fun getVideosPorModulo(@Path("moduloId") moduloId: Int): List<Video>

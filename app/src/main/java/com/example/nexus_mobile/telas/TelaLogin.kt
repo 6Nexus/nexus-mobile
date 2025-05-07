@@ -67,13 +67,16 @@ import retrofit2.HttpException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TelaLogin(navController: NavController, context: Context) {
+fun TelaLogin(
+    navController: NavController,
+    context: Context,
+    usuarioViewModel: UsuarioViewModel
+) {
 
     var isChecked by remember { mutableStateOf(false) }
     var email by remember { mutableStateOf("") }
     var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
-    val usuarioViewModel: UsuarioViewModel = viewModel()
     var erroEmail by remember { mutableStateOf("") }
     var erroSenha by remember { mutableStateOf("") }
 
@@ -250,13 +253,6 @@ fun TelaLogin(navController: NavController, context: Context) {
                         val resposta = RetrofitClient.getLoginApi(context).login(loginRequest)
                         Log.d("Login", "Token recebido: ${resposta.token}")
                         TokenManager.salvarToken(context, resposta.token)
-
-                        UsuarioManager.salvarUsuario(
-                            context,
-                            resposta.userId,
-                            resposta.nome,
-                            resposta.email
-                        )
 
                         withContext(Dispatchers.Main) {
                             usuarioViewModel.setUserData(

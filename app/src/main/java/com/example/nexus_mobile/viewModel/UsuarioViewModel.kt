@@ -24,6 +24,10 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     private val _email = MutableStateFlow("")
     val email: StateFlow<String> = _email
 
+    private val _senha = MutableStateFlow("")
+    val senha : StateFlow<String> = _senha
+
+
     init {
         carregarUsuario()
     }
@@ -52,8 +56,30 @@ class UsuarioViewModel(application: Application) : AndroidViewModel(application)
     fun limparUsuario() {
         _nome.value = ""
         _email.value = ""
-        _userId.value = 0
+        _userId.value = -1
         UsuarioManager.limparDados(context)
         Log.d("UsuarioViewModel", "Dados do usuário limpos")
+
     }
+
+    fun atualizarPerfil(nome: String, email: String) {
+        _nome.value = nome
+        _email.value = email
+        UsuarioManager.atualizarUsuario(context, nome, email)
+    }
+
+    fun atualizarNome(novoNome: String) {
+        _nome.value = novoNome
+        // UsuarioManager.atualizarUsuario(context, novoNome, _email.value)
+    }
+
+    fun atualizarEmail(novoEmail: String) {
+        _email.value = novoEmail
+        // UsuarioManager.atualizarUsuario(context, _nome.value, novoEmail)
+    }
+
+    fun atualizarSenha(novaSenha: String) {
+        _senha.value = novaSenha
+    }
+
 }

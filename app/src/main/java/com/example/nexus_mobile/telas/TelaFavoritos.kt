@@ -35,7 +35,11 @@ import com.example.nexus_mobile.viewModel.UsuarioViewModel
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun TelaFavoritos(navController: NavController, favoritosViewModel: FavoritosViewModel, usuarioViewModel: UsuarioViewModel) {
+fun TelaFavoritos(
+    navController: NavController,
+    favoritosViewModel: FavoritosViewModel,
+    usuarioViewModel: UsuarioViewModel
+) {
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
     val cursosFiltrados = favoritosViewModel.cursosFavoritos.filter {
