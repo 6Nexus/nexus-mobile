@@ -61,12 +61,12 @@ fun TelaVideo(
     var showPlayer by remember { mutableStateOf(false) }
 
     // Garantimos que a matrícula só será verificada quando o idAssociado estiver disponível
-    LaunchedEffect(moduloId, idAssociado) {
-        if (idAssociado > 0) {
-            viewModel.carregarVideos(moduloId)
-            viewModel.verificarMatricula(idAssociado, cursoId)
-        }
-    }
+//    LaunchedEffect(moduloId, idAssociado) {
+//        if (idAssociado > 0) {
+//            viewModel.carregarVideos(moduloId)
+//            viewModel.verificarMatricula(idAssociado, cursoId)
+//        }
+//    }
 
     Scaffold(
         topBar = {
@@ -76,9 +76,7 @@ fun TelaVideo(
             NavigationBar(
                 navController = navController,
                 telaAtual = "tela_curso",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
+                modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
             )
         },
         floatingActionButton = {
@@ -94,57 +92,45 @@ fun TelaVideo(
                 )
             }
         }
-    ) { valoresDePadding ->
-
+    ){ valoresDePadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(valoresDePadding)
         ) {
-            if (loading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-            } else if (erro != null) {
-                Text(
-                    text = erro ?: "",
-                    color = Color.Red,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                )
-            } else {
-                // Caso o usuário ainda não esteja matriculado
-                if ((idMatricula ?: 0) <= 0) {
-                    Text(
-                        text = "Você precisa se matricular para assistir aos vídeos.",
-                        color = Color.Red,
-                        modifier = Modifier
-                            .align(Alignment.CenterHorizontally)
-                            .padding(16.dp)
+            //player
+            var currentVideo by remember { mutableStateOf("") }
+            var showPlayer by remember { mutableStateOf(false) }
+
+            if (showPlayer) {
+                videoMenu({ showPlayer = false })
+                key(currentVideo) {
+                    VideoPlayer(
+                        currentVideo
                     )
-                }
-
-                if (showPlayer) {
-                    videoMenu({ showPlayer = false })
-                    key(currentVideo) {
-                        VideoPlayer(currentVideo)
-                    }
-                }
-
-                videos.forEach { video ->
-                    val url = video.youtubeUrl ?: ""
-                    if (url.isNotEmpty()) {
-                        VideoCard(
-                            url = url,
-                            videoTitle = video.titulo,
-                            onClick = { videoUrl, shouldShow ->
-                                currentVideo = videoUrl
-                                showPlayer = shouldShow
-                            }
-                        )
-                    }
                 }
             }
 
-            Log.d("TelaVideo", "id da matricula $idMatricula id modulo $moduloId")
+            val requestSimulation = listOf(
+                hashMapOf("title" to "Aula 1: Introdução", "url" to "https://www.youtube.com/watch?v=QKviWFOfcog"),
+                hashMapOf("title" to "Aula 2: Continuação", "url" to "https://www.youtube.com/watch?v=v-vRNPXMEGU&t=89s"),
+                hashMapOf("title" to "Aula 3: Finalização", "url" to "https://www.youtube.com/watch?v=7XsLu-CHQnQ&t=1907s")
+            )
+
+            //video click callback
+            val onVideoCardClick: (String, Boolean) -> Unit = { videoId, shouldShow ->
+                currentVideo = videoId
+                showPlayer = shouldShow
+            }
+
+            //video cards
+            requestSimulation.forEach { video ->
+                val title = video["title"]!!
+                val url = video["url"]!!
+
+                VideoCard(url, title, onVideoCardClick)
+            }
 
             // Exibe o QuestionaryCard quando idMatricula não é null
             idMatricula?.let { matriculaId ->

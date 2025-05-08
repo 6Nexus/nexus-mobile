@@ -1,5 +1,7 @@
 package com.example.nexus_mobile.telas
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,8 +10,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -20,6 +25,8 @@ import com.example.nexus_mobile.dto.ProgressoRequest
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import kotlinx.coroutines.launch
 
+
+
 @Composable
 fun TelaQuestionario(
     navController: NavController,
@@ -28,6 +35,7 @@ fun TelaQuestionario(
     viewModel: CursoViewModel
 ) {
     val questionario by viewModel.questionario.collectAsState()
+    val progresso by viewModel.progressoResponse.collectAsState()
     val erro by viewModel.erro.collectAsState()
 
     var respostasSelecionadas by remember { mutableStateOf(emptyList<Int>()) }
@@ -36,6 +44,15 @@ fun TelaQuestionario(
 
     LaunchedEffect(moduloId) {
         viewModel.carregarQuestionario(moduloId)
+        viewModel.buscarProgressoQuestionario(idMatricula, moduloId)
+    }
+
+    if (progresso != null) {
+        Column(Modifier.padding(16.dp)) {
+            Text("Você já respondeu este questionário.")
+            Text("Pontuação: ${progresso!!.pontuacao.toInt()}%", color = Color(0xFF4C7031))
+        }
+        return
     }
 
     if (questionario == null) {
@@ -45,7 +62,6 @@ fun TelaQuestionario(
 
     val perguntas = questionario!!.perguntas
 
-    // Inicializa seleção
     if (respostasSelecionadas.isEmpty()) {
         respostasSelecionadas = List(perguntas.size) { -1 }
         erros = List(perguntas.size) { false }
@@ -53,6 +69,27 @@ fun TelaQuestionario(
 
     Column {
         AppBar("Questionário")
+        Spacer(modifier = Modifier.height(30.dp))
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
+                .clickable{ navController.popBackStack() }
+        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.ic_back),
+//                contentDescription = "Voltar",
+//                modifier = Modifier.size(24.dp)
+//            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Voltar",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1B5E20)
+            )
+        }
 
         perguntas.forEachIndexed { index, pergunta ->
             PerguntaCard(
@@ -72,10 +109,19 @@ fun TelaQuestionario(
 
         Button(
             onClick = {
+                if (respostasSelecionadas.any { it == -1 }) {
+                    erros = perguntas.indices.map { index ->
+                        respostasSelecionadas[index] == -1
+                    }
+                    return@Button
+                }
+
                 val acertos = perguntas.indices.count { index ->
                     val correta = perguntas[index].respostas.indexOfFirst { it.respostaCerta }
                     respostasSelecionadas[index] == correta
                 }
+
+                val pontuacao = (acertos.toDouble() / perguntas.size) * 100.0
 
                 erros = perguntas.indices.map { index ->
                     val correta = perguntas[index].respostas.indexOfFirst { it.respostaCerta }
@@ -84,18 +130,18 @@ fun TelaQuestionario(
 
                 exibirResultado = true
 
-                viewModel.viewModelScope.launch {
-                    viewModel.enviarProgresso(
-                        ProgressoRequest(
-                            idMatricula = idMatricula,
-                            idQuestionario = questionario!!.id,
-                            acertos = acertos,
-                            erros = perguntas.size - acertos
-                        )
+                questionario?.let {
+                    viewModel.enviarProgressoQuestionario(
+                        pontuacao = pontuacao,
+                        matriculaId = idMatricula,
+                        questionarioId = it.id
                     )
                 }
             },
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            enabled = !exibirResultado
         ) {
             Text("Enviar Questionário")
         }

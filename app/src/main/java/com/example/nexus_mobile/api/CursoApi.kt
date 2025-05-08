@@ -7,6 +7,7 @@ import com.example.nexus_mobile.dto.MatriculaVerificacaoResponse
 import com.example.nexus_mobile.dto.Modulo
 import com.example.nexus_mobile.dto.ProgressoRequest
 import com.example.nexus_mobile.dto.QuestionarioResponse
+import com.example.nexus_mobile.dto.RespostaProgresso
 import com.example.nexus_mobile.dto.Video
 import retrofit2.Response
 import retrofit2.http.Body
@@ -87,11 +88,21 @@ interface CursoApi {
         @Header("Authorization") authToken: String
     ): QuestionarioResponse
 
+
     @POST("progresso-questionarios")
     suspend fun enviarProgresso(
         @Body progresso: ProgressoRequest,
         @Header("Authorization") authToken: String
     )
+
+
+    @GET("progresso-questionarios/{matriculaId}/{questionarioId}")
+    suspend fun buscarProgressoQuestionario(
+        @Path("matriculaId") matriculaId: Int,
+        @Path("questionarioId") questionarioId: Int,
+        @Header("Authorization") authToken: String
+    ): RespostaProgresso
+
 
 }
 
