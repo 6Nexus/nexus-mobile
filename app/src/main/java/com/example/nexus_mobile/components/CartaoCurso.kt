@@ -108,16 +108,14 @@ fun CartaoCurso(
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = Color(76, 173, 76)),
                         modifier = Modifier
-                            .padding(top = 26.dp)
-                            .height(30.dp)
-                            .width(100.dp)
+                            .align(Alignment.CenterVertically)
+                            .padding(top = 20.dp)
                     ) {
                         Text(
                             text = "Ver Curso",
                             color = Color.White,
                             fontSize = 11.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxSize(),
                         )
                     }
                 }

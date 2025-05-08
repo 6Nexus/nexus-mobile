@@ -18,8 +18,15 @@ data class Resposta(
 )
 
 data class ProgressoRequest(
-    val idMatricula: Int,
-    val idQuestionario: Int,
-    val acertos: Int,
-    val erros: Int
+    val pontuacao: Double,
+    val matriculaId: Int,
+    val questionarioId: Int
+)
+
+data class RespostaProgresso(
+    val id: Int,
+    val pontuacao: Double,
+    val dataAtualizacao: String,
+    val matriculaId: Int,
+    val questionarioId: Int
 )

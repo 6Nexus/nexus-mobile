@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import com.example.nexus_mobile.dto.Video
 import com.example.nexus_mobile.dto.ProgressoRequest
-
+import com.example.nexus_mobile.dto.RespostaProgresso
 
 
 class CursoViewModel(application: Application) : AndroidViewModel(application) {
@@ -242,4 +242,40 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             _erro.value = "Erro ao enviar progresso: ${e.message}"
         }
     }
+
+    private val _progressoResponse = MutableStateFlow<RespostaProgresso?>(null)
+    val progressoResponse: StateFlow<RespostaProgresso?> = _progressoResponse
+
+
+
+    fun enviarProgressoQuestionario(pontuacao: Double, matriculaId: Int, questionarioId: Int) {
+        viewModelScope.launch {
+            try {
+                val token = TokenManager.getToken(getApplication<Application>())
+                if (!token.isNullOrEmpty()) {
+                    val progresso = ProgressoRequest(pontuacao, matriculaId, questionarioId)
+                    api.enviarProgresso(progresso, "Bearer $token")
+                    Log.d("CursoViewModel", "Progresso enviado com sucesso")
+                }
+            } catch (e: Exception) {
+                Log.e("CursoViewModel", "Erro ao enviar progresso: ${e.message}")
+            }
+        }
+    }
+
+    fun buscarProgressoQuestionario(matriculaId: Int, questionarioId: Int) {
+        viewModelScope.launch {
+            try {
+                val token = TokenManager.getToken(getApplication<Application>())
+                if (!token.isNullOrEmpty()) {
+                    val resposta = api.buscarProgressoQuestionario(matriculaId, questionarioId, "Bearer $token")
+                    _progressoResponse.value = resposta
+                    Log.d("CursoViewModel", "Progresso carregado: ${resposta.pontuacao}")
+                }
+            } catch (e: Exception) {
+                Log.e("CursoViewModel", "Erro ao buscar progresso: ${e.message}")
+            }
+        }
+    }
+
 }
