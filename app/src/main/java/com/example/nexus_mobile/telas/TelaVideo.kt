@@ -63,8 +63,8 @@ fun TelaVideo(
     // Garantimos que a matrícula só será verificada quando o idAssociado estiver disponível
     LaunchedEffect(moduloId, idAssociado) {
         if (idAssociado > 0) {
-            viewModel.carregarVideos(moduloId)
-            viewModel.verificarMatricula(idAssociado, cursoId)
+            cursoViewModel.carregarVideos(moduloId)
+//            viewModel.verificarMatricula(idAssociado, cursoId)
         }
     }
 
