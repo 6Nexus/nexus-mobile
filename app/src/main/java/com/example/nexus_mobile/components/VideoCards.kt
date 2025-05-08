@@ -62,7 +62,7 @@ fun VideoCard(
                     .fillMaxHeight()
             ) {
                 Image(
-                    painter = rememberAsyncImagePainter("https://img.youtube.com/vi/${extractId(url)}/0.jpg"),
+                    painter = rememberAsyncImagePainter("https://img.youtube.com/vi/${url}/0.jpg"),
                     contentDescription = "Thumbnail do vídeo",
                     modifier = Modifier
                         .fillMaxSize(),
@@ -177,7 +177,7 @@ fun VideoPlayer(
 //    val screenHeight = configuration.screenHeightDp.dp
 //    val screenWidth = configuration.screenWidthDp.dp
 
-    val videoId = extractId(url)!!
+    val videoId = url
     val ctx = LocalContext.current
     AndroidView(factory = {
         var view = YouTubePlayerView(it)

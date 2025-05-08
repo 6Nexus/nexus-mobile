@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -85,14 +86,16 @@ fun TelaQuestionario(
                 exibirResultado = true
 
                 viewModel.viewModelScope.launch {
-                    viewModel.enviarProgresso(
-                        ProgressoRequest(
-                            idMatricula = idMatricula,
-                            idQuestionario = questionario!!.id,
-                            acertos = acertos,
-                            erros = perguntas.size - acertos
-                        )
+                    val progresso = ProgressoRequest(
+                        idMatricula = idMatricula,
+                        idQuestionario = questionario!!.id,
+                        acertos = acertos,
+                        erros = perguntas.size - acertos
                     )
+
+                    Log.d("TelaQuestionario", "Enviando progresso: $progresso")
+
+                    viewModel.enviarProgresso(progresso)
                 }
             },
             modifier = Modifier.padding(16.dp)

@@ -213,6 +213,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             _erro.value = null
             try {
                 val listaVideos = api.getVideosPorModulo(moduloId)
+                Log.d("CursoViewModel", "Recebido ${listaVideos.size} vídeos")
                 _videos.value = listaVideos
             } catch (e: Exception) {
                 _erro.value = "Erro ao carregar vídeos: ${e.message}"
