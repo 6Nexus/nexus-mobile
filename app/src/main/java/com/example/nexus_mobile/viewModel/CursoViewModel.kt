@@ -72,10 +72,19 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
                 if (!token.isNullOrEmpty()) {
-                    val cursosRecebidos = api.getCursos("Bearer $token", usuarioId)
-                    _cursos.clear()
-                    _cursos.addAll(cursosRecebidos)
-                    _uiState.value = CursoUiState.Success(cursosRecebidos)
+                    val response = api.getCursos("Bearer $token", usuarioId)
+                    if (response.isSuccessful) {
+                        val cursosRecebidos = response.body()
+                        if (cursosRecebidos != null) {
+                            _cursos.clear()
+                            _cursos.addAll(cursosRecebidos)
+                            _uiState.value = CursoUiState.Success(cursosRecebidos)
+                        } else {
+                            _uiState.value = CursoUiState.Error("Resposta sem conteúdo")
+                        }
+                    } else {
+                        _uiState.value = CursoUiState.Error("Erro ${response.code()}: ${response.message()}")
+                    }
                 } else {
                     _uiState.value = CursoUiState.Error("Token não encontrado ou expirado")
                 }
@@ -85,16 +94,28 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+
     fun carregarCursosMatriculados(idAssociado: Int) {
         viewModelScope.launch {
             _uiState.value = CursoUiState.Loading
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
                 if (!token.isNullOrEmpty()) {
-                    val cursosMatriculados = api.getCursosMatriculados("Bearer $token", idAssociado)
-                    _cursos.clear()
-                    _cursos.addAll(cursosMatriculados)
-                    _uiState.value = CursoUiState.Success(cursosMatriculados)
+                    Log.d("CursoViewModel", "Token usado: Bearer $token")
+                    Log.d("CursoViewModel", "ID associado usado: $idAssociado")
+
+                    val response = api.getCursosMatriculados("Bearer $token", idAssociado)
+
+                    if (response.isSuccessful) {
+                        val cursosMatriculados = response.body() ?: emptyList()
+                        _cursos.clear()
+                        _cursos.addAll(cursosMatriculados)
+                        _uiState.value = CursoUiState.Success(cursosMatriculados)
+                    } else {
+                        val erroCorpo = response.errorBody()?.string()
+                        Log.e("CursoViewModel", "Erro ${response.code()}: $erroCorpo")
+                        _uiState.value = CursoUiState.Error("Erro ${response.code()}: $erroCorpo")
+                    }
                 } else {
                     _uiState.value = CursoUiState.Error("Token não encontrado ou expirado")
                 }
@@ -109,14 +130,25 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
     fun carregarCursosPorCategoria(idAssociado: Int, categoria: String) {
         viewModelScope.launch {
             try {
-                val cursosRecebidos = api.getCursosPorCategoria(idAssociado, categoria)
-                _cursos.clear()
-                _cursos.addAll(cursosRecebidos)
+                val response = api.getCursosPorCategoria(idAssociado, categoria)
+                if (response.isSuccessful) {
+                    val cursosRecebidos = response.body()
+                    if (cursosRecebidos != null) {
+                        _cursos.clear()
+                        _cursos.addAll(cursosRecebidos)
+                        Log.d("CursoViewModel", "Cursos por categoria carregados: ${cursosRecebidos.size}")
+                    } else {
+                        Log.e("CursoViewModel", "Resposta sem corpo para cursos por categoria")
+                    }
+                } else {
+                    Log.e("CursoViewModel", "Erro HTTP ${response.code()}: ${response.message()}")
+                }
             } catch (e: Exception) {
                 Log.e("CursoViewModel", "Erro ao buscar cursos por categoria", e)
             }
         }
     }
+
 
     fun carregarCursoPorId(usuarioId: Int, cursoId: Int) {
         viewModelScope.launch {

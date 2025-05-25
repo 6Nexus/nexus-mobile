@@ -24,7 +24,7 @@ interface CursoApi {
     suspend fun getCursos(
         @Header("Authorization") token: String,
         @Query("idAssociado") usuarioId: Int
-    ): List<CursoDto>
+    ): Response<List<CursoDto>>
 
     @GET("cursos/{id}")
     suspend fun getCursoPorId(
@@ -36,13 +36,13 @@ interface CursoApi {
     suspend fun getCursosMatriculados(
         @Header("Authorization") token: String,
         @Path("idAssociado") idAssociado: Int
-    ): List<CursoDto>
+    ): Response<List<CursoDto>>
 
     @GET("cursos/associado/{idAssociado}/categoria/{categoria}")
     suspend fun getCursosPorCategoria(
         @Path("idAssociado") idAssociado: Int,
         @Path("categoria") categoria: String
-    ): List<CursoDto>
+    ): Response <List<CursoDto>>
 
     @POST("curtidas")
     suspend fun curtirCurso(
