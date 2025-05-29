@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -200,14 +201,17 @@ fun TelaCadastro(navController: NavController) {
                         val response = loginApi.cadastrar(cadastroRequest)
 
                         if (response.nome.isNotEmpty() && response.email.isNotEmpty()) {
-                            Toast.makeText(context, "Cadastro realizado com sucesso!", Toast.LENGTH_LONG).show()
+                            Toast.makeText(context, "Cadastro realizado com sucesso! Aguarde aprovação", Toast.LENGTH_LONG).show()
                             navController.navigate("tela_login")
                         } else {
                             Toast.makeText(context, "Erro ao cadastrar. Tente novamente.", Toast.LENGTH_LONG).show()
+                            Log.d("TelaCadastro", "Erro ao cadastrar: ${response.email}")
+                            Log.d("TelaCadastro", "Erro ao cadastrar: ${response.nome}")
                         }
 
                     } catch (e: Exception) {
                         Toast.makeText(context, "Erro: ${e.message}", Toast.LENGTH_LONG).show()
+                        Log.d("TelaCadastro", "Erro ao cadastrar: ${e.message}")
                     }
                 }
             },

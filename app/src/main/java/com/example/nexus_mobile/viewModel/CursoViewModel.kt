@@ -174,7 +174,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
                 val response = api.matricular(MatriculaRequest(usuarioId, cursoId))
                 if (response.isSuccessful) {
                     _matriculaRealizada.value = true
-                    Log.e("CursoViewModel", "matricula executada: ${response.code()}")
+                    Log.d("CursoViewModel", "matricula executada: ${response.code()}")
                 } else {
                     Log.e("CursoViewModel", "Erro ao matricular: ${response.code()}")
                 }
@@ -217,17 +217,24 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
-                if (!token.isNullOrEmpty()) {
+                Log.d("CursoViewModel", "Token recuperado: $token")
                     val response = api.getModulosPorCurso(cursoId, "Bearer $token")
+                if (!token.isNullOrEmpty()) {
                     if (response.isSuccessful) {
                         val modulosRecebidos = response.body()
                         _modulos.value = modulosRecebidos ?: emptyList()
+
                         Log.d("CursoViewModel", "Módulos carregados: ${_modulos.value.size}")
+                        Log.d("CursoViewModel", "Buscando módulos para cursoId: $cursoId")
                     } else if (response.code() == 204) {
                         _modulos.value = emptyList()
                         Log.d("CursoViewModel", "Nenhum módulo encontrado (204)")
                     } else {
+
                         Log.e("CursoViewModel", "Erro inesperado ao buscar módulos: ${response.code()}")
+                        Log.d("CursoViewModel", "Requisição para cursoId: $cursoId, token: Bearer $token")
+                        Log.d("CursoViewModel", "Response code: ${response.code()}, message: ${response.message()}")
+                        Log.d("CursoViewModel", "Error body: ${response.errorBody()?.string()}")
                     }
                 } else {
                     Log.e("CursoViewModel", "Token não encontrado ou expirado")

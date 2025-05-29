@@ -91,7 +91,7 @@ fun TelaMatricula(
         containerColor = Color(0xFFF8F8F8),
         topBar = {
             Column {
-                AppBar(descricao = "Perfil")
+                AppBar(descricao = cursoViewModel.curso.toString())
                 Spacer(modifier = Modifier.height(30.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,

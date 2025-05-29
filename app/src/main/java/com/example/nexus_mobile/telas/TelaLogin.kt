@@ -58,6 +58,7 @@ import com.example.nexus_mobile.ui.theme.cinza
 import com.example.nexus_mobile.ui.theme.verdePrincipal
 import com.example.nexus_mobile.utils.UsuarioManager
 import com.example.nexus_mobile.viewModel.UsuarioViewModel
+import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -249,6 +250,7 @@ fun TelaLogin(
 
                 CoroutineScope(Dispatchers.IO).launch {
                     try {
+                        Log.d("Login", "JSON enviado: ${Gson().toJson(loginRequest)}")
                         Log.d("Login", "Chamando API de login...")
                         val resposta = RetrofitClient.getLoginApi(context).login(loginRequest)
                         Log.d("Login", "Token recebido: ${resposta.token}")
