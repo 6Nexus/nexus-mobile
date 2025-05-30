@@ -68,11 +68,11 @@ class FavoritosViewModel(application: Application) : AndroidViewModel(applicatio
                 if (token != null && token.isNotEmpty()) {
                     if (_favoritos.contains(cursoId)) {
                         Log.d("FavoritosViewModel", "Curso $cursoId já é favorito. Enviando requisição para remover.")
-                        api.descurtirCurso("Bearer $token", idAssociado, cursoId)
+                        api.descurtirCurso( idAssociado, cursoId)
                         _favoritos.remove(cursoId)
                     } else {
                         Log.d("FavoritosViewModel", "Curso $cursoId não é favorito. Enviando requisição para curtir.")
-                        api.curtirCurso("Bearer $token", CurtidaCriacaoDto(idAssociado, cursoId))
+                        api.curtirCurso(CurtidaCriacaoDto(idAssociado, cursoId))
                         _favoritos.add(cursoId)
                     }
 

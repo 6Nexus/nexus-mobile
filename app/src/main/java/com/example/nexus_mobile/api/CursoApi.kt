@@ -22,7 +22,7 @@ interface CursoApi {
 
     @GET("cursos")
     suspend fun getCursos(
-        @Header("Authorization") token: String,
+       // @Header("Authorization") token: String,
         @Query("idAssociado") usuarioId: Int
     ): Response<List<CursoDto>>
 
@@ -34,7 +34,7 @@ interface CursoApi {
 
     @GET("cursos/associado/{idAssociado}")
     suspend fun getCursosMatriculados(
-        @Header("Authorization") token: String,
+       // @Header("Authorization") token: String,
         @Path("idAssociado") idAssociado: Int
     ): Response<List<CursoDto>>
 
@@ -46,13 +46,13 @@ interface CursoApi {
 
     @POST("curtidas")
     suspend fun curtirCurso(
-        @Header("Authorization") token: String,
+       // @Header("Authorization") token: String,
         @Body curtida: CurtidaCriacaoDto
     )
 
     @DELETE("curtidas/{idAssociado}/{idCurso}")
     suspend fun descurtirCurso(
-        @Header("Authorization") token: String,
+       // @Header("Authorization") token: String,
         @Path("idAssociado") idAssociado: Int,
         @Path("idCurso") idCurso: Int
     )
@@ -67,7 +67,7 @@ interface CursoApi {
 
     @GET("matriculas/{usuarioId}/{cursoId}")
     suspend fun verificarMatricula(
-        @Header("Authorization") token: String,
+      //  @Header("Authorization") token: String,
         @Path("usuarioId") usuarioId: Int,
         @Path("cursoId") cursoId: Int
     ): Response<Int>
@@ -76,23 +76,23 @@ interface CursoApi {
     @GET("modulos/curso/{idCurso}")
     suspend fun getModulosPorCurso(
         @Path("idCurso") cursoId: Int,
-        @Header("Authorization") token: String
+      //  @Header("Authorization") token: String
     ):  Response<List<Modulo>>
 
     @GET("videos/modulo/{moduloId}")
-    suspend fun getVideosPorModulo(@Path("moduloId") moduloId: Int): List<Video>
+    suspend fun getVideosPorModulo(@Path("moduloId") moduloId: Int): Response <List<Video>>
 
     @GET("questionarios/modulo/{moduloId}")
     suspend fun getQuestionarioPorModulo(
         @Path("moduloId") moduloId: Int,
-        @Header("Authorization") authToken: String
+       // @Header("Authorization") authToken: String
     ): QuestionarioResponse
 
 
     @POST("progresso-questionarios")
     suspend fun enviarProgresso(
         @Body progresso: ProgressoRequest,
-        @Header("Authorization") authToken: String
+       // @Header("Authorization") authToken: String
     )
 
 
@@ -100,7 +100,7 @@ interface CursoApi {
     suspend fun buscarProgressoQuestionario(
         @Path("matriculaId") matriculaId: Int,
         @Path("questionarioId") questionarioId: Int,
-        @Header("Authorization") authToken: String
+       // @Header("Authorization") authToken: String
     ): RespostaProgresso
 
 

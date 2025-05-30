@@ -68,6 +68,14 @@ fun TelaMatricula(
     val matriculaRealizada by cursoViewModel.matriculaRealizada.collectAsState()
     var iniciado by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        if (!matriculaRealizada) {
+            cursoViewModel.verificarMatricula(id, cursoId)
+            iniciado = true
+        }
+    }
+
+
     LaunchedEffect(key1 = id, key2 = cursoId) {
         if (id > 0) {
             Log.d("TelaMatricula", "Chamando carregarCursoPorId com id=$id e cursoId=$cursoId")
@@ -173,6 +181,7 @@ fun TelaMatricula(
                             Button(
                                 onClick = {
                                     cursoViewModel.matricular(id, cursoId)
+                                    iniciado = false
                                 },
                                 enabled = !matriculaRealizada,
                                 shape = RoundedCornerShape(10.dp),

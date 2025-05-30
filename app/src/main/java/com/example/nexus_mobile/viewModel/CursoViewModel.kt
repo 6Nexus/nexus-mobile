@@ -72,7 +72,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
                 if (!token.isNullOrEmpty()) {
-                    val response = api.getCursos("Bearer $token", usuarioId)
+                    val response = api.getCursos( usuarioId)
                     if (response.isSuccessful) {
                         val cursosRecebidos = response.body()
                         if (cursosRecebidos != null) {
@@ -104,7 +104,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
                     Log.d("CursoViewModel", "Token usado: Bearer $token")
                     Log.d("CursoViewModel", "ID associado usado: $idAssociado")
 
-                    val response = api.getCursosMatriculados("Bearer $token", idAssociado)
+                    val response = api.getCursosMatriculados(idAssociado)
 
                     if (response.isSuccessful) {
                         val cursosMatriculados = response.body() ?: emptyList()
@@ -167,10 +167,11 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
 
     @OptIn(UnstableApi::class)
     fun matricular(usuarioId: Int, cursoId: Int) {
-        if (_matriculaRealizada.value) return
+        if (_matriculaRealizada.value == true) return
 
         viewModelScope.launch {
             try {
+                val token = TokenManager.getToken(getApplication<Application>())
                 val response = api.matricular(MatriculaRequest(usuarioId, cursoId))
                 if (response.isSuccessful) {
                     _matriculaRealizada.value = true
@@ -189,7 +190,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
-                val response = api.verificarMatricula("Bearer $token", idAssociado, cursoId)
+                val response = api.verificarMatricula( idAssociado, cursoId)
 
                 if (response.isSuccessful) {
                     val idMatricula = response.body()
@@ -218,7 +219,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
                 Log.d("CursoViewModel", "Token recuperado: $token")
-                    val response = api.getModulosPorCurso(cursoId, "Bearer $token")
+                    val response = api.getModulosPorCurso(cursoId)
                 if (!token.isNullOrEmpty()) {
                     if (response.isSuccessful) {
                         val modulosRecebidos = response.body()
@@ -252,8 +253,22 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             _erro.value = null
             try {
                 val listaVideos = api.getVideosPorModulo(moduloId)
-                Log.d("CursoViewModel", "Recebido ${listaVideos.size} vídeos")
-                _videos.value = listaVideos
+                //Log.d("CursoViewModel", "Recebido ${listaVideos.size} vídeos")
+//                if(listaVideos.isEmpty()){
+//                    Log.d("CursoViewModel", "Nenhum vídeo encontrado para o módulo $moduloId")
+//                }
+//                _videos.value = listaVideos
+                 if(listaVideos.code() == 204) {
+                     Log.d("CursoViewModel", "Nenhum vídeo encontrado para o módulo $moduloId")
+                     _videos.value = emptyList()
+                }
+                else if(listaVideos.isSuccessful){
+                    _videos.value =listaVideos.body() ?: emptyList()
+                    Log.d("CursoViewModel", "Vídeos carregados: ${_videos.value.size} vídeos")
+                } else {
+                    Log.e("CursoViewModel", "Erro ao carregar vídeos: ${listaVideos.code()} - ${listaVideos.message()}")
+                    _erro.value = "Erro ao carregar vídeos: ${listaVideos.code()} - ${listaVideos.message()}"
+                }
             } catch (e: Exception) {
                 _erro.value = "Erro ao carregar vídeos: ${e.message}"
             } finally {
@@ -266,7 +281,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun carregarQuestionario(moduloId: Int) {
         val token = TokenManager.getToken(getApplication<Application>())
         try {
-            val response = api.getQuestionarioPorModulo(moduloId, "Bearer $token")
+            val response = api.getQuestionarioPorModulo(moduloId)
             _questionario.value = response
         } catch (e: Exception) {
             _erro.value = "Erro ao carregar questionário: ${e.message}"
@@ -276,7 +291,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
     suspend fun enviarProgresso(progresso: ProgressoRequest) {
         val token = TokenManager.getToken(getApplication<Application>())
         try {
-            api.enviarProgresso(progresso, "Bearer $token")
+            api.enviarProgresso(progresso)
         } catch (e: Exception) {
             _erro.value = "Erro ao enviar progresso: ${e.message}"
         }
@@ -293,7 +308,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
                 val token = TokenManager.getToken(getApplication<Application>())
                 if (!token.isNullOrEmpty()) {
                     val progresso = ProgressoRequest(pontuacao, matriculaId, questionarioId)
-                    api.enviarProgresso(progresso, "Bearer $token")
+                    api.enviarProgresso(progresso)
                     Log.d("CursoViewModel", "Progresso enviado com sucesso")
                 }
             } catch (e: Exception) {
@@ -307,7 +322,7 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val token = TokenManager.getToken(getApplication<Application>())
                 if (!token.isNullOrEmpty()) {
-                    val resposta = api.buscarProgressoQuestionario(matriculaId, questionarioId, "Bearer $token")
+                    val resposta = api.buscarProgressoQuestionario(matriculaId, questionarioId)
                     _progressoResponse.value = resposta
                     Log.d("CursoViewModel", "Progresso carregado: ${resposta.pontuacao}")
                 }

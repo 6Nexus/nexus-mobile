@@ -60,6 +60,8 @@ fun TelaVideo(
     var currentVideo by remember { mutableStateOf("") }
     var showPlayer by remember { mutableStateOf(false) }
 
+    val videoCarregado by cursoViewModel.videos.collectAsState()
+
     // Garantimos que a matrícula só será verificada quando o idAssociado estiver disponível
     LaunchedEffect(moduloId, idAssociado) {
         if (idAssociado > 0) {
