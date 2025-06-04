@@ -39,15 +39,15 @@ fun BarraPesquisa(
         onValueChange = onQueryChange,
         modifier = modifier
             .fillMaxWidth()
-            .border(
-                border = BorderStroke(1.dp, Color(0xFFDFDFDF)),
-                shape = RoundedCornerShape(16.dp)
-            )
+//            .border(
+//                border = BorderStroke(1.dp, Color(240, 240, 240)),
+//               // shape = RoundedCornerShape(16.dp)
+//            )
         ,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = Color(0xFFDFDFDF),
-            unfocusedBorderColor = Color(0xFFDFDFDF),
-            // focusedLabelColor = Color(0xFF004b23),
+            focusedBorderColor = Color(240, 240, 240),
+            unfocusedBorderColor = Color(240, 240, 240),
+             focusedLabelColor = Color(240, 240, 240),
             unfocusedContainerColor = Color(240, 240, 240),
             focusedContainerColor = Color(240, 240, 240)
         ),
@@ -70,7 +70,7 @@ fun BarraPesquisa(
             }
         },
         singleLine = true,
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         textStyle = TextStyle(fontSize = 16.sp),
         keyboardOptions = KeyboardOptions.Default.copy(
             imeAction = ImeAction.Search
