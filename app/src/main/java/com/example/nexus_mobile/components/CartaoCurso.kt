@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -119,10 +120,13 @@ fun CartaoCurso(
 
                 Box(
                     modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
                         .background(Color(217, 217, 217))
                         .padding(horizontal = 13.dp)
-                        .height(20.dp),
-                    contentAlignment = Alignment.Center
+                        .height(20.dp)
+
+                    ,
+                    contentAlignment = Alignment.Center,
                 ) {
                     Text(text = curso.categoria, fontSize = 11.sp, color = Color.Black)
                 }
