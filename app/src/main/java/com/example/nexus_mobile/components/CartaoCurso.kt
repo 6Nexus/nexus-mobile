@@ -77,8 +77,6 @@ fun CartaoCurso(
     }
 
 
-
-
     Card(
         modifier = Modifier
             .fillMaxWidth()

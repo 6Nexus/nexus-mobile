@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import BarraPesquisa
 import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -28,7 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.nexus_mobile.components.BarraPesquisa
+
 import com.example.nexus_mobile.components.Favorito
 import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
@@ -44,10 +45,12 @@ import com.example.nexus_mobile.viewModel.UsuarioViewModel
 fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, context: Context, favoritosViewModel: FavoritosViewModel) {
     val cursoViewModel: CursoViewModel = viewModel()
     var query by remember { mutableStateOf("") }
-    val cursosFiltrados = cursoViewModel.cursos
+    val cursosFiltrados = cursoViewModel.cursos.filter {
+        it.titulo.contains(query, ignoreCase = true)
+    }
     val nome by usuarioViewModel.nome.collectAsState()
     val id by usuarioViewModel.userId.collectAsState()
-
+    var active by remember { mutableStateOf(false) }
     LaunchedEffect(id) {
         if (id > 0) {
             cursoViewModel.carregarCursosMatriculados(id)
@@ -58,7 +61,13 @@ fun Home(navController: NavController, usuarioViewModel: UsuarioViewModel, conte
     Column(modifier = Modifier.fillMaxSize()) {
 
         Spacer(modifier = Modifier.height(20.dp))
-        BarraPesquisa(query, { query = it })
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            onSearch = {
+                // Opcional: pode fazer algo quando o usuário "confirma" a busca
+            }
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
         Card(

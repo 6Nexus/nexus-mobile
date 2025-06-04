@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.telas
 
+import BarraPesquisa
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Text
@@ -17,7 +18,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.nexus_mobile.RetrofitClient
-import com.example.nexus_mobile.components.BarraPesquisa
 import com.example.nexus_mobile.components.FiltroCategorias
 import com.example.nexus_mobile.components.ListaCursos
 import com.example.nexus_mobile.components.NavigationBar
@@ -42,7 +42,10 @@ fun TelaCursos(
     val id by usuarioViewModel.userId.collectAsState()
     var query by remember { mutableStateOf("") }
     var categoriaSelecionada by remember { mutableStateOf("Todos") }
-    val cursosFiltrados = cursoViewModel.cursos
+    val cursosFiltrados = cursoViewModel.cursos.filter {
+        it.titulo.contains(query, ignoreCase = true)
+    }
+    var active by remember { mutableStateOf(false) }
 
     LaunchedEffect(categoriaSelecionada) {
         val idAssociado = id
@@ -55,7 +58,13 @@ fun TelaCursos(
 
     Column(modifier = Modifier.fillMaxSize()) {
         Spacer(modifier = Modifier.height(30.dp))
-        BarraPesquisa(query, { query = it })
+        BarraPesquisa(
+            query = query,
+            onQueryChange = { query = it },
+            onSearch = {
+
+            }
+        )
         Text(
             text = "Todos os cursos",
             fontSize = 18.sp,
