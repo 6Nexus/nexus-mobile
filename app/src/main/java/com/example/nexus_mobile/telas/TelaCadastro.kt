@@ -23,6 +23,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -57,13 +58,14 @@ import kotlinx.coroutines.launch
 @Composable
 fun TelaCadastro(navController: NavController) {
 
-    var nome by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var senha by remember { mutableStateOf("") }
+    var nome by remember { mutableStateOf("Manoela") }
+    var email by remember { mutableStateOf("manoela@gmail.com") }
+    var senha by remember { mutableStateOf("123456") }
     var exibirSenha by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    var isCarregando by remember { mutableStateOf(false) }
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
@@ -208,7 +210,7 @@ fun TelaCadastro(navController: NavController) {
                             Log.d("TelaCadastro", "Erro ao cadastrar: ${response.email}")
                             Log.d("TelaCadastro", "Erro ao cadastrar: ${response.nome}")
                         }
-
+                        isCarregando = true
                     } catch (e: Exception) {
                         Toast.makeText(context, "Erro: ${e.message}", Toast.LENGTH_LONG).show()
                         Log.d("TelaCadastro", "Erro ao cadastrar: ${e.message}")
@@ -226,12 +228,20 @@ fun TelaCadastro(navController: NavController) {
 
 
             ) {
-            Text(
-                text = "Entrar",
-                color = Color.White,
-                fontSize = 20.sp,
-
+            if (isCarregando) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
                 )
+            } else {
+                Text(
+                    text = "Entrar",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                )
+
+            }
 
         }
 

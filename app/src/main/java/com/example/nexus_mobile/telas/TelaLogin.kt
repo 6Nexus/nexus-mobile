@@ -24,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -80,6 +81,7 @@ fun TelaLogin(
     var exibirSenha by remember { mutableStateOf(false) }
     var erroEmail by remember { mutableStateOf("") }
     var erroSenha by remember { mutableStateOf("") }
+    var isCarregando by remember { mutableStateOf(false) }
 
     val visualTransformation: VisualTransformation =
         if (exibirSenha) VisualTransformation.None else PasswordVisualTransformation()
@@ -266,7 +268,7 @@ fun TelaLogin(
                                 popUpTo("tela_login") { inclusive = true }
                             }
                         }
-
+                        isCarregando = true
                     } catch (e: HttpException) {
                         Log.e("Login", "Erro HTTP: ${e.code()} - ${e.message()}")
                         withContext(Dispatchers.Main) {
@@ -293,11 +295,20 @@ fun TelaLogin(
                 .shadow(8.dp),
             shape = RoundedCornerShape(10.dp),
         ) {
-            Text(
-                text = "Entrar",
-                color = Color.White,
-                fontSize = 20.sp,
-            )
+            if (isCarregando) {
+                CircularProgressIndicator(
+                    color = Color.White,
+                    modifier = Modifier.size(20.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                Text(
+                    text = "Entrar",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                )
+
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
