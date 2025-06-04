@@ -61,17 +61,21 @@ fun CartaoCurso(
     val imagem = R.drawable.curso1
 
 
-    val capaUrl by cursoViewModel.capaCursoUrl.collectAsState()
+      val capaUrl by cursoViewModel.capaCursoUrl.collectAsState()
 
     LaunchedEffect(curso.id) {
         cursoViewModel.buscarCapaCurso(curso.id)
     }
 
     val imagemPainter = if (!curso.capaUrl.isNullOrEmpty()) {
-        rememberAsyncImagePainter(model = curso.capaUrl)
+        rememberAsyncImagePainter(
+            model = curso.capaUrl,
+            error = painterResource(id = R.drawable.curso1)
+        )
     } else {
         painterResource(id = R.drawable.curso1)
     }
+
 
 
 
@@ -85,7 +89,7 @@ fun CartaoCurso(
     ) {
         Column {
             Image(
-                painter = imagemPainter,
+                painter =  imagemPainter,
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth().height(100.dp),
                 contentScale = ContentScale.Crop
