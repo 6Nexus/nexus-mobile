@@ -68,6 +68,8 @@ fun TelaMatricula(
     val matriculaRealizada by cursoViewModel.matriculaRealizada.collectAsState()
     var iniciado by remember { mutableStateOf(false) }
 
+
+
     LaunchedEffect(Unit) {
         if (!matriculaRealizada) {
             cursoViewModel.verificarMatricula(id, cursoId)
@@ -99,7 +101,7 @@ fun TelaMatricula(
         containerColor = Color(0xFFF8F8F8),
         topBar = {
             Column {
-                AppBar(descricao = cursoViewModel.curso.toString())
+                AppBar(descricao = curso?.titulo ?: "Curso")
                 Spacer(modifier = Modifier.height(30.dp))
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
