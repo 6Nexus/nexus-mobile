@@ -6,8 +6,15 @@ data class CursoDto(
     val categoria: String,
     val descricao: String,
     val professorId: Int,
-    val professorNome: String
+    val professorNome: String,
+    // capa
+    val capaUrl: String
 )
+
+data class CapaRespostaDto(
+    val capaUrl: String
+)
+
 
 
 

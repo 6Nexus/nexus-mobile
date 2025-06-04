@@ -14,6 +14,7 @@ import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.util.UnstableApi
 import com.example.nexus_mobile.RetrofitClient
+import com.example.nexus_mobile.api.CursoApi
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
 import com.example.nexus_mobile.dto.Modulo
@@ -331,5 +332,27 @@ class CursoViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
     }
+
+    private val _capaCursoUrl = MutableStateFlow<String?>(null)
+    val capaCursoUrl: StateFlow<String?> = _capaCursoUrl
+
+
+    fun buscarCapaCurso(cursoId: Int) {
+        viewModelScope.launch {
+            try {
+                val response = api.buscarCapaCurso(cursoId)
+                if (response.isSuccessful) {
+                    _capaCursoUrl.value = response.body()?.capaUrl
+                    Log.d("CursoViewModel", "Capa do curso carregada: ${_capaCursoUrl.value}")
+                } else {
+                    Log.e("CursoViewModel", "Erro ao carregar capa: ${response.code()} - ${response.errorBody()?.string()}")
+                }
+            } catch (e: Exception) {
+                Log.e("CursoViewModel", "Erro ao buscar capa do curso: ${e.message}", e)
+            }
+        }
+    }
+
+
 
 }

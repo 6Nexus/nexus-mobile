@@ -1,5 +1,6 @@
 package com.example.nexus_mobile.api
 
+import com.example.nexus_mobile.dto.CapaRespostaDto
 import com.example.nexus_mobile.dto.CursoDto
 import com.example.nexus_mobile.dto.CurtidaCriacaoDto
 import com.example.nexus_mobile.dto.MatriculaRequest
@@ -103,6 +104,11 @@ interface CursoApi {
        // @Header("Authorization") authToken: String
     ): RespostaProgresso
 
+    // CAPA CURSO
+    @GET("cursos/capa/{cursoId}")
+    suspend fun buscarCapaCurso(
+        @Path("cursoId") cursoId: Int
+    ): Response<CapaRespostaDto>
 
 }
 

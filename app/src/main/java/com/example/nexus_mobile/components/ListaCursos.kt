@@ -19,7 +19,7 @@ fun ListaCursos(
                 navController = navController,
                 curso = cursoDto, // passa o CursoDto direto
                 favoritos = favoritos,
-                onFavoritoChanged = onFavoritoChanged
+                onFavoritoChanged = onFavoritoChanged,
             )
         }
     }

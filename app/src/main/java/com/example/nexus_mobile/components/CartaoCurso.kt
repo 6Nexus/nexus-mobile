@@ -25,6 +25,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,24 +35,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.example.nexus_mobile.R
 import com.example.nexus_mobile.components.Favorito
 import com.example.nexus_mobile.dto.CursoDto
+import com.example.nexus_mobile.viewModel.CursoViewModel
 
 @Composable
 fun CartaoCurso(
     navController: NavController,
     curso: CursoDto,
     favoritos: List<Int>,
+    //cursoViewModel: CursoViewModel,
     onFavoritoChanged: (Int, Boolean) -> Unit
 ) {
+    val cursoViewModel : CursoViewModel = viewModel()
     val imagem = R.drawable.curso1
+
+
+    val capaUrl by cursoViewModel.capaCursoUrl.collectAsState()
+
+    LaunchedEffect(curso.id) {
+        cursoViewModel.buscarCapaCurso(curso.id)
+    }
+
+    val imagemPainter = if (!curso.capaUrl.isNullOrEmpty()) {
+        rememberAsyncImagePainter(model = curso.capaUrl)
+    } else {
+        painterResource(id = R.drawable.curso1)
+    }
+
+
 
     Card(
         modifier = Modifier
@@ -62,7 +85,7 @@ fun CartaoCurso(
     ) {
         Column {
             Image(
-                painter = painterResource(id = imagem),
+                painter = imagemPainter,
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth().height(100.dp),
                 contentScale = ContentScale.Crop
