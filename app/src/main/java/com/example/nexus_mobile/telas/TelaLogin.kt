@@ -76,8 +76,8 @@ fun TelaLogin(
 ) {
 
     var isChecked by remember { mutableStateOf(false) }
-    var email by remember { mutableStateOf("amanda@gmail.com") }
-    var senha by remember { mutableStateOf("123456") }
+    var email by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
     var erroEmail by remember { mutableStateOf("") }
     var erroSenha by remember { mutableStateOf("") }

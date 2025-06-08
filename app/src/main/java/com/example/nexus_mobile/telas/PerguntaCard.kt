@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.nexus_mobile.ui.theme.verdePrincipal
 
 @Composable
 fun PerguntaCard(
@@ -76,7 +77,10 @@ fun PerguntaCard(
 
                         RadioButton(
                             selected = respostaSelecionada == index,
-                            onClick = { onRespostaSelecionada(index) }
+                            onClick = { onRespostaSelecionada(index) },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = verdePrincipal
+                            )
                         )
                     }
                 }

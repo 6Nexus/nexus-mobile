@@ -1,14 +1,17 @@
 package com.example.nexus_mobile.telas
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,6 +24,7 @@ import com.example.nexus_mobile.components.AppBar
 import com.example.nexus_mobile.components.NavigationBar
 import com.example.nexus_mobile.components.PerguntaCard
 import com.example.nexus_mobile.dto.ProgressoRequest
+import com.example.nexus_mobile.ui.theme.verdePrincipal
 import com.example.nexus_mobile.viewModel.CursoViewModel
 import kotlinx.coroutines.launch
 
@@ -107,6 +111,7 @@ fun TelaQuestionario(
         }
 
         Button(
+
             onClick = {
                 if (respostasSelecionadas.any { it == -1 }) {
                     erros = perguntas.indices.map { index ->
@@ -137,12 +142,21 @@ fun TelaQuestionario(
                     )
                 }
             },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = verdePrincipal,
+                contentColor = Color.White,
+            ),
             modifier = Modifier
                 .padding(16.dp)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .size(330.dp, 56.dp)
+            ,
+            shape = RoundedCornerShape(10.dp),
             enabled = !exibirResultado
         ) {
-            Text("Enviar Questionário")
+            Text("Enviar Questionário"
+                , fontSize = 18.sp, fontWeight = FontWeight.Bold
+            )
         }
 
         if (exibirResultado) {
@@ -152,5 +166,7 @@ fun TelaQuestionario(
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
         }
+
     }
 }
+

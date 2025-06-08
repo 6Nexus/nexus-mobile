@@ -58,9 +58,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun TelaCadastro(navController: NavController) {
 
-    var nome by remember { mutableStateOf("Manoela") }
-    var email by remember { mutableStateOf("manoela@gmail.com") }
-    var senha by remember { mutableStateOf("123456") }
+    var nome by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var senha by remember { mutableStateOf("") }
     var exibirSenha by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
